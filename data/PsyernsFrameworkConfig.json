@@ -1,0 +1,21 @@
+{
+    "EnableDebugLogging": false,
+    "DefaultRetryCount": 3,
+    "QueueMaxSize": 100,
+    "Endpoints": [
+        {
+            "Name": "WordPress",
+            "BaseUrl": "https://your-site.com/wp-json/psyern/v1",
+            "ApiKey": "YOUR_API_KEY_HERE",
+            "Enabled": false,
+            "RateLimitMs": 5000
+        },
+        {
+            "Name": "Discord",
+            "BaseUrl": "https://discord.com/api/webhooks",
+            "ApiKey": "",
+            "Enabled": false,
+            "RateLimitMs": 1000
+        }
+    ]
+}
