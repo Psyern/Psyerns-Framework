@@ -21,8 +21,12 @@ class PF_WebClient
 	RestContext GetRestContext(string baseUrl)
 	{
 		if (m_Contexts.Contains(baseUrl))
+		{
+			PF_Logger.Debug("Reusing RestContext for: " + baseUrl);
 			return m_Contexts.Get(baseUrl);
+		}
 
+		PF_Logger.Debug("Creating new RestContext for: " + baseUrl);
 		RestContext ctx = m_RestApi.GetRestContext(baseUrl);
 		ctx.SetHeader("application/json");
 		m_Contexts.Insert(baseUrl, ctx);
@@ -31,6 +35,18 @@ class PF_WebClient
 
 	void Send(PF_WebRequest request)
 	{
+		if (!request)
+		{
+			PF_Logger.Error("Send() called with null request");
+			return;
+		}
+
+		string method = "GET";
+		if (request.GetMethod() == 1)
+			method = "POST";
+
+		PF_Logger.Debug("Send " + method + " " + request.GetBaseUrl() + request.GetEndpoint());
+
 		RestContext ctx = GetRestContext(request.GetBaseUrl());
 		ctx.SetHeader(request.GetHeader());
 

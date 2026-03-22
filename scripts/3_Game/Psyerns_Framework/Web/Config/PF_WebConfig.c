@@ -3,6 +3,9 @@ class PF_WebConfig
 	bool EnableDebugLogging;
 	int DefaultRetryCount;
 	int QueueMaxSize;
+	bool EnableServerStartNotification;
+	int ServerStartDelaySeconds;
+	string ServerName;
 	ref array<ref PF_WebEndpoint> Endpoints;
 
 	[NonSerialized()]
@@ -13,6 +16,9 @@ class PF_WebConfig
 		EnableDebugLogging = false;
 		DefaultRetryCount = 3;
 		QueueMaxSize = 100;
+		EnableServerStartNotification = false;
+		ServerStartDelaySeconds = 30;
+		ServerName = "DayZ Server";
 		Endpoints = new array<ref PF_WebEndpoint>();
 	}
 
@@ -45,6 +51,7 @@ class PF_WebConfig
 		{
 			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, this);
 			Print("[Psyerns Framework] Config loaded from " + path);
+			Print("[Psyerns Framework] Debug logging: " + EnableDebugLogging.ToString() + " | Endpoints: " + Endpoints.Count().ToString() + " | RetryCount: " + DefaultRetryCount.ToString() + " | QueueMax: " + QueueMaxSize.ToString());
 		}
 		else
 		{
@@ -59,11 +66,13 @@ class PF_WebConfig
 		string dir = GetConfigDirectory();
 		if (!FileExist(dir))
 		{
+			Print("[Psyerns Framework] Creating config directory: " + dir);
 			MakeDirectory(dir);
 		}
 
 		string path = GetConfigPath();
 		JsonFileLoader<PF_WebConfig>.JsonSaveFile(path, this);
+		Print("[Psyerns Framework] Config saved to " + path);
 	}
 
 	void CreateDefaults()
@@ -71,6 +80,9 @@ class PF_WebConfig
 		EnableDebugLogging = false;
 		DefaultRetryCount = 3;
 		QueueMaxSize = 100;
+		EnableServerStartNotification = false;
+		ServerStartDelaySeconds = 30;
+		ServerName = "DayZ Server";
 		Endpoints.Clear();
 
 		PF_WebEndpoint wp = new PF_WebEndpoint();

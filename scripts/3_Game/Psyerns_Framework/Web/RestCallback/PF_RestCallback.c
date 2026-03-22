@@ -15,7 +15,8 @@ class PF_RestCallback : RestCallback
 		m_Response.SetSuccess(true);
 		m_Response.SetData(data, dataSize);
 		m_Response.SetElapsedMs(elapsed);
-		Print("[Psyerns Framework] HTTP Success (" + elapsed.ToString() + "ms, " + dataSize.ToString() + " bytes)");
+		PF_Logger.Log("HTTP Success (" + elapsed.ToString() + "ms, " + dataSize.ToString() + " bytes)");
+		PF_Logger.Debug("Response data: " + data);
 	}
 
 	override void OnError(int errorCode)
@@ -24,7 +25,7 @@ class PF_RestCallback : RestCallback
 		m_Response.SetSuccess(false);
 		m_Response.SetErrorCode(errorCode);
 		m_Response.SetElapsedMs(elapsed);
-		Print("[Psyerns Framework] HTTP Error: " + errorCode.ToString() + " (" + elapsed.ToString() + "ms)");
+		PF_Logger.Error("HTTP Error: " + errorCode.ToString() + " (" + elapsed.ToString() + "ms)");
 	}
 
 	override void OnTimeout()
@@ -33,7 +34,7 @@ class PF_RestCallback : RestCallback
 		m_Response.SetSuccess(false);
 		m_Response.SetErrorCode(-1);
 		m_Response.SetElapsedMs(elapsed);
-		Print("[Psyerns Framework] HTTP Timeout (" + elapsed.ToString() + "ms)");
+		PF_Logger.Error("HTTP Timeout after " + elapsed.ToString() + "ms");
 	}
 
 	PF_WebResponse GetResponse()

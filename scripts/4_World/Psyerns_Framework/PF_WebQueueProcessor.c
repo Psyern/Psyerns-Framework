@@ -37,13 +37,13 @@ class PF_WebQueueProcessor
 	void Start()
 	{
 		m_Running = true;
-		Print("[Psyerns Framework] Queue processor started");
+		PF_Logger.Log("Queue processor started (interval: " + m_SendInterval.ToString() + "s)");
 	}
 
 	void Stop()
 	{
 		m_Running = false;
-		Print("[Psyerns Framework] Queue processor stopped");
+		PF_Logger.Log("Queue processor stopped. Remaining items in queue: " + m_Queue.Count().ToString());
 	}
 
 	bool IsRunning()
@@ -74,7 +74,7 @@ class PF_WebQueueProcessor
 		if (!item)
 			return;
 
-		Print("[Psyerns Framework] Processing queue item (remaining: " + m_Queue.Count().ToString() + ")");
+		PF_Logger.Debug("Processing queue item (remaining: " + m_Queue.Count().ToString() + ", interval: " + m_SendInterval.ToString() + "s)");
 
 		PF_WebClient client = PF_WebClient.GetInstance();
 		client.Send(item.m_Request);
@@ -91,11 +91,11 @@ class PF_WebQueueProcessor
 			m_Queue.EnqueueItem(item);
 			// Increase interval on failure (max 2.0s)
 			m_SendInterval = Math.Min(2.0, m_SendInterval + 0.25);
-			Print("[Psyerns Framework] Request failed, retry " + item.m_RetryCount.ToString() + "/" + item.m_MaxRetries.ToString());
+			PF_Logger.Error("Request failed, retry " + item.m_RetryCount.ToString() + "/" + item.m_MaxRetries.ToString() + " (next interval: " + m_SendInterval.ToString() + "s)");
 		}
 		else
 		{
-			Print("[Psyerns Framework] Request failed, max retries reached. Dropping request.");
+			PF_Logger.Error("Request failed, max retries reached. Dropping request.");
 		}
 	}
 }

@@ -2,6 +2,9 @@
     "EnableDebugLogging": false,
     "DefaultRetryCount": 3,
     "QueueMaxSize": 100,
+    "EnableServerStartNotification": false,
+    "ServerStartDelaySeconds": 30,
+    "ServerName": "DayZ Server",
     "Endpoints": [
         {
             "Name": "WordPress",
@@ -13,7 +16,7 @@
         {
             "Name": "Discord",
             "BaseUrl": "https://discord.com/api/webhooks",
-            "ApiKey": "",
+            "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
             "Enabled": false,
             "RateLimitMs": 1000
         }

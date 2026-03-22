@@ -19,7 +19,8 @@ class PF_WordPressApi : PF_WebApiBase
 		args.Add("api_key", m_ApiKey);
 		string endpoint = args.ToQuery("/upload");
 
-		Print("[Psyerns Framework] Uploading leaderboard to WordPress...");
+		PF_Logger.Log("Uploading leaderboard to WordPress: " + m_BaseUrl + endpoint);
+		PF_Logger.Debug("WordPress payload size: " + data.Length().ToString() + " bytes");
 		Post(endpoint, data);
 	}
 
@@ -29,6 +30,7 @@ class PF_WordPressApi : PF_WebApiBase
 		args.Add("api_key", m_ApiKey);
 		string endpoint = args.ToQuery("/ping");
 
+		PF_Logger.Debug("Pinging WordPress: " + m_BaseUrl + endpoint);
 		Get(endpoint);
 	}
 }

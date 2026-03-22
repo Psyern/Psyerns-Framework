@@ -21,6 +21,7 @@ class PF_WebApiBase
 		if (!callback)
 			callback = new PF_RestCallback();
 
+		PF_Logger.Debug("POST " + m_BaseUrl + endpoint + " (" + data.Length().ToString() + " bytes)");
 		m_RestContext.POST(callback, endpoint, data);
 	}
 
@@ -29,6 +30,7 @@ class PF_WebApiBase
 		if (!callback)
 			callback = new PF_RestCallback();
 
+		PF_Logger.Debug("GET " + m_BaseUrl + endpoint);
 		m_RestContext.GET(callback, endpoint);
 	}
 }
