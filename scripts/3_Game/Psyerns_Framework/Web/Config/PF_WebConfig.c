@@ -27,9 +27,14 @@ class PF_WebConfig
 		return s_Instance;
 	}
 
+	static string GetConfigDirectory()
+	{
+		return "$profile:DeadmansEcho\\PsyernsFramework";
+	}
+
 	static string GetConfigPath()
 	{
-		return "$profile:Psyerns_Framework\\PsyernsFrameworkConfig.json";
+		return GetConfigDirectory() + "\\PsyernsFrameworkConfig.json";
 	}
 
 	void Load()
@@ -51,6 +56,12 @@ class PF_WebConfig
 
 	void Save()
 	{
+		string dir = GetConfigDirectory();
+		if (!FileExist(dir))
+		{
+			MakeDirectory(dir);
+		}
+
 		string path = GetConfigPath();
 		JsonFileLoader<PF_WebConfig>.JsonSaveFile(path, this);
 	}

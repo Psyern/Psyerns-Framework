@@ -4,7 +4,10 @@ class PF_WordPressApi : PF_WebApiBase
 
 	void PF_WordPressApi(string baseUrl, string apiKey)
 	{
+		m_BaseUrl = baseUrl;
 		m_ApiKey = apiKey;
+		m_RestContext = m_Rest.GetRestContext(m_BaseUrl);
+		m_RestContext.SetHeader("application/json");
 	}
 
 	void UploadLeaderboard(PF_WordPressPayload payload)

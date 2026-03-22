@@ -85,8 +85,8 @@ class PF_JsonBuilder
 	protected string EscapeString(string input)
 	{
 		string output = input;
-		output.Replace("\\", "\\\\");
-		output.Replace("\"", "\\\"");
+		output.Replace("\\", "\\" + "\\");
+		output.Replace("\"", "\\" + "\"");
 		output.Replace("\n", "\\n");
 		output.Replace("\r", "\\r");
 		output.Replace("\t", "\\t");
