@@ -1,4 +1,4 @@
-# 🌐 Psyerns Framework — DayZ Mod
+# Psyerns Framework — DayZ Mod
 
 [![DayZ](https://img.shields.io/badge/DayZ-1.29+-blue)](https://dayz.com)
 [![Enforce Script](https://img.shields.io/badge/Enforce-Script-orange)](https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax)
@@ -6,7 +6,7 @@
 
 > A standalone, dependency-free HTTP/Webhook framework for DayZ mods — built on the engine-native `RestApi`. No external programs, no companion services, no root server access required.
 
-## ✨ Features
+## Features
 
 - Lightweight HTTP client wrapping DayZ's native `RestApi` / `RestContext` / `RestCallback`
 - Fluent request builder with GET and POST support
@@ -19,7 +19,7 @@
 - Zero dependencies — no CF, no Dabs, no COT required
 - Server-only execution with clean `MissionServer` bootstrap
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 Psyerns_Framework/
@@ -61,7 +61,7 @@ Psyerns_Framework/
         └── PF_MissionInit.c
 ```
 
-## 📁 Profile Structure
+## Profile Structure
 
 ```text
 profiles/
@@ -73,7 +73,7 @@ profiles/
 
 All files are created automatically on first server start. The config is populated with example endpoints for WordPress and Discord.
 
-## ⚙️ Configuration
+## Configuration
 
 File: `profiles/Psyerns_Framework/PsyernsFrameworkConfig.json`
 
@@ -116,7 +116,7 @@ File: `profiles/Psyerns_Framework/PsyernsFrameworkConfig.json`
 - `Enabled` — Whether the endpoint is active
 - `RateLimitMs` — Minimum milliseconds between requests to this endpoint
 
-## 🚀 Usage Examples
+## Usage Examples
 
 ### Simple POST to WordPress
 
@@ -175,7 +175,7 @@ string json = PF_JsonBuilder.Begin()
 // Result: {"name":"PlayerOne","kills":15,"online":true}
 ```
 
-## 📨 Queue System
+## Queue System
 
 All HTTP requests are processed through an async queue with the following behavior:
 
@@ -186,7 +186,7 @@ All HTTP requests are processed through an async queue with the following behavi
 - Failed requests are retried up to `DefaultRetryCount` times
 - Queue processing runs on every server frame via `MissionServer.OnUpdate`
 
-## 📝 Logging
+## Logging
 
 The framework logs to both the server RPT and a dedicated log file:
 
@@ -195,7 +195,7 @@ The framework logs to both the server RPT and a dedicated log file:
 - Debug logging is only active when `EnableDebugLogging` is `true`
 - All log entries are prefixed with `[Psyerns Framework]` and timestamped
 
-## 🧠 Technical Notes
+## Technical Notes
 
 - Language: Enforce Script
 - Engine: DayZ Enfusion
@@ -206,7 +206,7 @@ The framework logs to both the server RPT and a dedicated log file:
 - Config uses `$profile:` paths for server portability
 - Framework is passive — does nothing if no endpoints are enabled
 
-## 🔌 Dependencies
+## Dependencies
 
 Required:
 
@@ -216,7 +216,7 @@ Optional:
 
 - None — this is a standalone framework with zero mod dependencies
 
-## 🚀 Installation
+## Installation
 
 1. Add `Psyerns_Framework` to your server mod load order
 2. Start the server once to auto-generate the config file
@@ -225,7 +225,7 @@ Optional:
 5. Set `Enabled` to `true` for the endpoints you want to use
 6. Restart the server
 
-## 🔗 Integration
+## Integration
 
 Psyerns Framework is designed to be used by other mods as a shared HTTP layer. Dependent mods should:
 
@@ -234,7 +234,7 @@ Psyerns Framework is designed to be used by other mods as a shared HTTP layer. D
 3. Use `PF_WebApiBase` as a base class for custom API targets
 4. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
 
-## 👤 Credits
+## Credits
 
 - Author: Psyern
 - Community: Deadmans Echo
