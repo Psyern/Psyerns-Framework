@@ -16,7 +16,6 @@
 - WordPress REST API integration for leaderboard uploads
 - Fluent JSON string builder with proper escaping
 - Framework-wide logger with daily log rotation and RPT output
-- Zero dependencies — no CF, no Dabs, no COT required
 - Server-only execution with clean `MissionServer` bootstrap
 
 ## Project Structure
