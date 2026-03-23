@@ -50,7 +50,7 @@ class PF_WebClient
 		RestContext ctx = GetRestContext(request.GetBaseUrl());
 		ctx.SetHeader(request.GetHeader());
 
-		ref PF_RestCallback callback = new PF_RestCallback();
+		PF_RestCallback callback = new PF_RestCallback();
 
 		if (request.GetMethod() == 1)
 			ctx.POST(callback, request.GetEndpoint(), request.GetBody());

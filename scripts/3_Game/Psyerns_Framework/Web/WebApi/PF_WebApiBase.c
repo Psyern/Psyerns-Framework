@@ -16,21 +16,15 @@ class PF_WebApiBase
 		return m_BaseUrl;
 	}
 
-	void Post(string endpoint, string data, ref PF_RestCallback callback = null)
+	void Post(string endpoint, string data)
 	{
-		if (!callback)
-			callback = new PF_RestCallback();
-
 		PF_Logger.Debug("POST " + m_BaseUrl + endpoint + " (" + data.Length().ToString() + " bytes)");
-		m_RestContext.POST(callback, endpoint, data);
+		m_RestContext.POST(new PF_RestCallback(), endpoint, data);
 	}
 
-	void Get(string endpoint, ref PF_RestCallback callback = null)
+	void Get(string endpoint)
 	{
-		if (!callback)
-			callback = new PF_RestCallback();
-
 		PF_Logger.Debug("GET " + m_BaseUrl + endpoint);
-		m_RestContext.GET(callback, endpoint);
+		m_RestContext.GET(new PF_RestCallback(), endpoint);
 	}
 }
