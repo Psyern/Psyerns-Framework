@@ -27,9 +27,21 @@
     "EnableKillFeed": false,
     "EnableDiscordEvents": false,
     "EnableAlertSystem": false,
-    "ServerStatusIntervalSeconds": 30,
-    "DiscordWebhookId": "",
-    "DiscordWebhookToken": "",
-    "WebhookUrls": [],
-    "AlertRules": []
+    "ServerStatusIntervalSeconds": 300,
+    "DiscordWebhookId": "YOUR_DISCORD_WEBHOOK_ID",
+    "DiscordWebhookToken": "YOUR_DISCORD_WEBHOOK_TOKEN",
+    "WebhookUrls": [
+        "https://your-site.com/wp-json/psyern/v1/killfeed"
+    ],
+    "AlertRules": [
+        {
+            "TriggerType": "zone_enter",
+            "Radius": 200.0,
+            "PosX": 7500.0,
+            "PosY": 0.0,
+            "PosZ": 7500.0,
+            "WebhookUrl": "https://your-site.com/wp-json/psyern/v1/alerts",
+            "MessageTemplate": "Player {playerName} entered zone at {posX},{posZ}"
+        }
+    ]
 }

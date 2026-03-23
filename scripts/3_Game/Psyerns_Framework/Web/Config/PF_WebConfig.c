@@ -118,12 +118,11 @@ class PF_WebConfig
 		EnableKillFeed = false;
 		EnableDiscordEvents = false;
 		EnableAlertSystem = false;
-		ServerStatusIntervalSeconds = 30;
-		DiscordWebhookId = "";
-		DiscordWebhookToken = "";
-		WebhookUrls = new array<string>();
-		AlertRules = new array<ref PF_AlertRuleConfig>();
+		ServerStatusIntervalSeconds = 300;
+		DiscordWebhookId = "YOUR_DISCORD_WEBHOOK_ID";
+		DiscordWebhookToken = "YOUR_DISCORD_WEBHOOK_TOKEN";
 
+		// Endpoints
 		PF_WebEndpoint wp = new PF_WebEndpoint();
 		wp.Name = "WordPress";
 		wp.BaseUrl = "https://your-site.com/wp-json/psyern/v1";
@@ -135,10 +134,26 @@ class PF_WebConfig
 		PF_WebEndpoint discord = new PF_WebEndpoint();
 		discord.Name = "Discord";
 		discord.BaseUrl = "https://discord.com/api/webhooks";
-		discord.ApiKey = "";
+		discord.ApiKey = "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN";
 		discord.Enabled = false;
 		discord.RateLimitMs = 1000;
 		Endpoints.Insert(discord);
+
+		// KillFeed Webhook URLs
+		WebhookUrls = new array<string>();
+		WebhookUrls.Insert("https://your-site.com/wp-json/psyern/v1/killfeed");
+
+		// Alert Rules
+		AlertRules = new array<ref PF_AlertRuleConfig>();
+		PF_AlertRuleConfig exampleRule = new PF_AlertRuleConfig();
+		exampleRule.TriggerType = "zone_enter";
+		exampleRule.Radius = 200;
+		exampleRule.PosX = 7500;
+		exampleRule.PosY = 0;
+		exampleRule.PosZ = 7500;
+		exampleRule.WebhookUrl = "https://your-site.com/wp-json/psyern/v1/alerts";
+		exampleRule.MessageTemplate = "Player {playerName} entered zone at {posX},{posZ}";
+		AlertRules.Insert(exampleRule);
 	}
 
 	PF_WebEndpoint GetEndpoint(string name)
