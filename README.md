@@ -8,15 +8,28 @@
 
 ## Features
 
+**Web Transport:**
 - Lightweight HTTP client wrapping DayZ's native `RestApi` / `RestContext` / `RestCallback`
 - Fluent request builder with GET and POST support
 - Async request queue with adaptive rate limiting and automatic retries
-- JSON configuration with auto-generated defaults on first server start
-- Discord webhook integration with full embed support
+- Discord webhook integration with full embed support (embeds, fields, author, timestamps)
 - WordPress REST API integration for leaderboard uploads
 - Fluent JSON string builder with proper escaping
+- Server start notification via Discord webhook
+
+**REST API Modules:**
+- Whitelist management (check/add/remove via REST)
+- Player lookup and online status queries
+- Periodic server status reporting (player count, uptime, map, time of day)
+- Kill feed broadcasting to webhook URLs
+- Discord event integration (player connect/disconnect, kills)
+- Configurable alert system with zone-based triggers
+
+**Infrastructure:**
+- Single unified config file — everything in one JSON
 - Framework-wide logger with daily log rotation and RPT output
 - Server-only execution with clean `MissionServer` bootstrap
+- `#ifdef PSYERNS_FRAMEWORK` support for optional integration by other mods
 
 ## Project Structure
 
@@ -34,6 +47,13 @@ Psyerns_Framework/
     │   ├── Utils/
     │   │   ├── PF_HttpArguments.c
     │   │   └── PF_JsonBuilder.c
+    │   ├── REST/
+    │   │   ├── Base/PF_RestBase.c
+    │   │   ├── Config/PF_RestConfig.c
+    │   │   ├── Discord/PF_DiscordIntegration.c
+    │   │   ├── PlayerLookup/PF_PlayerLookup.c
+    │   │   ├── ServerStatus/PF_ServerStatus.c
+    │   │   └── Whitelist/PF_WhitelistManager.c
     │   └── Web/
     │       ├── PF_WebClient.c
     │       ├── PF_WebRequest.c
@@ -55,32 +75,41 @@ Psyerns_Framework/
     │           ├── PF_DiscordWebhook.c
     │           └── PF_WordPressApi.c
     ├── 4_World/Psyerns_Framework/
-    │   └── PF_WebQueueProcessor.c
+    │   ├── PF_WebQueueProcessor.c
+    │   └── REST/
+    │       ├── PF_KillFeedHook.c
+    │       ├── Alerts/PF_AlertSystem.c
+    │       └── KillFeed/PF_KillFeedManager.c
     └── 5_Mission/Psyerns_Framework/
-        └── PF_MissionInit.c
+        ├── PF_MissionInit.c
+        └── PF_RestInit.c
 ```
 
 ## Profile Structure
 
 ```text
 profiles/
-└── Psyerns_Framework/
-    ├── PsyernsFrameworkConfig.json
-    └── Logs/
-        └── PF_Log_2026-03-22.log
+└── DeadmansEcho/
+    └── PsyernsFramework/
+        ├── PsyernsFrameworkConfig.json
+        └── Logs/
+            └── PF_Log_2026-03-23.log
 ```
 
-All files are created automatically on first server start. The config is populated with example endpoints for WordPress and Discord.
+All files are created automatically on first server start.
 
 ## Configuration
 
-File: `profiles/Psyerns_Framework/PsyernsFrameworkConfig.json`
+**One file for everything:** `profiles/DeadmansEcho/PsyernsFramework/PsyernsFrameworkConfig.json`
 
 ```json
 {
     "EnableDebugLogging": false,
     "DefaultRetryCount": 3,
     "QueueMaxSize": 100,
+    "EnableServerStartNotification": false,
+    "ServerStartDelaySeconds": 30,
+    "ServerName": "DayZ Server",
     "Endpoints": [
         {
             "Name": "WordPress",
@@ -92,47 +121,63 @@ File: `profiles/Psyerns_Framework/PsyernsFrameworkConfig.json`
         {
             "Name": "Discord",
             "BaseUrl": "https://discord.com/api/webhooks",
-            "ApiKey": "",
+            "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
             "Enabled": false,
             "RateLimitMs": 1000
         }
-    ]
+    ],
+    "EnableWhitelist": false,
+    "EnablePlayerLookup": false,
+    "EnableServerStatus": false,
+    "EnableKillFeed": false,
+    "EnableDiscordEvents": false,
+    "EnableAlertSystem": false,
+    "ServerStatusIntervalSeconds": 30,
+    "DiscordWebhookId": "",
+    "DiscordWebhookToken": "",
+    "WebhookUrls": [],
+    "AlertRules": []
 }
 ```
 
-### Fields
+### General Settings
 
-- `EnableDebugLogging` — Enables verbose debug output to log file and RPT
-- `DefaultRetryCount` — Number of retries for failed HTTP requests (default: 3)
-- `QueueMaxSize` — Maximum number of queued requests (default: 100)
-- `Endpoints` — List of configured API endpoints
+| Field | Default | Description |
+|-------|---------|-------------|
+| `EnableDebugLogging` | `false` | Verbose debug output to log file and RPT |
+| `DefaultRetryCount` | `3` | Retries for failed HTTP requests |
+| `QueueMaxSize` | `100` | Maximum queued requests |
+| `EnableServerStartNotification` | `false` | Send Discord webhook when server starts |
+| `ServerStartDelaySeconds` | `30` | Delay before start notification (wait for unlock) |
+| `ServerName` | `"DayZ Server"` | Server name shown in notifications |
 
-### Endpoint Fields
+### Endpoints
 
-- `Name` — Unique identifier for the endpoint (e.g. `"WordPress"`, `"Discord"`)
-- `BaseUrl` — Base URL for API requests
-- `ApiKey` — Authentication key (usage depends on the API implementation)
-- `Enabled` — Whether the endpoint is active
-- `RateLimitMs` — Minimum milliseconds between requests to this endpoint
+| Field | Description |
+|-------|-------------|
+| `Name` | Unique identifier (`"WordPress"`, `"Discord"`) |
+| `BaseUrl` | Base URL for API requests |
+| `ApiKey` | Auth key. For Discord: `webhook_id/webhook_token` |
+| `Enabled` | Whether the endpoint is active |
+| `RateLimitMs` | Minimum ms between requests |
+
+### REST Feature Toggles
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `EnableWhitelist` | `false` | Whitelist check/add/remove via REST API |
+| `EnablePlayerLookup` | `false` | Player data queries via REST API |
+| `EnableServerStatus` | `false` | Periodic server status push to WordPress |
+| `EnableKillFeed` | `false` | Kill events to webhook URLs |
+| `EnableDiscordEvents` | `false` | Player connect/disconnect/kill to Discord |
+| `EnableAlertSystem` | `false` | Zone-based alert triggers |
+| `ServerStatusIntervalSeconds` | `30` | Status push interval |
+| `DiscordWebhookId` | `""` | Discord webhook ID for events |
+| `DiscordWebhookToken` | `""` | Discord webhook token for events |
+| `WebhookUrls` | `[]` | Webhook URLs for kill feed |
+| `AlertRules` | `[]` | Alert rule definitions |
 
 ## Usage Examples
-
-### Simple POST to WordPress
-
-```c
-PF_WordPressApi wordpress = new PF_WordPressApi("https://mysite.com/wp-json/psyern/v1", "MY_API_KEY");
-PF_WordPressPayload payload = new PF_WordPressPayload();
-payload.generatedAt = "2026-03-22T12:00:00Z";
-payload.totalPlayers = 42;
-wordpress.UploadLeaderboard(payload);
-```
-
-### Discord Webhook
-
-```c
-PF_DiscordWebhook discord = new PF_DiscordWebhook("WEBHOOK_ID", "WEBHOOK_TOKEN");
-discord.SendSimple("Player Kill", "PlayerA killed PlayerB with M4A1", 16711680);
-```
 
 ### Discord Webhook with Embeds
 
@@ -151,7 +196,17 @@ embed.AddField("Uptime", "12h 34m", true);
 discord.Send(payload);
 ```
 
-### Generic HTTP POST
+### WordPress Leaderboard Upload
+
+```c
+PF_WordPressApi wordpress = new PF_WordPressApi("https://mysite.com/wp-json/psyern/v1", "MY_KEY");
+PF_WordPressPayload payload = new PF_WordPressPayload();
+payload.generatedAt = "2026-03-23T12:00:00Z";
+payload.totalPlayers = 42;
+wordpress.UploadLeaderboard(payload);
+```
+
+### Generic HTTP Request
 
 ```c
 PF_WebClient client = PF_WebClient.GetInstance();
@@ -163,75 +218,69 @@ req.Post();
 client.Send(req);
 ```
 
-### Using the JSON Builder
+### JSON Builder
 
 ```c
-string json = PF_JsonBuilder.Begin()
-    .Add("name", "PlayerOne")
-    .AddInt("kills", 15)
-    .AddBool("online", true)
-    .Build();
+PF_JsonBuilder b = PF_JsonBuilder.Begin();
+b.Add("name", "PlayerOne");
+b.AddInt("kills", 15);
+b.AddBool("online", true);
+string json = b.Build();
 // Result: {"name":"PlayerOne","kills":15,"online":true}
 ```
 
 ## Queue System
 
-All HTTP requests are processed through an async queue with the following behavior:
+All HTTP requests are processed through an async queue:
 
 - Requests are queued and sent one at a time
 - Adaptive rate limiting: 250ms–2000ms between sends
-- On success, the send interval decreases (faster throughput)
-- On failure, the send interval increases (back-off)
+- On success: interval decreases (faster throughput)
+- On failure: interval increases (back-off)
 - Failed requests are retried up to `DefaultRetryCount` times
 - Queue processing runs on every server frame via `MissionServer.OnUpdate`
 
 ## Logging
 
-The framework logs to both the server RPT and a dedicated log file:
+The framework logs to both server RPT and a dedicated log file:
 
-- Log path: `profiles/Psyerns_Framework/Logs/PF_Log_YYYY-MM-DD.log`
-- Log levels: `Log`, `Error`, `Debug`
-- Debug logging is only active when `EnableDebugLogging` is `true`
-- All log entries are prefixed with `[Psyerns Framework]` and timestamped
-
-## Technical Notes
-
-- Language: Enforce Script
-- Engine: DayZ Enfusion
-- Script modules: `3_Game`, `4_World`, `5_Mission`
-- Uses only engine-native `RestApi`, `RestContext`, `RestCallback`
-- All classes prefixed with `PF_` to avoid naming collisions
-- Server-only execution — bootstraps via modded `MissionServer`
-- Config uses `$profile:` paths for server portability
-- Framework is passive — does nothing if no endpoints are enabled
+- Log path: `profiles/DeadmansEcho/PsyernsFramework/Logs/PF_Log_YYYY-MM-DD.log`
+- Log levels: `Log` (always), `Error` (always), `Debug` (only when `EnableDebugLogging` is true)
+- All entries prefixed with `[Psyerns Framework]` and timestamped
 
 ## Dependencies
 
 Required:
-
-- DayZ Standalone
+- DayZ Standalone 1.29+
 
 Optional:
-
-- None — this is a standalone framework with zero mod dependencies
+- None — standalone framework with zero mod dependencies
 
 ## Installation
 
 1. Add `Psyerns_Framework` to your server mod load order
-2. Start the server once to auto-generate the config file
-3. Edit `profiles/Psyerns_Framework/PsyernsFrameworkConfig.json`
-4. Set your endpoint URLs and API keys
-5. Set `Enabled` to `true` for the endpoints you want to use
+2. Start the server once to auto-generate the config
+3. Edit `profiles/DeadmansEcho/PsyernsFramework/PsyernsFrameworkConfig.json`
+4. Configure your endpoints (WordPress URL + API Key, Discord Webhook ID/Token)
+5. Enable the features you want (`EnableServerStatus`, `EnableKillFeed`, etc.)
 6. Restart the server
 
-## Integration
+## Integration by Other Mods
 
-Psyerns Framework is designed to be used by other mods as a shared HTTP layer. Dependent mods should:
+Use `#ifdef PSYERNS_FRAMEWORK` for optional integration:
 
-1. Add `Psyerns_Framework` to their `requiredAddons[]` in `config.cpp`
-2. Use `PF_WebClient.GetInstance()` to send requests
-3. Use `PF_WebApiBase` as a base class for custom API targets
-4. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
+```c
+#ifdef PSYERNS_FRAMEWORK
+PF_WebClient client = PF_WebClient.GetInstance();
+// ... send requests
+#endif
+```
+
+Integration points:
+1. Use `PF_WebClient.GetInstance()` to send requests
+2. Extend `PF_WebApiBase` for custom API targets
+3. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
+4. Use `PF_JsonBuilder` for safe JSON construction
 
 ## Credits
 

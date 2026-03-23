@@ -20,5 +20,16 @@
             "Enabled": false,
             "RateLimitMs": 1000
         }
-    ]
+    ],
+    "EnableWhitelist": false,
+    "EnablePlayerLookup": false,
+    "EnableServerStatus": false,
+    "EnableKillFeed": false,
+    "EnableDiscordEvents": false,
+    "EnableAlertSystem": false,
+    "ServerStatusIntervalSeconds": 30,
+    "DiscordWebhookId": "",
+    "DiscordWebhookToken": "",
+    "WebhookUrls": [],
+    "AlertRules": []
 }

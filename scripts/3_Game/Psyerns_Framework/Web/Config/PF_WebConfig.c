@@ -8,6 +8,19 @@ class PF_WebConfig
 	string ServerName;
 	ref array<ref PF_WebEndpoint> Endpoints;
 
+	// REST Features
+	bool EnableWhitelist;
+	bool EnablePlayerLookup;
+	bool EnableServerStatus;
+	bool EnableKillFeed;
+	bool EnableDiscordEvents;
+	bool EnableAlertSystem;
+	int ServerStatusIntervalSeconds;
+	string DiscordWebhookId;
+	string DiscordWebhookToken;
+	ref array<string> WebhookUrls;
+	ref array<ref PF_AlertRuleConfig> AlertRules;
+
 	[NonSerialized()]
 	protected static ref PF_WebConfig s_Instance;
 
@@ -20,6 +33,19 @@ class PF_WebConfig
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
 		Endpoints = new array<ref PF_WebEndpoint>();
+
+		// REST Features
+		EnableWhitelist = false;
+		EnablePlayerLookup = false;
+		EnableServerStatus = false;
+		EnableKillFeed = false;
+		EnableDiscordEvents = false;
+		EnableAlertSystem = false;
+		ServerStatusIntervalSeconds = 30;
+		DiscordWebhookId = "";
+		DiscordWebhookToken = "";
+		WebhookUrls = new array<string>();
+		AlertRules = new array<ref PF_AlertRuleConfig>();
 	}
 
 	static PF_WebConfig GetInstance()
@@ -84,6 +110,19 @@ class PF_WebConfig
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
 		Endpoints.Clear();
+
+		// REST Feature Defaults
+		EnableWhitelist = false;
+		EnablePlayerLookup = false;
+		EnableServerStatus = false;
+		EnableKillFeed = false;
+		EnableDiscordEvents = false;
+		EnableAlertSystem = false;
+		ServerStatusIntervalSeconds = 30;
+		DiscordWebhookId = "";
+		DiscordWebhookToken = "";
+		WebhookUrls = new array<string>();
+		AlertRules = new array<ref PF_AlertRuleConfig>();
 
 		PF_WebEndpoint wp = new PF_WebEndpoint();
 		wp.Name = "WordPress";
