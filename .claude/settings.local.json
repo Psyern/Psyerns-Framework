@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Ninjin_Leaderboard\\\\web\\\\api\")",
-      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Ninjin_Leaderboard\\\\web\\\\data\")"
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Ninjin_Leaderboard\\\\web\\\\data\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-framework\\\\includes\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-framework\\\\admin\\\\views\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-framework\\\\admin\\\\css\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-framework\\\\public\\\\assets\\\\css\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-framework\\\\public\\\\assets\\\\js\")"
     ]
   }
 }
