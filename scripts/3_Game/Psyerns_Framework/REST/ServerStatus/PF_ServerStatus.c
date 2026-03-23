@@ -77,14 +77,14 @@ class PF_ServerStatus : PF_RestBase
 		string serverName = PF_WebConfig.GetInstance().ServerName;
 
 		// Build JSON payload
-		string json = PF_JsonBuilder.Begin()
-			.Add("serverName", serverName)
-			.AddInt("playerCount", playerCount)
-			.AddInt("uptimeSeconds", uptimeInt)
-			.Add("mapName", mapName)
-			.Add("dayTime", dayTime)
-			.Add("timestamp", GetTimestamp())
-			.Build();
+		PF_JsonBuilder b = PF_JsonBuilder.Begin();
+		b.Add("serverName", serverName);
+		b.AddInt("playerCount", playerCount);
+		b.AddInt("uptimeSeconds", uptimeInt);
+		b.Add("mapName", mapName);
+		b.Add("dayTime", dayTime);
+		b.Add("timestamp", GetTimestamp());
+		string json = b.Build();
 
 		PostJson("/server/status", json);
 		Print("[PF-REST] ServerStatus pushed: " + playerCount.ToString() + " players, uptime " + uptimeInt.ToString() + "s");

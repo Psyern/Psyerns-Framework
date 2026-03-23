@@ -77,14 +77,14 @@ class PF_AlertRule
 
 		string message = BuildMessage(playerName, pos);
 
-		string json = PF_JsonBuilder.Begin()
-			.Add("triggerType", triggerType)
-			.Add("playerName", playerName)
-			.AddFloat("posX", pos[0])
-			.AddFloat("posY", pos[1])
-			.AddFloat("posZ", pos[2])
-			.Add("message", message)
-			.Build();
+		PF_JsonBuilder b = PF_JsonBuilder.Begin();
+		b.Add("triggerType", triggerType);
+		b.Add("playerName", playerName);
+		b.AddFloat("posX", pos[0]);
+		b.AddFloat("posY", pos[1]);
+		b.AddFloat("posZ", pos[2]);
+		b.Add("message", message);
+		string json = b.Build();
 
 		PF_RestCallback cb = new PF_RestCallback();
 		m_RestCtx.POST(cb, "", json);

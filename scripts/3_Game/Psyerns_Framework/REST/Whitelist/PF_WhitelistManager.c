@@ -53,13 +53,10 @@ class PF_WhitelistManager : PF_RestBase
 			return;
 		}
 
-		string json = PF_JsonBuilder.Begin()
-			.Add("steamId", steamId)
-			.Add("name", name)
-			.Build();
+		string json = PF_JsonBuilder.Begin().Add("steamId", steamId).Add("name", name).Build();
 
 		PostJson("/whitelist/add", json);
-		Print("[PF-REST] Added to whitelist: " + name + " (" + steamId + ")");
+		PF_Logger.Log("Added to whitelist: " + name + " (" + steamId + ")");
 	}
 
 	/**
@@ -74,12 +71,10 @@ class PF_WhitelistManager : PF_RestBase
 			return;
 		}
 
-		string json = PF_JsonBuilder.Begin()
-			.Add("steamId", steamId)
-			.Build();
+		string json = PF_JsonBuilder.Begin().Add("steamId", steamId).Build();
 
 		PostJson("/whitelist/remove", json);
-		Print("[PF-REST] Removed from whitelist: " + steamId);
+		PF_Logger.Log("Removed from whitelist: " + steamId);
 	}
 }
 

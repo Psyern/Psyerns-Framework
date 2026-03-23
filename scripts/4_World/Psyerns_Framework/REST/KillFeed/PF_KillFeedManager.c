@@ -39,18 +39,18 @@ class PF_KillEvent
 
 	string ToJson()
 	{
-		return PF_JsonBuilder.Begin()
-			.Add("killerSteamId", killerSteamId)
-			.Add("killerName", killerName)
-			.Add("killerWeapon", killerWeapon)
-			.Add("victimSteamId", victimSteamId)
-			.Add("victimName", victimName)
-			.AddFloat("posX", posX)
-			.AddFloat("posY", posY)
-			.AddFloat("posZ", posZ)
-			.AddFloat("distance", distance)
-			.Add("timestamp", timestamp)
-			.Build();
+		PF_JsonBuilder b = PF_JsonBuilder.Begin();
+		b.Add("killerSteamId", killerSteamId);
+		b.Add("killerName", killerName);
+		b.Add("killerWeapon", killerWeapon);
+		b.Add("victimSteamId", victimSteamId);
+		b.Add("victimName", victimName);
+		b.AddFloat("posX", posX);
+		b.AddFloat("posY", posY);
+		b.AddFloat("posZ", posZ);
+		b.AddFloat("distance", distance);
+		b.Add("timestamp", timestamp);
+		return b.Build();
 	}
 }
 
@@ -155,8 +155,7 @@ class PF_KillFeedManager
 		string json = killEvent.ToJson();
 		SendToWebhooks(json);
 
-		Print("[PF-REST] KillFeed: " + killEvent.killerName + " killed " + killEvent.victimName
-			+ " with " + killEvent.killerWeapon + " at " + killEvent.distance.ToString() + "m");
+		PF_Logger.Log("KillFeed: " + killEvent.killerName + " killed " + killEvent.victimName + " with " + killEvent.killerWeapon + " at " + killEvent.distance.ToString() + "m");
 	}
 
 	protected void SendToWebhooks(string json)
