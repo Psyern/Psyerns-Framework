@@ -63,10 +63,7 @@ class PF_ServerStatus : PF_RestBase
 
 		// Map name
 		string mapName = "unknown";
-		if (GetGame().GetWorldName(mapName))
-		{
-			// mapName is filled by out param
-		}
+		GetGame().GetWorldName(mapName);
 
 		// In-game time of day
 		int year, month, day, hour, minute;
@@ -96,7 +93,6 @@ class PF_ServerStatus : PF_RestBase
 		int year, month, day, hour, minute, second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
-		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2)
-			+ "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
+		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 }

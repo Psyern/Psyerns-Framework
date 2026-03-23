@@ -148,8 +148,7 @@ class PF_KillFeedManager
 		int year, month, day, hour, minute, second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
-		killEvent.timestamp = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2)
-			+ "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
+		killEvent.timestamp = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 
 		// Serialize and send to all webhooks
 		string json = killEvent.ToJson();

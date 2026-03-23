@@ -155,8 +155,7 @@ class PF_DiscordIntegration
 		int year, month, day, hour, minute, second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
-		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2)
-			+ "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
+		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 
 	PF_DiscordWebhook GetWebhook()
