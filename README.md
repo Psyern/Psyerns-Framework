@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="https://deadmansecho.com">
+  <a href="https://deadmans-echo.de">
     <img src="https://img.shields.io/badge/Community-Deadmans_Echo-F0C040?style=for-the-badge" alt="Deadmans Echo">
   </a>
 </p>
