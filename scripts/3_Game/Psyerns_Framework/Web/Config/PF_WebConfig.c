@@ -76,15 +76,48 @@ class PF_WebConfig
 		if (FileExist(path))
 		{
 			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, this);
+			AutoGenerateApiKeys();
 			Print("[Psyerns Framework] Config loaded from " + path);
 			Print("[Psyerns Framework] Debug logging: " + EnableDebugLogging.ToString() + " | Endpoints: " + Endpoints.Count().ToString() + " | RetryCount: " + DefaultRetryCount.ToString() + " | QueueMax: " + QueueMaxSize.ToString());
 		}
 		else
 		{
 			CreateDefaults();
+			AutoGenerateApiKeys();
 			Save();
 			Print("[Psyerns Framework] Default config created at " + path);
 		}
+	}
+
+	protected void AutoGenerateApiKeys()
+	{
+		bool changed = false;
+
+		for (int i = 0; i < Endpoints.Count(); i++)
+		{
+			PF_WebEndpoint ep = Endpoints[i];
+			if (ep.ApiKey == "" || ep.ApiKey == "YOUR_API_KEY_HERE")
+			{
+				ep.ApiKey = GenerateRandomKey();
+				PF_Logger.Log("Auto-generated API key for endpoint: " + ep.Name + " → " + ep.ApiKey);
+				changed = true;
+			}
+		}
+
+		if (changed)
+			Save();
+	}
+
+	static string GenerateRandomKey()
+	{
+		string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+		string key = "pf-";
+		for (int i = 0; i < 24; i++)
+		{
+			int idx = Math.RandomInt(0, 36);
+			key = key + chars[idx].ToString();
+		}
+		return key;
 	}
 
 	void Save()

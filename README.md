@@ -265,6 +265,30 @@ Optional:
 5. Enable the features you want (`EnableServerStatus`, `EnableKillFeed`, etc.)
 6. Restart the server
 
+### Discord Webhook Setup
+
+1. Discord Server → Server Settings → Integrations → Webhooks
+2. Create Webhook → select channel → Copy URL
+3. URL format: `https://discord.com/api/webhooks/123456789/abcdefghijkl`
+4. In config: `ApiKey` = `123456789/abcdefghijkl` (everything after `/webhooks/`)
+
+### WordPress Plugin Setup
+
+1. Upload the `psyerns-framework` plugin to your WordPress site → Plugins → Activate
+2. Go to Psyerns Framework → Settings → set your API Key
+3. In DayZ config, set the WordPress endpoint:
+   - `BaseUrl`: `https://your-site.com/wp-json/psyern/v1`
+   - `ApiKey`: same key you set in WordPress
+   - `Enabled`: `true`
+4. Test: visit `https://your-site.com/wp-json/psyern/v1/ping?api_key=YOUR_KEY`
+
+### Steam API Key (Optional, for player avatars)
+
+1. Go to [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)
+2. Sign in with your Steam account
+3. Enter a domain name (e.g. `deadmansecho.com`)
+4. Copy the key → enter it in WordPress under Psyerns Framework → Settings → Steam API Key
+
 ## Integration by Other Mods
 
 Use `#ifdef PSYERNS_FRAMEWORK` for optional integration:
