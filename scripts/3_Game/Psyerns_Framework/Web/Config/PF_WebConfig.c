@@ -186,6 +186,14 @@ class PF_WebConfig
 		discord.RateLimitMs = 1000;
 		Endpoints.Insert(discord);
 
+		PF_WebEndpoint leaderboard = new PF_WebEndpoint();
+		leaderboard.Name = "Leaderboard";
+		leaderboard.BaseUrl = "https://your-site.com/wp-json/psyern/v1";
+		leaderboard.ApiKey = "YOUR_API_KEY_HERE";
+		leaderboard.Enabled = false;
+		leaderboard.RateLimitMs = 5000;
+		Endpoints.Insert(leaderboard);
+
 		// Webhook Notifications
 		EnableServerStopNotification = false;
 		EnableHeartbeat = false;

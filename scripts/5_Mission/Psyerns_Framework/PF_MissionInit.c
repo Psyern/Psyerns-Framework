@@ -101,6 +101,22 @@ modded class MissionServer
 		embed.SetTitle("Server Online");
 		embed.SetDescription("**" + config.ServerName + "** ist jetzt erreichbar!");
 
+		// Endpoint Status Fields
+		string wpStatus = GetEndpointStatus(config, "WordPress");
+		string lbStatus = GetEndpointStatus(config, "Leaderboard");
+		string statusText = "WordPress: " + wpStatus + "\nLeaderboard: " + lbStatus;
+
+		if (config.EnableServerStatus)
+			statusText = statusText + "\nServer Status: Aktiv (alle " + config.ServerStatusIntervalSeconds.ToString() + "s)";
+
+		if (config.EnableKillFeed)
+			statusText = statusText + "\nKillFeed: Aktiv";
+
+		if (config.EnableDiscordEvents)
+			statusText = statusText + "\nDiscord Events: Aktiv";
+
+		embed.AddField("Verbindungen", statusText, false);
+
 		int year, month, day, hour, minute, second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
@@ -111,6 +127,18 @@ modded class MissionServer
 
 		webhook.Send(payload);
 		PF_Logger.Log("Server start notification sent for: " + config.ServerName);
+	}
+
+	protected string GetEndpointStatus(PF_WebConfig config, string name)
+	{
+		PF_WebEndpoint ep = config.GetEndpoint(name);
+		if (!ep)
+			return "Nicht konfiguriert";
+
+		if (!ep.Enabled)
+			return "Deaktiviert";
+
+		return "Verbunden (" + ep.BaseUrl + ")";
 	}
 
 	protected bool ParseWebhookApiKey(string apiKey, out string webhookId, out string webhookToken)
