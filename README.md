@@ -147,9 +147,11 @@ All files are created automatically on first server start.
 | `EnableDebugLogging` | `false` | Verbose debug output to log file and RPT |
 | `DefaultRetryCount` | `3` | Retries for failed HTTP requests |
 | `QueueMaxSize` | `100` | Maximum queued requests |
-| `EnableServerStartNotification` | `false` | Send Discord webhook when server starts |
-| `ServerStartDelaySeconds` | `30` | Delay before start notification (wait for unlock) |
+| `EnableServerStartNotification` | `false` | Send Discord webhook when server has fully started (see below) |
+| `ServerStartDelaySeconds` | `30` | Delay in seconds after init before notification is sent |
 | `ServerName` | `"DayZ Server"` | Server name shown in notifications |
+
+> **Server Start Notification:** The Discord webhook is only sent after the server has fully booted — including BattlEye initialization, map loading, and mod loading. The framework waits `ServerStartDelaySeconds` after `MissionServer.OnInit()` completes, which ensures the server is unlocked and accepting player connections before the notification fires. If the server crashes during startup, no notification is sent.
 
 ### Endpoints
 
@@ -275,12 +277,29 @@ Optional:
 ### WordPress Plugin Setup
 
 1. Upload the `psyerns-framework` plugin to your WordPress site → Plugins → Activate
-2. Go to Psyerns Framework → Settings → set your API Key
-3. In DayZ config, set the WordPress endpoint:
+2. Go to Psyerns Framework → Settings
+3. Set your API Key — or leave it empty in the DayZ config and let the server auto-generate one on first start (check the server log for the generated key: `[Psyerns Framework] Auto-generated API key for endpoint: WordPress → pf-xxxx...`)
+4. Enter the same API Key in WordPress → Psyerns Framework → Settings → API Key
+5. In DayZ config, set the WordPress endpoint:
    - `BaseUrl`: `https://your-site.com/wp-json/psyern/v1`
-   - `ApiKey`: same key you set in WordPress
+   - `ApiKey`: the generated or manually set key
    - `Enabled`: `true`
-4. Test: visit `https://your-site.com/wp-json/psyern/v1/ping?api_key=YOUR_KEY`
+6. Restart the DayZ server
+
+### Testing the Connection
+
+After setup, test the API with the Ping endpoint:
+
+```
+https://your-site.com/wp-json/psyern/v1/ping?api_key=YOUR_KEY
+```
+
+Expected response:
+```json
+{"status":"ok"}
+```
+
+The Ping URL is also shown in the WordPress admin under Psyerns Framework → Settings → Connection Test, with a "Test Now" button.
 
 ### Steam API Key (Optional, for player avatars)
 

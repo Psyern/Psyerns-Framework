@@ -110,12 +110,12 @@ class PF_WebConfig
 
 	static string GenerateRandomKey()
 	{
-		string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 		string key = "pf-";
+		string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 		for (int i = 0; i < 24; i++)
 		{
 			int idx = Math.RandomInt(0, 36);
-			key = key + chars[idx].ToString();
+			key = key + chars.Substring(idx, 1);
 		}
 		return key;
 	}
