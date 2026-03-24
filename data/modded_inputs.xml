@@ -2,12 +2,14 @@
 <modded_inputs>
 	<inputs>
 		<actions>
-			<input name="PF_ReloadConfig" loc="PF: Reload Config" />
+			<input name="PF_ReloadConfig" loc="Reload Config (Admin)" />
 		</actions>
+
+		<sorting name="psyerns_framework" loc="Psyerns Framework">
+			<input name="PF_ReloadConfig" />
+		</sorting>
 	</inputs>
-	<sorting name="psyerns_framework" loc="PF">
-		<input name="PF_ReloadConfig" />
-	</sorting>
+
 	<preset>
 		<input name="PF_ReloadConfig">
 			<btn name="kF9" />
