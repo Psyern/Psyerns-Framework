@@ -33,6 +33,11 @@
     "WebhookUrls": [
         "https://your-site.com/wp-json/psyern/v1/killfeed"
     ],
+    "EnableServerStopNotification": false,
+    "EnableHeartbeat": false,
+    "HeartbeatIntervalSeconds": 60,
+    "EnableModUpdateNotification": false,
+    "EnableQuestNotifications": false,
     "AlertRules": [
         {
             "TriggerType": "zone_enter",

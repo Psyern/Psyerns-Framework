@@ -40,6 +40,9 @@ modded class MissionServer
 			PF_Logger.Log("Server start notification will be sent after " + config.ServerStartDelaySeconds.ToString() + "s delay");
 
 		PF_Logger.Log("Framework initialized. Queue processor running.");
+
+		PF_ServerNotifications.Init();
+		PF_ServerNotifications.CheckModUpdates();
 	}
 
 	override void OnUpdate(float timeslice)
@@ -60,6 +63,8 @@ modded class MissionServer
 				SendServerStartNotification(config);
 			}
 		}
+
+		PF_ServerNotifications.OnUpdate(timeslice);
 	}
 
 	protected void SendServerStartNotification(PF_WebConfig config)
@@ -124,6 +129,8 @@ modded class MissionServer
 
 	override void OnMissionFinish()
 	{
+		PF_ServerNotifications.SendServerStopNotification();
+
 		if (m_PF_QueueProcessor)
 			m_PF_QueueProcessor.Stop();
 

@@ -21,6 +21,13 @@ class PF_WebConfig
 	ref array<string> WebhookUrls;
 	ref array<ref PF_AlertRuleConfig> AlertRules;
 
+	// Webhook Notifications
+	bool EnableServerStopNotification;
+	bool EnableHeartbeat;
+	int HeartbeatIntervalSeconds;
+	bool EnableModUpdateNotification;
+	bool EnableQuestNotifications;
+
 	[NonSerialized()]
 	protected static ref PF_WebConfig s_Instance;
 
@@ -46,6 +53,13 @@ class PF_WebConfig
 		DiscordWebhookToken = "";
 		WebhookUrls = new array<string>();
 		AlertRules = new array<ref PF_AlertRuleConfig>();
+
+		// Webhook Notifications
+		EnableServerStopNotification = false;
+		EnableHeartbeat = false;
+		HeartbeatIntervalSeconds = 60;
+		EnableModUpdateNotification = false;
+		EnableQuestNotifications = false;
 	}
 
 	static PF_WebConfig GetInstance()
@@ -171,6 +185,13 @@ class PF_WebConfig
 		discord.Enabled = false;
 		discord.RateLimitMs = 1000;
 		Endpoints.Insert(discord);
+
+		// Webhook Notifications
+		EnableServerStopNotification = false;
+		EnableHeartbeat = false;
+		HeartbeatIntervalSeconds = 60;
+		EnableModUpdateNotification = false;
+		EnableQuestNotifications = false;
 
 		// KillFeed Webhook URLs
 		WebhookUrls = new array<string>();
