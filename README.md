@@ -1,6 +1,10 @@
 # Psyerns Framework
 
 <p align="center">
+  <img src="data/PsyernsFramework.png" alt="Psyerns Framework" width="400">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/DayZ-1.29+-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29+">
   <img src="https://img.shields.io/badge/Enforce_Script-Enfusion-FF851B?style=for-the-badge" alt="Enforce Script">
   <img src="https://img.shields.io/badge/Dependencies-Zero-2ECC40?style=for-the-badge" alt="Zero Dependencies">
