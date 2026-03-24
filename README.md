@@ -1,35 +1,86 @@
-# Psyerns Framework — DayZ Mod
+# Psyerns Framework
 
-[![DayZ](https://img.shields.io/badge/DayZ-1.29+-blue)](https://dayz.com)
-[![Enforce Script](https://img.shields.io/badge/Enforce-Script-orange)](https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax)
-[![Maintainer](https://img.shields.io/badge/Maintainer-Psyern-green)](https://github.com/Psyern)
+<p align="center">
+  <img src="https://img.shields.io/badge/DayZ-1.29+-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29+">
+  <img src="https://img.shields.io/badge/Enforce_Script-Enfusion-FF851B?style=for-the-badge" alt="Enforce Script">
+  <img src="https://img.shields.io/badge/Dependencies-Zero-2ECC40?style=for-the-badge" alt="Zero Dependencies">
+  <img src="https://img.shields.io/badge/License-GPL--2.0-green?style=for-the-badge" alt="License">
+</p>
 
-> A standalone, dependency-free HTTP/Webhook framework for DayZ mods — built on the engine-native `RestApi`. No external programs, no companion services, no root server access required.
+<p align="center">
+  <img src="https://img.shields.io/badge/Discord-Webhooks-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord">
+  <img src="https://img.shields.io/badge/WordPress-REST_API-21759B?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress">
+  <img src="https://img.shields.io/badge/Steam-Avatar_API-1B2838?style=flat-square&logo=steam&logoColor=white" alt="Steam">
+  <img src="https://img.shields.io/badge/REST-Whitelist_%7C_KillFeed_%7C_Alerts-E74C3C?style=flat-square" alt="REST Modules">
+</p>
+
+<p align="center">
+  <b>A standalone, dependency-free HTTP/Webhook framework for DayZ mods</b><br>
+  Built on the engine-native <code>RestApi</code>. No external programs, no companion services, no root server access required.
+</p>
+
+<p align="center">
+  <a href="https://deadmansecho.com">
+    <img src="https://img.shields.io/badge/Community-Deadmans_Echo-F0C040?style=for-the-badge" alt="Deadmans Echo">
+  </a>
+</p>
+
+---
 
 ## Features
 
-**Web Transport:**
-- Lightweight HTTP client wrapping DayZ's native `RestApi` / `RestContext` / `RestCallback`
-- Fluent request builder with GET and POST support
-- Async request queue with adaptive rate limiting and automatic retries
-- Discord webhook integration with full embed support (embeds, fields, author, timestamps)
-- WordPress REST API integration for leaderboard uploads
-- Fluent JSON string builder with proper escaping
-- Server start notification via Discord webhook
+<table>
+<tr>
+<td width="33%" valign="top">
 
-**REST API Modules:**
-- Whitelist management (check/add/remove via REST)
-- Player lookup and online status queries
-- Periodic server status reporting (player count, uptime, map, time of day)
-- Kill feed broadcasting to webhook URLs
-- Discord event integration (player connect/disconnect, kills)
-- Configurable alert system with zone-based triggers
+### Web Transport
+- HTTP Client (GET/POST)
+- Async request queue
+- Adaptive rate limiting
+- Automatic retries
+- Discord webhook embeds
+- WordPress REST API
+- JSON builder
+- Server start notification
 
-**Infrastructure:**
-- Single unified config file — everything in one JSON
-- Framework-wide logger with daily log rotation and RPT output
-- Server-only execution with clean `MissionServer` bootstrap
-- `#ifdef PSYERNS_FRAMEWORK` support for optional integration by other mods
+</td>
+<td width="33%" valign="top">
+
+### REST Modules
+- Whitelist management
+- Player lookup & online status
+- Server status reporting
+- Kill feed broadcasting
+- Discord event integration
+- Zone-based alert system
+
+</td>
+<td width="33%" valign="top">
+
+### Infrastructure
+- Single unified config file
+- Auto-generated API keys
+- Daily log rotation
+- Debug/Error/Info levels
+- `#ifdef` optional integration
+- WordPress plugin included
+
+</td>
+</tr>
+</table>
+
+---
+
+## Quick Start
+
+```
+1. Add Psyerns_Framework to server mod load order
+2. Start server → config auto-generates with API key
+3. Copy API key from config → paste in WordPress plugin
+4. Enable endpoints → restart → done
+```
+
+---
 
 ## Project Structure
 
@@ -88,15 +139,13 @@ Psyerns_Framework/
 ## Profile Structure
 
 ```text
-profiles/
-└── DeadmansEcho/
-    └── PsyernsFramework/
-        ├── PsyernsFrameworkConfig.json
-        └── Logs/
-            └── PF_Log_2026-03-23.log
+profiles/DeadmansEcho/PsyernsFramework/
+├── PsyernsFrameworkConfig.json      ← auto-generated on first start
+└── Logs/
+    └── PF_Log_2026-03-24.log
 ```
 
-All files are created automatically on first server start.
+---
 
 ## Configuration
 
@@ -132,13 +181,15 @@ All files are created automatically on first server start.
     "EnableKillFeed": false,
     "EnableDiscordEvents": false,
     "EnableAlertSystem": false,
-    "ServerStatusIntervalSeconds": 30,
+    "ServerStatusIntervalSeconds": 300,
     "DiscordWebhookId": "",
     "DiscordWebhookToken": "",
     "WebhookUrls": [],
     "AlertRules": []
 }
 ```
+
+> **Auto-Generated API Keys:** If the WordPress endpoint `ApiKey` is empty or still set to `YOUR_API_KEY_HERE`, the server will auto-generate a secure key on startup (e.g. `pf-a7kx9m2bq4w1n6tp8r3j5hcv`) and save it to the config. Check the server log for: `[Psyerns Framework] Auto-generated API key for endpoint: WordPress → pf-xxxx...`
 
 ### General Settings
 
@@ -159,7 +210,7 @@ All files are created automatically on first server start.
 |-------|-------------|
 | `Name` | Unique identifier (`"WordPress"`, `"Discord"`) |
 | `BaseUrl` | Base URL for API requests |
-| `ApiKey` | Auth key. For Discord: `webhook_id/webhook_token` |
+| `ApiKey` | Auth key. For Discord: `webhook_id/webhook_token` (see setup below) |
 | `Enabled` | Whether the endpoint is active |
 | `RateLimitMs` | Minimum ms between requests |
 
@@ -173,11 +224,13 @@ All files are created automatically on first server start.
 | `EnableKillFeed` | `false` | Kill events to webhook URLs |
 | `EnableDiscordEvents` | `false` | Player connect/disconnect/kill to Discord |
 | `EnableAlertSystem` | `false` | Zone-based alert triggers |
-| `ServerStatusIntervalSeconds` | `30` | Status push interval |
+| `ServerStatusIntervalSeconds` | `300` | Status push interval (seconds) |
 | `DiscordWebhookId` | `""` | Discord webhook ID for events |
 | `DiscordWebhookToken` | `""` | Discord webhook token for events |
 | `WebhookUrls` | `[]` | Webhook URLs for kill feed |
 | `AlertRules` | `[]` | Alert rule definitions |
+
+---
 
 ## Usage Examples
 
@@ -203,7 +256,7 @@ discord.Send(payload);
 ```c
 PF_WordPressApi wordpress = new PF_WordPressApi("https://mysite.com/wp-json/psyern/v1", "MY_KEY");
 PF_WordPressPayload payload = new PF_WordPressPayload();
-payload.generatedAt = "2026-03-23T12:00:00Z";
+payload.generatedAt = "2026-03-24T12:00:00Z";
 payload.totalPlayers = 42;
 wordpress.UploadLeaderboard(payload);
 ```
@@ -231,6 +284,8 @@ string json = b.Build();
 // Result: {"name":"PlayerOne","kills":15,"online":true}
 ```
 
+---
+
 ## Queue System
 
 All HTTP requests are processed through an async queue:
@@ -250,43 +305,51 @@ The framework logs to both server RPT and a dedicated log file:
 - Log levels: `Log` (always), `Error` (always), `Debug` (only when `EnableDebugLogging` is true)
 - All entries prefixed with `[Psyerns Framework]` and timestamped
 
-## Dependencies
-
-Required:
-- DayZ Standalone 1.29+
-
-Optional:
-- None — standalone framework with zero mod dependencies
+---
 
 ## Installation
 
+### Requirements
+
+| | |
+|---|---|
+| **DayZ** | 1.29+ |
+| **Dependencies** | None — standalone framework |
+| **WordPress** | Optional — plugin included for web integration |
+
+### Step-by-Step
+
 1. Add `Psyerns_Framework` to your server mod load order
-2. Start the server once to auto-generate the config
-3. Edit `profiles/DeadmansEcho/PsyernsFramework/PsyernsFrameworkConfig.json`
-4. Configure your endpoints (WordPress URL + API Key, Discord Webhook ID/Token)
-5. Enable the features you want (`EnableServerStatus`, `EnableKillFeed`, etc.)
-6. Restart the server
+2. Start the server once — config auto-generates at `profiles/DeadmansEcho/PsyernsFramework/PsyernsFrameworkConfig.json`
+3. API key is auto-generated for the WordPress endpoint (check server log)
+4. Configure your endpoints (URLs, enable/disable features)
+5. Restart the server
 
-### Discord Webhook Setup
+---
 
-1. Discord Server → Server Settings → Integrations → Webhooks
-2. Create Webhook → select channel → Copy URL
+### <img src="https://img.shields.io/badge/Discord-Setup-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord">
+
+1. Discord Server → **Server Settings** → **Integrations** → **Webhooks**
+2. Create Webhook → select channel → **Copy URL**
 3. URL format: `https://discord.com/api/webhooks/123456789/abcdefghijkl`
 4. In config: `ApiKey` = `123456789/abcdefghijkl` (everything after `/webhooks/`)
 
-### WordPress Plugin Setup
+---
 
-1. Upload the `psyerns-framework` plugin to your WordPress site → Plugins → Activate
-2. Go to Psyerns Framework → Settings
-3. Set your API Key — or leave it empty in the DayZ config and let the server auto-generate one on first start (check the server log for the generated key: `[Psyerns Framework] Auto-generated API key for endpoint: WordPress → pf-xxxx...`)
-4. Enter the same API Key in WordPress → Psyerns Framework → Settings → API Key
-5. In DayZ config, set the WordPress endpoint:
+### <img src="https://img.shields.io/badge/WordPress-Plugin_Setup-21759B?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress">
+
+1. Upload the `psyerns-framework` plugin folder to `wp-content/plugins/` → Activate
+2. Go to **Psyerns Framework → Settings**
+3. Enter the API Key from your DayZ server config (auto-generated on first start)
+4. Set the WordPress endpoint in DayZ config:
    - `BaseUrl`: `https://your-site.com/wp-json/psyern/v1`
-   - `ApiKey`: the generated or manually set key
+   - `ApiKey`: the auto-generated key
    - `Enabled`: `true`
-6. Restart the DayZ server
+5. Restart the DayZ server
 
-### Testing the Connection
+---
+
+### <img src="https://img.shields.io/badge/Connection-Test-2ECC40?style=flat-square" alt="Test"> Testing the Connection
 
 After setup, test the API with the Ping endpoint:
 
@@ -299,14 +362,20 @@ Expected response:
 {"status":"ok"}
 ```
 
-The Ping URL is also shown in the WordPress admin under Psyerns Framework → Settings → Connection Test, with a "Test Now" button.
+The Ping URL is also shown in the WordPress admin under **Psyerns Framework → Settings → Connection Test**, with a **"Test Now"** button.
 
-### Steam API Key (Optional, for player avatars)
+---
 
-1. Go to [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)
+### <img src="https://img.shields.io/badge/Steam-API_Key-1B2838?style=flat-square&logo=steam&logoColor=white" alt="Steam"> Steam API Key (Optional)
+
+Required for automatic player avatar resolution in the WordPress plugin.
+
+1. Go to **[steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey)**
 2. Sign in with your Steam account
 3. Enter a domain name (e.g. `deadmansecho.com`)
-4. Copy the key → enter it in WordPress under Psyerns Framework → Settings → Steam API Key
+4. Copy the key → enter it in WordPress under **Psyerns Framework → Settings → Steam API Key**
+
+---
 
 ## Integration by Other Mods
 
@@ -325,8 +394,12 @@ Integration points:
 3. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
 4. Use `PF_JsonBuilder` for safe JSON construction
 
+---
+
 ## Credits
 
-- Author: Psyern
-- Community: Deadmans Echo
-- Built as a reusable HTTP framework for the DayZ modding community
+<p align="center">
+  <b>Author:</b> Psyern<br>
+  <b>Community:</b> <a href="https://deadmansecho.com">Deadmans Echo</a><br><br>
+  Built as a reusable HTTP framework for the DayZ modding community.
+</p>
