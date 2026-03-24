@@ -45,7 +45,6 @@
 - Discord webhook embeds
 - WordPress REST API
 - JSON builder
-- Server start notification
 
 </td>
 <td width="33%" valign="top">
@@ -57,6 +56,7 @@
 - Kill feed broadcasting
 - Discord event integration
 - Zone-based alert system
+- Leaderboard web export
 
 </td>
 <td width="33%" valign="top">
@@ -64,10 +64,37 @@
 ### Infrastructure
 - Single unified config file
 - Auto-generated API keys
+- Config version auto-upgrade
+- Live config reload (F9)
+- Admin permission system
 - Daily log rotation
-- Debug/Error/Info levels
 - `#ifdef` optional integration
 - WordPress plugin included
+
+</td>
+</tr>
+</table>
+
+### Discord Notifications
+
+| Notification | Embed Color | Trigger |
+|---|---|---|
+| Server Online | :green_circle: Green | Server fully booted + BattlEye unlocked |
+| Server Offline | :red_circle: Red | Server shutting down |
+| Endpoint Status | :green_circle: / :red_circle: | Shown in Server Online embed |
+| Server Heartbeat | — | Periodic pulse for crash detection |
+| Mod Update | :large_blue_circle: Blue | Mod version changed since last start |
+| Player Connected | :green_circle: Green | Player joined |
+| Player Disconnected | :red_circle: Red | Player left |
+| Player Kill | :orange_circle: Orange | PvP/PvE kill |
+| Quest Completed | :purple_circle: Purple | Expansion Quest done (`#ifdef`) |
+
+### Config Reload
+
+Admins can reload the config live without restarting the server:
+- Press **F9** in-game (customizable in DayZ Settings → Controls → **PF** tab)
+- Server reloads `PsyernsFrameworkConfig.json` and confirms via chat message
+- Requires Steam64 ID in `AdminIDs` config field
 
 </td>
 </tr>
@@ -410,6 +437,8 @@ Required for automatic player avatar resolution in the WordPress plugin.
 2. Sign in with your Steam account
 3. Enter a domain name (e.g. `deadmansecho.com`)
 4. Copy the key → enter it in WordPress under **Psyerns Framework → Settings → Steam API Key**
+
+> **Player Avatars in the Leaderboard:** Avatars are fetched automatically via the Steam Web API using the player's Steam64 ID. If a player has linked their Steam account to Discord, their Steam profile picture will appear next to their name in the leaderboard. Players with private profiles or no avatar will show a default placeholder image.
 
 ---
 
