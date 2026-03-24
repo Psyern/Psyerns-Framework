@@ -23,6 +23,9 @@ class PF_WebConfig
 	ref array<string> WebhookUrls;
 	ref array<ref PF_AlertRuleConfig> AlertRules;
 
+	// Admin
+	ref array<string> AdminIDs;
+
 	// Webhook Notifications
 	bool EnableServerStopNotification;
 	bool EnableHeartbeat;
@@ -46,6 +49,7 @@ class PF_WebConfig
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
 		DiscordAvatarUrl = "";
+		AdminIDs = new array<string>();
 		Endpoints = new array<ref PF_WebEndpoint>();
 
 		// REST Features
@@ -173,6 +177,8 @@ class PF_WebConfig
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
 		DiscordAvatarUrl = "";
+		AdminIDs = new array<string>();
+		AdminIDs.Insert("YOUR_STEAM64_ID_HERE");
 		Endpoints.Clear();
 
 		// REST Feature Defaults
@@ -259,5 +265,28 @@ class PF_WebConfig
 			return false;
 
 		return ep.Enabled;
+	}
+
+	bool IsAdmin(string plainId)
+	{
+		if (!AdminIDs)
+			return false;
+
+		for (int i = 0; i < AdminIDs.Count(); i++)
+		{
+			if (AdminIDs[i] == plainId)
+				return true;
+		}
+		return false;
+	}
+
+	static void Reload()
+	{
+		if (s_Instance)
+		{
+			string path = GetConfigPath();
+			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, s_Instance);
+			PF_Logger.Log("Config reloaded from " + path);
+		}
 	}
 }

@@ -41,8 +41,37 @@ modded class MissionServer
 
 		PF_Logger.Log("Framework initialized. Queue processor running.");
 
+		GetRPCManager().AddRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_REQUEST, this, SingleplayerExecutionType.Server);
+
 		PF_ServerNotifications.Init();
 		PF_ServerNotifications.CheckModUpdates();
+	}
+
+	void PF_ReloadRequest(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		if (type != CallType.Server || !sender)
+			return;
+
+		string playerName = sender.GetName();
+		string playerGUID = sender.GetId();
+
+		PF_Logger.Log("Config reload request from: " + playerName + " (" + playerGUID + ")");
+
+		PF_WebConfig config = PF_WebConfig.GetInstance();
+		if (!config.IsAdmin(playerGUID))
+		{
+			PF_Logger.Log("Reload denied — not an admin: " + playerName);
+			Param2<bool, string> deny = new Param2<bool, string>(false, "Not authorized");
+			GetRPCManager().SendRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_RESPONSE, deny, true, sender);
+			return;
+		}
+
+		PF_WebConfig.Reload();
+		PF_Logger.Init(PF_WebConfig.GetInstance().EnableDebugLogging);
+
+		Param2<bool, string> ok = new Param2<bool, string>(true, "Config reloaded!");
+		GetRPCManager().SendRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_RESPONSE, ok, true, sender);
+		PF_Logger.Log("Config reloaded by admin: " + playerName);
 	}
 
 	override void OnUpdate(float timeslice)

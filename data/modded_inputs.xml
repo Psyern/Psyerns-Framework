@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<modded_inputs>
+	<inputs>
+		<actions>
+			<input name="PF_ReloadConfig" loc="PF: Reload Config" />
+		</actions>
+	</inputs>
+	<sorting name="psyerns_framework" loc="PF">
+		<input name="PF_ReloadConfig" />
+	</sorting>
+	<preset>
+		<input name="PF_ReloadConfig">
+			<btn name="kF9" />
+		</input>
+	</preset>
+</modded_inputs>

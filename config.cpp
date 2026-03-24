@@ -18,6 +18,7 @@ class CfgMods
 		author = "Psyern";
 		credits = "Psyern, Deadmans Echo Community";
 		version = "1.0.0";
+		inputs = "Psyerns_Framework/data/modded_inputs.xml";
 
 		class defs
 		{
