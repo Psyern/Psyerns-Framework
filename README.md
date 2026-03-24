@@ -153,12 +153,14 @@ profiles/DeadmansEcho/PsyernsFramework/
 
 ```json
 {
+    "ConfigVersion": 2,
     "EnableDebugLogging": false,
     "DefaultRetryCount": 3,
     "QueueMaxSize": 100,
     "EnableServerStartNotification": false,
     "ServerStartDelaySeconds": 30,
     "ServerName": "DayZ Server",
+    "DiscordAvatarUrl": "",
     "Endpoints": [
         {
             "Name": "WordPress",
@@ -173,6 +175,13 @@ profiles/DeadmansEcho/PsyernsFramework/
             "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
             "Enabled": false,
             "RateLimitMs": 1000
+        },
+        {
+            "Name": "Leaderboard",
+            "BaseUrl": "https://your-site.com/wp-json/psyern/v1",
+            "ApiKey": "YOUR_API_KEY_HERE",
+            "Enabled": false,
+            "RateLimitMs": 5000
         }
     ],
     "EnableWhitelist": false,
@@ -184,33 +193,51 @@ profiles/DeadmansEcho/PsyernsFramework/
     "ServerStatusIntervalSeconds": 300,
     "DiscordWebhookId": "",
     "DiscordWebhookToken": "",
+    "DiscordAvatarUrl": "",
     "WebhookUrls": [],
+    "EnableServerStopNotification": false,
+    "EnableHeartbeat": false,
+    "HeartbeatIntervalSeconds": 60,
+    "EnableModUpdateNotification": false,
+    "EnableQuestNotifications": false,
     "AlertRules": []
 }
 ```
 
-> **Auto-Generated API Keys:** If the WordPress endpoint `ApiKey` is empty or still set to `YOUR_API_KEY_HERE`, the server will auto-generate a secure key on startup (e.g. `pf-a7kx9m2bq4w1n6tp8r3j5hcv`) and save it to the config. Check the server log for: `[Psyerns Framework] Auto-generated API key for endpoint: WordPress → pf-xxxx...`
+> **Auto-Upgrade:** The config file includes a `ConfigVersion` field. When the framework is updated with new config fields, the server will automatically detect the outdated version, add any missing fields with their defaults, and save the updated config. No manual editing required — existing values are preserved.
+
+> **Auto-Generated API Keys:** If the WordPress or Leaderboard endpoint `ApiKey` is empty or still set to `YOUR_API_KEY_HERE`, the server will auto-generate a secure key on startup (e.g. `pf-a7kx9m2bq4w1n6tp8r3j5hcv`) and save it to the config. Check the server log for: `[Psyerns Framework] Auto-generated API key for endpoint: WordPress → pf-xxxx...`
 
 ### General Settings
 
 | Field | Default | Description |
 |-------|---------|-------------|
+| `ConfigVersion` | `2` | Internal version — used for auto-upgrade (do not edit manually) |
 | `EnableDebugLogging` | `false` | Verbose debug output to log file and RPT |
 | `DefaultRetryCount` | `3` | Retries for failed HTTP requests |
 | `QueueMaxSize` | `100` | Maximum queued requests |
 | `EnableServerStartNotification` | `false` | Send Discord webhook when server has fully started (see below) |
 | `ServerStartDelaySeconds` | `30` | Delay in seconds after init before notification is sent |
-| `ServerName` | `"DayZ Server"` | Server name shown in notifications |
+| `ServerName` | `"DayZ Server"` | Server name shown in notifications and Discord embeds |
+| `DiscordAvatarUrl` | `""` | Custom avatar image URL for Discord webhooks (PNG/JPG, 256x256+) |
 
-> **Server Start Notification:** The Discord webhook is only sent after the server has fully booted — including BattlEye initialization, map loading, and mod loading. The framework waits `ServerStartDelaySeconds` after `MissionServer.OnInit()` completes, which ensures the server is unlocked and accepting player connections before the notification fires. If the server crashes during startup, no notification is sent.
+> **Server Start Notification:** The Discord webhook is only sent after the server has fully booted — including BattlEye initialization, map loading, and mod loading. The framework waits `ServerStartDelaySeconds` after `MissionServer.OnInit()` completes, which ensures the server is unlocked and accepting player connections before the notification fires. If the server crashes during startup, no notification is sent. The embed shows connection status for all configured endpoints (:green_circle: connected / :red_circle: disabled).
 
 ### Endpoints
 
+Three endpoints are configured by default:
+
+| Name | Purpose |
+|------|---------|
+| `WordPress` | WordPress REST API for whitelist, player lookup, server status |
+| `Discord` | Discord webhooks for notifications (server start/stop, events) |
+| `Leaderboard` | Leaderboard data push to WordPress (separate from WordPress endpoint for independent control) |
+
 | Field | Description |
 |-------|-------------|
-| `Name` | Unique identifier (`"WordPress"`, `"Discord"`) |
+| `Name` | Unique identifier (`"WordPress"`, `"Discord"`, `"Leaderboard"`) |
 | `BaseUrl` | Base URL for API requests |
-| `ApiKey` | Auth key. For Discord: `webhook_id/webhook_token` (see setup below) |
+| `ApiKey` | Auth key. For Discord: `webhook_id/webhook_token`. For WordPress/Leaderboard: auto-generated on first start |
 | `Enabled` | Whether the endpoint is active |
 | `RateLimitMs` | Minimum ms between requests |
 
@@ -224,7 +251,12 @@ profiles/DeadmansEcho/PsyernsFramework/
 | `EnableKillFeed` | `false` | Kill events to webhook URLs |
 | `EnableDiscordEvents` | `false` | Player connect/disconnect/kill to Discord |
 | `EnableAlertSystem` | `false` | Zone-based alert triggers |
+| `EnableServerStopNotification` | `false` | Send Discord webhook when server shuts down |
+| `EnableHeartbeat` | `false` | Periodic heartbeat for crash detection |
+| `EnableModUpdateNotification` | `false` | Notify when mod versions change |
+| `EnableQuestNotifications` | `false` | Notify on Expansion Quest completion |
 | `ServerStatusIntervalSeconds` | `300` | Status push interval (seconds) |
+| `HeartbeatIntervalSeconds` | `60` | Heartbeat interval (seconds) |
 | `DiscordWebhookId` | `""` | Discord webhook ID for events |
 | `DiscordWebhookToken` | `""` | Discord webhook token for events |
 | `WebhookUrls` | `[]` | Webhook URLs for kill feed |

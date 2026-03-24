@@ -7,9 +7,8 @@
  */
 modded class MissionBaseWorld
 {
-	override void Expansion_OnQuestCompletion(ExpansionQuest quest)
+	void Expansion_OnQuestCompletion(ExpansionQuest quest)
 	{
-		super.Expansion_OnQuestCompletion(quest);
 
 		if (!GetGame().IsDedicatedServer())
 			return;

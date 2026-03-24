@@ -1,11 +1,13 @@
 class PF_WebConfig
 {
+	int ConfigVersion;
 	bool EnableDebugLogging;
 	int DefaultRetryCount;
 	int QueueMaxSize;
 	bool EnableServerStartNotification;
 	int ServerStartDelaySeconds;
 	string ServerName;
+	string DiscordAvatarUrl;
 	ref array<ref PF_WebEndpoint> Endpoints;
 
 	// REST Features
@@ -31,14 +33,19 @@ class PF_WebConfig
 	[NonSerialized()]
 	protected static ref PF_WebConfig s_Instance;
 
+	[NonSerialized()]
+	static const int CURRENT_VERSION = 2;
+
 	void PF_WebConfig()
 	{
+		ConfigVersion = 0;
 		EnableDebugLogging = false;
 		DefaultRetryCount = 3;
 		QueueMaxSize = 100;
 		EnableServerStartNotification = false;
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
+		DiscordAvatarUrl = "";
 		Endpoints = new array<ref PF_WebEndpoint>();
 
 		// REST Features
@@ -91,7 +98,15 @@ class PF_WebConfig
 		{
 			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, this);
 			AutoGenerateApiKeys();
-			Print("[Psyerns Framework] Config loaded from " + path);
+
+			if (ConfigVersion < CURRENT_VERSION)
+			{
+				ConfigVersion = CURRENT_VERSION;
+				Save();
+				Print("[Psyerns Framework] Config upgraded to version " + CURRENT_VERSION.ToString() + " — new fields added");
+			}
+
+			Print("[Psyerns Framework] Config v" + ConfigVersion.ToString() + " loaded from " + path);
 			Print("[Psyerns Framework] Debug logging: " + EnableDebugLogging.ToString() + " | Endpoints: " + Endpoints.Count().ToString() + " | RetryCount: " + DefaultRetryCount.ToString() + " | QueueMax: " + QueueMaxSize.ToString());
 		}
 		else
@@ -99,7 +114,7 @@ class PF_WebConfig
 			CreateDefaults();
 			AutoGenerateApiKeys();
 			Save();
-			Print("[Psyerns Framework] Default config created at " + path);
+			Print("[Psyerns Framework] Default config v" + CURRENT_VERSION.ToString() + " created at " + path);
 		}
 	}
 
@@ -150,12 +165,14 @@ class PF_WebConfig
 
 	void CreateDefaults()
 	{
+		ConfigVersion = CURRENT_VERSION;
 		EnableDebugLogging = false;
 		DefaultRetryCount = 3;
 		QueueMaxSize = 100;
 		EnableServerStartNotification = false;
 		ServerStartDelaySeconds = 30;
 		ServerName = "DayZ Server";
+		DiscordAvatarUrl = "";
 		Endpoints.Clear();
 
 		// REST Feature Defaults

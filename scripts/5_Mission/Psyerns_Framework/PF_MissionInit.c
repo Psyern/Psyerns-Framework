@@ -95,6 +95,8 @@ modded class MissionServer
 
 		PF_DiscordPayload payload = new PF_DiscordPayload();
 		payload.username = "Psyerns Framework";
+		if (config.DiscordAvatarUrl != "")
+			payload.avatar_url = config.DiscordAvatarUrl;
 
 		PF_DiscordEmbed embed = payload.CreateEmbed();
 		embed.SetColor(3066993);
@@ -102,18 +104,18 @@ modded class MissionServer
 		embed.SetDescription("**" + config.ServerName + "** ist jetzt erreichbar!");
 
 		// Endpoint Status Fields
-		string wpStatus = GetEndpointStatus(config, "WordPress");
-		string lbStatus = GetEndpointStatus(config, "Leaderboard");
-		string statusText = "WordPress: " + wpStatus + "\nLeaderboard: " + lbStatus;
+		string wpDot = GetEndpointStatusDot(config, "WordPress");
+		string lbDot = GetEndpointStatusDot(config, "Leaderboard");
+		string statusText = wpDot + " WordPress\n" + lbDot + " Leaderboard";
 
 		if (config.EnableServerStatus)
-			statusText = statusText + "\nServer Status: Aktiv (alle " + config.ServerStatusIntervalSeconds.ToString() + "s)";
+			statusText = statusText + "\n:green_circle: Server Status";
 
 		if (config.EnableKillFeed)
-			statusText = statusText + "\nKillFeed: Aktiv";
+			statusText = statusText + "\n:green_circle: KillFeed";
 
 		if (config.EnableDiscordEvents)
-			statusText = statusText + "\nDiscord Events: Aktiv";
+			statusText = statusText + "\n:green_circle: Discord Events";
 
 		embed.AddField("Verbindungen", statusText, false);
 
@@ -129,16 +131,16 @@ modded class MissionServer
 		PF_Logger.Log("Server start notification sent for: " + config.ServerName);
 	}
 
-	protected string GetEndpointStatus(PF_WebConfig config, string name)
+	protected string GetEndpointStatusDot(PF_WebConfig config, string name)
 	{
 		PF_WebEndpoint ep = config.GetEndpoint(name);
 		if (!ep)
-			return "Nicht konfiguriert";
+			return ":red_circle:";
 
 		if (!ep.Enabled)
-			return "Deaktiviert";
+			return ":red_circle:";
 
-		return "Verbunden (" + ep.BaseUrl + ")";
+		return ":green_circle:";
 	}
 
 	protected bool ParseWebhookApiKey(string apiKey, out string webhookId, out string webhookToken)

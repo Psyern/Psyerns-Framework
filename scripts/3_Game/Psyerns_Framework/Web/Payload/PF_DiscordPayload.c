@@ -120,12 +120,14 @@ class PF_DiscordEmbed
 class PF_DiscordPayload
 {
 	string username;
+	string avatar_url;
 	string content;
 	ref array<ref PF_DiscordEmbed> embeds;
 
 	void PF_DiscordPayload()
 	{
 		username = "Psyerns Framework";
+		avatar_url = "";
 		embeds = new array<ref PF_DiscordEmbed>();
 	}
 
@@ -142,6 +144,9 @@ class PF_DiscordPayload
 
 		if (username != "")
 			builder.Add("username", username);
+
+		if (avatar_url != "")
+			builder.Add("avatar_url", avatar_url);
 
 		if (content != "")
 			builder.Add("content", content);
