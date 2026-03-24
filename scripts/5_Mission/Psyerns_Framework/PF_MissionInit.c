@@ -119,12 +119,6 @@ modded class MissionServer
 
 		embed.AddField("Verbindungen", statusText, false);
 
-		int year, month, day, hour, minute, second;
-		GetYearMonthDay(year, month, day);
-		GetHourMinuteSecond(hour, minute, second);
-		string ts = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
-		embed.SetTimestamp(ts);
-
 		embed.SetAuthor("Psyerns Framework");
 
 		webhook.Send(payload);
