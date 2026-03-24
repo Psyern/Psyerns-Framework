@@ -1,7 +1,7 @@
 # Psyerns Framework
 
 <p align="center">
-  <img src="data/PsyernsFramework.png" alt="Psyerns Framework" width="400">
+  <img src="data/psyernsframework_banner.png" alt="Psyerns Framework" width="800">
 </p>
 
 <p align="center">
@@ -415,10 +415,10 @@ Required for automatic player avatar resolution in the WordPress plugin.
 
 ## Integration by Other Mods
 
-Use `#ifdef PSYERNS_FRAMEWORK` for optional integration:
+Use `#ifdef Psyerns_Framework` for optional integration:
 
 ```c
-#ifdef PSYERNS_FRAMEWORK
+#ifdef Psyerns_Framework
 PF_WebClient client = PF_WebClient.GetInstance();
 // ... send requests
 #endif
