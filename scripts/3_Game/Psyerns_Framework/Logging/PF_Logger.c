@@ -26,9 +26,28 @@ class PF_Logger
 		if (!s_DebugEnabled)
 			return;
 
-		string formatted = "[Psyerns Framework] [DEBUG] " + message;
+		string formatted = "[Psyerns Framework] [DEBUG] " + MaskSecrets(message);
 		Print(formatted);
 		WriteToFile(formatted);
+	}
+
+	static string MaskSecrets(string input)
+	{
+		string result = input;
+		int keyPos = result.IndexOf("api_key=");
+		if (keyPos < 0)
+			return result;
+
+		int valueStart = keyPos + 8;
+		int valueEnd = result.IndexOf("&");
+		if (valueEnd < 0 || valueEnd < valueStart)
+			valueEnd = result.Length();
+
+		string key = result.Substring(valueStart, valueEnd - valueStart);
+		if (key.Length() > 6)
+			result = result.Substring(0, valueStart) + key.Substring(0, 3) + "***" + result.Substring(valueEnd, result.Length() - valueEnd);
+
+		return result;
 	}
 
 	protected static void WriteToFile(string message)

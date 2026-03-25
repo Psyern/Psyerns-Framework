@@ -70,7 +70,6 @@ class PF_ServerNotifications
 		embed.SetTitle("Server Offline");
 		embed.SetDescription("**" + config.ServerName + "** is shutting down.");
 		embed.AddField("Uptime", uptimeStr, true);
-		embed.SetTimestamp(GetTimestamp());
 		embed.SetAuthor("Psyerns Framework");
 		webhook.Send(payload);
 		PF_Logger.Log("Server stop notification sent");
@@ -145,14 +144,41 @@ class PF_ServerNotifications
 
 		if (previousMods != "" && previousMods != currentMods)
 		{
+			string added = "";
+			string removed = "";
+			ref array<string> prevList = SplitModString(previousMods);
+			ref array<string> currList = SplitModString(currentMods);
+
+			int ci;
+			for (ci = 0; ci < currList.Count(); ci++)
+			{
+				if (!ListContains(prevList, currList[ci]))
+					added = added + "+ " + currList[ci] + "\n";
+			}
+			for (ci = 0; ci < prevList.Count(); ci++)
+			{
+				if (!ListContains(currList, prevList[ci]))
+					removed = removed + "- " + prevList[ci] + "\n";
+			}
+
+			string changes = "";
+			if (added != "")
+				changes = "**Added:**\n" + added;
+			if (removed != "")
+				changes = changes + "**Removed:**\n" + removed;
+			if (changes == "")
+				changes = "Mod load order changed.";
+
 			PF_DiscordWebhook webhook = new PF_DiscordWebhook(webhookId, webhookToken);
 			PF_DiscordPayload payload = new PF_DiscordPayload();
 			payload.username = "Psyerns Framework";
+			if (config.DiscordAvatarUrl != "")
+				payload.avatar_url = config.DiscordAvatarUrl;
 			PF_DiscordEmbed embed = payload.CreateEmbed();
 			embed.SetColor(3447003);
-			embed.SetTitle("Mod Configuration Changed");
-			embed.SetDescription("Server mods have been updated since last start.");
-			embed.SetTimestamp(GetTimestamp());
+			embed.SetTitle("Mod Update Detected");
+			embed.SetDescription(changes);
+			embed.AddField("Total Mods", currList.Count().ToString(), true);
 			embed.SetAuthor("Psyerns Framework");
 			webhook.Send(payload);
 			PF_Logger.Log("Mod update notification sent");
@@ -200,6 +226,39 @@ class PF_ServerNotifications
 		webhookId = discordEp.ApiKey.Substring(0, slashPos);
 		webhookToken = discordEp.ApiKey.Substring(slashPos + 1, discordEp.ApiKey.Length() - slashPos - 1);
 		return true;
+	}
+
+	protected static ref array<string> SplitModString(string mods)
+	{
+		ref array<string> result = new array<string>();
+		string current = "";
+		for (int i = 0; i < mods.Length(); i++)
+		{
+			string ch = mods.Substring(i, 1);
+			if (ch == ";")
+			{
+				if (current != "")
+					result.Insert(current);
+				current = "";
+			}
+			else
+			{
+				current = current + ch;
+			}
+		}
+		if (current != "")
+			result.Insert(current);
+		return result;
+	}
+
+	protected static bool ListContains(array<string> list, string item)
+	{
+		for (int i = 0; i < list.Count(); i++)
+		{
+			if (list[i] == item)
+				return true;
+		}
+		return false;
 	}
 
 	protected static string GetTimestamp()

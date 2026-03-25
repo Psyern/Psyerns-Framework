@@ -4,8 +4,9 @@
  * When a player dies, this forwards the event to PF_KillFeedManager (if enabled)
  * and to PF_DiscordIntegration (if enabled) and PF_AlertSystem (if enabled).
  *
- * Uses modded PlayerBase instead of MissionServer.OnPlayerKilled since
- * vanilla MissionServer does not provide a kill callback.
+ * Note: Boss kills are handled by DME-WAR (#ifdef DME_War) directly via
+ * DMEW_CheckBossKillWebhook → PF_DiscordIntegration. This hook skips
+ * AI-killed-player events when DME_War is loaded to avoid duplicates.
  */
 modded class PlayerBase
 {
@@ -16,6 +17,26 @@ modded class PlayerBase
 		if (!GetGame().IsDedicatedServer())
 			return;
 
+		string victimName = "Unknown";
+		string killerName = "Unknown";
+		bool killerIsPlayer = false;
+		bool killerIsAI = false;
+
+		if (GetIdentity())
+			victimName = GetIdentity().GetName();
+
+		PlayerBase killerPlayer;
+		if (Class.CastTo(killerPlayer, killer) && killerPlayer.GetIdentity())
+		{
+			killerName = killerPlayer.GetIdentity().GetName();
+			killerIsPlayer = true;
+		}
+		else if (killer)
+		{
+			killerName = killer.GetType();
+			killerIsAI = true;
+		}
+
 		// Kill Feed webhook
 		PF_KillFeedManager killFeed = GetPF_KillFeedManager();
 		if (killFeed)
@@ -23,23 +44,27 @@ modded class PlayerBase
 			killFeed.OnPlayerKilled(this, killer);
 		}
 
-		// Discord notification for kill events
+		// Discord notification
 		PF_DiscordIntegration discord = GetPF_DiscordIntegration();
 		if (discord)
 		{
-			string victimName = "Unknown";
-			string killerName = "Unknown";
-
-			if (GetIdentity())
-				victimName = GetIdentity().GetName();
-
-			PlayerBase killerPlayer;
-			if (Class.CastTo(killerPlayer, killer) && killerPlayer.GetIdentity())
-				killerName = killerPlayer.GetIdentity().GetName();
-			else if (killer)
-				killerName = killer.GetType();
-
-			discord.Send("player.kill", "**" + killerName + "** killed **" + victimName + "**");
+			#ifdef DME_War
+			if (killerIsAI)
+			{
+				PF_Logger.Debug("Kill webhook skipped (AI kill handled by DME-WAR): " + killerName + " -> " + victimName);
+			}
+			else
+			{
+				discord.Send("player.kill", "**" + killerName + "** killed **" + victimName + "**");
+			}
+			#else
+			string msg;
+			if (killerIsPlayer)
+				msg = "**" + killerName + "** killed **" + victimName + "**";
+			else
+				msg = "**" + victimName + "** was killed by **" + killerName + "**";
+			discord.Send("player.kill", msg);
+			#endif
 		}
 
 		// Alert system trigger
