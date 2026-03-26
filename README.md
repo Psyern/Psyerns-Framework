@@ -56,6 +56,7 @@
 - Kill feed broadcasting
 - Discord event integration
 - Zone-based alert system
+- Quest notifications (`#ifdef`)
 - Leaderboard web export
 
 </td>
@@ -67,6 +68,7 @@
 - Config version auto-upgrade
 - Live config reload (F9)
 - Admin permission system
+- RPC system for mod communication
 - Daily log rotation
 - `#ifdef` optional integration
 - WordPress plugin included
@@ -95,9 +97,6 @@ Admins can reload the config live without restarting the server:
 - Press **F9** in-game (customizable in DayZ Settings → Controls → **PF** tab)
 - Server reloads `PsyernsFrameworkConfig.json` and confirms via chat message
 - Requires Steam64 ID in `AdminIDs` config field
-
-</td>
-</tr>
 </table>
 
 ---
@@ -120,22 +119,31 @@ Psyerns_Framework/
 ├── config.cpp
 ├── mod.cpp
 ├── data/
-│   └── PsyernsFrameworkConfig.json
+│   ├── PsyernsFrameworkConfig.json
+│   └── PF_RestConfig.json
 └── scripts/
     ├── config.cpp
     ├── 3_Game/Psyerns_Framework/
     │   ├── Logging/
     │   │   └── PF_Logger.c
+    │   ├── RPC/
+    │   │   └── PF_RPCConstants.c
     │   ├── Utils/
     │   │   ├── PF_HttpArguments.c
     │   │   └── PF_JsonBuilder.c
     │   ├── REST/
-    │   │   ├── Base/PF_RestBase.c
-    │   │   ├── Config/PF_RestConfig.c
-    │   │   ├── Discord/PF_DiscordIntegration.c
-    │   │   ├── PlayerLookup/PF_PlayerLookup.c
-    │   │   ├── ServerStatus/PF_ServerStatus.c
-    │   │   └── Whitelist/PF_WhitelistManager.c
+    │   │   ├── Base/
+    │   │   │   └── PF_RestBase.c
+    │   │   ├── Config/
+    │   │   │   └── PF_RestConfig.c
+    │   │   ├── Discord/
+    │   │   │   └── PF_DiscordIntegration.c
+    │   │   ├── PlayerLookup/
+    │   │   │   └── PF_PlayerLookup.c
+    │   │   ├── ServerStatus/
+    │   │   │   └── PF_ServerStatus.c
+    │   │   └── Whitelist/
+    │   │       └── PF_WhitelistManager.c
     │   └── Web/
     │       ├── PF_WebClient.c
     │       ├── PF_WebRequest.c
@@ -143,6 +151,8 @@ Psyerns_Framework/
     │       ├── Config/
     │       │   ├── PF_WebConfig.c
     │       │   └── PF_WebEndpoint.c
+    │       ├── Notifications/
+    │       │   └── PF_ServerNotifications.c
     │       ├── Payload/
     │       │   ├── PF_JsonPayload.c
     │       │   ├── PF_DiscordPayload.c
@@ -160,9 +170,14 @@ Psyerns_Framework/
     │   ├── PF_WebQueueProcessor.c
     │   └── REST/
     │       ├── PF_KillFeedHook.c
-    │       ├── Alerts/PF_AlertSystem.c
-    │       └── KillFeed/PF_KillFeedManager.c
+    │       ├── Alerts/
+    │       │   └── PF_AlertSystem.c
+    │       ├── KillFeed/
+    │       │   └── PF_KillFeedManager.c
+    │       └── Quests/
+    │           └── PF_QuestWebhook.c
     └── 5_Mission/Psyerns_Framework/
+        ├── PF_MissionClient.c
         ├── PF_MissionInit.c
         └── PF_RestInit.c
 ```
@@ -206,13 +221,6 @@ profiles/DeadmansEcho/PsyernsFramework/
             "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
             "Enabled": false,
             "RateLimitMs": 1000
-        },
-        {
-            "Name": "Leaderboard",
-            "BaseUrl": "https://your-site.com/wp-json/psyern/v1",
-            "ApiKey": "YOUR_API_KEY_HERE",
-            "Enabled": false,
-            "RateLimitMs": 5000
         }
     ],
     "EnableWhitelist": false,
@@ -222,16 +230,27 @@ profiles/DeadmansEcho/PsyernsFramework/
     "EnableDiscordEvents": false,
     "EnableAlertSystem": false,
     "ServerStatusIntervalSeconds": 300,
-    "DiscordWebhookId": "",
-    "DiscordWebhookToken": "",
-    "DiscordAvatarUrl": "",
-    "WebhookUrls": [],
+    "DiscordWebhookId": "YOUR_DISCORD_WEBHOOK_ID",
+    "DiscordWebhookToken": "YOUR_DISCORD_WEBHOOK_TOKEN",
+    "WebhookUrls": [
+        "https://your-site.com/wp-json/psyern/v1/killfeed"
+    ],
     "EnableServerStopNotification": false,
     "EnableHeartbeat": false,
     "HeartbeatIntervalSeconds": 60,
     "EnableModUpdateNotification": false,
     "EnableQuestNotifications": false,
-    "AlertRules": []
+    "AlertRules": [
+        {
+            "TriggerType": "zone_enter",
+            "Radius": 200.0,
+            "PosX": 7500.0,
+            "PosY": 0.0,
+            "PosZ": 7500.0,
+            "WebhookUrl": "https://your-site.com/wp-json/psyern/v1/alerts",
+            "MessageTemplate": "Player {playerName} entered zone at {posX},{posZ}"
+        }
+    ]
 }
 ```
 
@@ -260,9 +279,8 @@ Three endpoints are configured by default:
 
 | Name | Purpose |
 |------|---------|
-| `WordPress` | WordPress REST API for whitelist, player lookup, server status |
-| `Discord` | Discord webhooks for notifications (server start/stop, events) |
-| `Leaderboard` | Leaderboard data push to WordPress (separate from WordPress endpoint for independent control) |
+| `WordPress` | WordPress REST API for whitelist, player lookup, server status and leaderboard |
+| `Discord` | Discord webhooks for notifications (server start/stop, events, kill feed) |
 
 | Field | Description |
 |-------|-------------|
@@ -285,7 +303,7 @@ Three endpoints are configured by default:
 | `EnableServerStopNotification` | `false` | Send Discord webhook when server shuts down |
 | `EnableHeartbeat` | `false` | Periodic heartbeat for crash detection |
 | `EnableModUpdateNotification` | `false` | Notify when mod versions change |
-| `EnableQuestNotifications` | `false` | Notify on Expansion Quest completion |
+| `EnableQuestNotifications` | `false` | Notify on Expansion Quest completion (`#ifdef`) |
 | `ServerStatusIntervalSeconds` | `300` | Status push interval (seconds) |
 | `HeartbeatIntervalSeconds` | `60` | Heartbeat interval (seconds) |
 | `DiscordWebhookId` | `""` | Discord webhook ID for events |
@@ -401,6 +419,8 @@ The framework logs to both server RPT and a dedicated log file:
 
 ### <img src="https://img.shields.io/badge/WordPress-Plugin_Setup-21759B?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress">
 
+The `psyerns-framework` WordPress plugin is included with the mod and handles all server-side communication — whitelist management, player lookup, server status display, leaderboard storage, and the REST API that the DayZ server connects to.
+
 1. Upload the `psyerns-framework` plugin folder to `wp-content/plugins/` → Activate
 2. Go to **Psyerns Framework → Settings**
 3. Enter the API Key from your DayZ server config (auto-generated on first start)
@@ -409,6 +429,19 @@ The framework logs to both server RPT and a dedicated log file:
    - `ApiKey`: the auto-generated key
    - `Enabled`: `true`
 5. Restart the DayZ server
+
+**Available Shortcodes:**
+
+| Shortcode | Description |
+|---|---|
+| `[pf_leaderboard]` | Full leaderboard with PvE/PvP tabs |
+| `[pf_server_status]` | Current server status widget |
+| `[pf_top3_monthly]` | Top 3 players of the month |
+| `[pf_top3_deadliest]` | Top 3 deadliest players |
+| `[pf_top3_bosskills]` | Top 3 boss slayers |
+| `[pf_player_card steam_id="..."]` | Single player stats card |
+
+Optional shortcode attributes: `theme="dark"` / `theme="light"`, `type="pve"` / `type="pvp"`, `limit="20"`
 
 ---
 
@@ -458,6 +491,7 @@ Integration points:
 2. Extend `PF_WebApiBase` for custom API targets
 3. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
 4. Use `PF_JsonBuilder` for safe JSON construction
+5. Use `PF_RPCConstants` for RPC channel identifiers when communicating between server and client scripts
 
 ---
 
@@ -465,6 +499,6 @@ Integration points:
 
 <p align="center">
   <b>Author:</b> Psyern<br>
-  <b>Community:</b> <a href="https://deadmansecho.com">Deadmans Echo</a><br><br>
+  <b>Community:</b> <a href="https://deadmans-echo.de">Deadmans Echo</a><br><br>
   Built as a reusable HTTP framework for the DayZ modding community.
 </p>
