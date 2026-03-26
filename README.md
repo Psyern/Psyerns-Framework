@@ -464,7 +464,7 @@ Integration points:
 ## Credits
 
 <p align="center">
-  <b>Author:</b> <br><a href="https://steamcommunity.com/profiles/76561198043039918/">Psyern</a><br><br>
+  <b>Author:</b> <a href="https://steamcommunity.com/profiles/76561198043039918/">Psyern</a><br><br>
   <b>Community:</b> <a href="https://deadmans-echo.com">Deadmans Echo</a><br><br>
   Built as a reusable HTTP framework for the DayZ modding community.
 </p>
