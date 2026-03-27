@@ -26,6 +26,12 @@ class PF_WebConfig
 	// Admin
 	ref array<string> AdminIDs;
 
+	// Leaderboard Export
+	bool EnableLeaderboardExport;
+	int LeaderboardExportIntervalSeconds;
+	string NinjinPlayersPath;
+	int LeaderboardMaxPlayers;
+
 	// Webhook Notifications
 	bool EnableServerStopNotification;
 	bool EnableHeartbeat;
@@ -37,7 +43,7 @@ class PF_WebConfig
 	protected static ref PF_WebConfig s_Instance;
 
 	[NonSerialized()]
-	static const int CURRENT_VERSION = 2;
+	static const int CURRENT_VERSION = 3;
 
 	void PF_WebConfig()
 	{
@@ -64,6 +70,12 @@ class PF_WebConfig
 		DiscordWebhookToken = "";
 		WebhookUrls = new array<string>();
 		AlertRules = new array<ref PF_AlertRuleConfig>();
+
+		// Leaderboard Export
+		EnableLeaderboardExport = false;
+		LeaderboardExportIntervalSeconds = 600;
+		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
+		LeaderboardMaxPlayers = 100;
 
 		// Webhook Notifications
 		EnableServerStopNotification = false;
@@ -191,6 +203,12 @@ class PF_WebConfig
 		ServerStatusIntervalSeconds = 300;
 		DiscordWebhookId = "YOUR_DISCORD_WEBHOOK_ID";
 		DiscordWebhookToken = "YOUR_DISCORD_WEBHOOK_TOKEN";
+
+		// Leaderboard Export
+		EnableLeaderboardExport = false;
+		LeaderboardExportIntervalSeconds = 600;
+		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
+		LeaderboardMaxPlayers = 100;
 
 		// Endpoints
 		PF_WebEndpoint wp = new PF_WebEndpoint();

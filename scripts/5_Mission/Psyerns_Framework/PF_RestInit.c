@@ -65,6 +65,13 @@ modded class MissionServer
 			enabledCount++;
 		}
 
+		if (restCfg.IsLeaderboardExportEnabled())
+		{
+			g_PF_LeaderboardExport = new PF_LeaderboardExport(baseUrl, apiKey, restCfg.GetLeaderboardExportInterval(), restCfg.GetNinjinPlayersPath(), restCfg.GetLeaderboardMaxPlayers());
+			enabledCount++;
+			PF_Logger.Log("LeaderboardExport initialized (interval: " + restCfg.GetLeaderboardExportInterval().ToString() + "s)");
+		}
+
 		PF_Logger.Log("REST initialization complete. " + enabledCount.ToString() + " feature(s) enabled.");
 	}
 
@@ -74,6 +81,9 @@ modded class MissionServer
 
 		if (g_PF_ServerStatus)
 			g_PF_ServerStatus.OnUpdate(timeslice);
+
+		if (g_PF_LeaderboardExport)
+			g_PF_LeaderboardExport.OnUpdate(timeslice);
 	}
 
 	override void OnMissionFinish()
@@ -84,6 +94,7 @@ modded class MissionServer
 		g_PF_KillFeedManager = null;
 		g_PF_DiscordIntegration = null;
 		g_PF_AlertSystem = null;
+		g_PF_LeaderboardExport = null;
 
 		PF_Logger.Log("REST subsystems shut down.");
 		super.OnMissionFinish();

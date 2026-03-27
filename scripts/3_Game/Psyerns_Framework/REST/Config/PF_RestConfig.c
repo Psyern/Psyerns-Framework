@@ -53,6 +53,10 @@ class PF_RestConfig
 	bool IsDiscordEventsEnabled() { return m_Config.EnableDiscordEvents; }
 	bool IsAlertSystemEnabled() { return m_Config.EnableAlertSystem; }
 	int GetServerStatusInterval() { return m_Config.ServerStatusIntervalSeconds; }
+	bool IsLeaderboardExportEnabled() { return m_Config.EnableLeaderboardExport; }
+	int GetLeaderboardExportInterval() { return m_Config.LeaderboardExportIntervalSeconds; }
+	string GetNinjinPlayersPath() { return m_Config.NinjinPlayersPath; }
+	int GetLeaderboardMaxPlayers() { return m_Config.LeaderboardMaxPlayers; }
 	string GetDiscordWebhookId() { return m_Config.DiscordWebhookId; }
 	string GetDiscordWebhookToken() { return m_Config.DiscordWebhookToken; }
 	array<string> GetWebhookUrls() { return m_Config.WebhookUrls; }

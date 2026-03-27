@@ -33,6 +33,10 @@
     "WebhookUrls": [
         "https://your-site.com/wp-json/psyern/v1/killfeed"
     ],
+    "EnableLeaderboardExport": false,
+    "LeaderboardExportIntervalSeconds": 600,
+    "NinjinPlayersPath": "$profile:Ninjins_Tracking_Mod/Data/Players",
+    "LeaderboardMaxPlayers": 100,
     "EnableServerStopNotification": false,
     "EnableHeartbeat": false,
     "HeartbeatIntervalSeconds": 60,
