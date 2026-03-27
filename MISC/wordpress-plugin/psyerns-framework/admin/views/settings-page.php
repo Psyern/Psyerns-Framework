@@ -190,29 +190,207 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 
 				<?php
 				$current_theme = get_option( 'psyern_theme', 'military' );
+
+				/**
+				 * Theme definitions.
+				 * bg      = card/preview background
+				 * accent  = primary highlight colour
+				 * text    = main text colour
+				 * dim     = dimmed / secondary text
+				 * row_alt = alternating row tint
+				 * border  = table / card border
+				 * header  = column header text colour
+				 * glow    = box-shadow glow colour (rgba string)
+				 * badge   = rank badge / tag colour
+				 */
 				$themes = array(
-					'military'  => array( 'label' => 'Military — Tactical HUD',     'desc' => 'CRT scanlines, phosphor green, classified briefing aesthetic.',                         'swatch' => '#0a0f0a', 'accent' => '#4ade80' ),
-					'ops'       => array( 'label' => 'Ops — CRT Terminal',           'desc' => 'Phosphor green CRT with scanlines, vignette, and flicker effects.',                    'swatch' => '#020d02', 'accent' => '#4ade80' ),
-					'stalker'   => array( 'label' => 'Stalker — Radioactive Zone',   'desc' => 'S.T.A.L.K.E.R. inspired. Radiation orange, chromatic aberration, Geiger aesthetic.',  'swatch' => '#0c0a06', 'accent' => '#ff8c00' ),
-					'outbreak'  => array( 'label' => 'Outbreak — Quarantine Zone',   'desc' => 'Hazard amber, warning stripes, biohazard aesthetic.',                                  'swatch' => '#0d0d00', 'accent' => '#f59e0b' ),
-					'cyberpunk' => array( 'label' => 'Cyberpunk — Neon HUD',         'desc' => 'Matrix green, magenta neon glow. Glitch effects, HUD corners, scanlines.',             'swatch' => '#0a0a0f', 'accent' => '#00ff88' ),
-					'inferno'   => array( 'label' => 'Inferno — Fire & Flames',      'desc' => 'Blazing hellfire. Ember particles, lava glow, flame gradient. Scorched earth.',        'swatch' => '#0a0200', 'accent' => '#ff4500' ),
-					'ash'       => array( 'label' => 'Ash — Post-Apocalyptic',       'desc' => 'Weathered paper, rust, hand-drawn wanted poster style.',                               'swatch' => '#1a1714', 'accent' => '#c8392b' ),
-					'frostbite' => array( 'label' => 'Frostbite — Eternal Winter',   'desc' => 'Ice & snow. Falling snowflakes, frost-rimmed borders, glacial glow.',                  'swatch' => '#060a12', 'accent' => '#5ba8e0' ),
+					'military' => array(
+						'label'   => 'Military',
+						'sub'     => 'Tactical HUD',
+						'desc'    => 'CRT scanlines · Phosphor green · Classified briefing aesthetic.',
+						'bg'      => '#0a0f0a',
+						'accent'  => '#4ade80',
+						'text'    => '#a0d080',
+						'dim'     => '#5a7a4a',
+						'row_alt' => '#0d150d',
+						'border'  => '#1a3a1a',
+						'header'  => '#4ade80',
+						'glow'    => 'rgba(74,222,128,.18)',
+						'badge'   => '#4ade80',
+					),
+					'ops' => array(
+						'label'   => 'Ops',
+						'sub'     => 'CRT Terminal',
+						'desc'    => 'Phosphor green CRT · Scanlines · Vignette · Flicker effects.',
+						'bg'      => '#020d02',
+						'accent'  => '#39ff14',
+						'text'    => '#39ff14',
+						'dim'     => '#1a7a0a',
+						'row_alt' => '#050f05',
+						'border'  => '#0d3a0d',
+						'header'  => '#39ff14',
+						'glow'    => 'rgba(57,255,20,.22)',
+						'badge'   => '#39ff14',
+					),
+					'stalker' => array(
+						'label'   => 'Stalker',
+						'sub'     => 'Radioactive Zone',
+						'desc'    => 'S.T.A.L.K.E.R. inspired · Radiation amber · Geiger aesthetic.',
+						'bg'      => '#0c0a06',
+						'accent'  => '#ff8c00',
+						'text'    => '#d4c8a0',
+						'dim'     => '#7a6a3a',
+						'row_alt' => '#120e08',
+						'border'  => '#3a3018',
+						'header'  => '#ff8c00',
+						'glow'    => 'rgba(255,140,0,.20)',
+						'badge'   => '#ff8c00',
+					),
+					'outbreak' => array(
+						'label'   => 'Outbreak',
+						'sub'     => 'Quarantine Zone',
+						'desc'    => 'Hazard amber · Warning stripes · Biohazard aesthetic.',
+						'bg'      => '#0d0d00',
+						'accent'  => '#f59e0b',
+						'text'    => '#d4b860',
+						'dim'     => '#6a5a10',
+						'row_alt' => '#111100',
+						'border'  => '#3a3000',
+						'header'  => '#f59e0b',
+						'glow'    => 'rgba(245,158,11,.20)',
+						'badge'   => '#f59e0b',
+					),
+					'cyberpunk' => array(
+						'label'   => 'Cyberpunk',
+						'sub'     => 'Neon HUD',
+						'desc'    => 'Matrix green · Magenta neon · Glitch effects · HUD corners.',
+						'bg'      => '#0a0a0f',
+						'accent'  => '#00ff88',
+						'text'    => '#c0f0d0',
+						'dim'     => '#306050',
+						'row_alt' => '#0d0d14',
+						'border'  => '#1a1a3a',
+						'header'  => '#00ff88',
+						'glow'    => 'rgba(0,255,136,.22)',
+						'badge'   => '#ff00aa',
+					),
+					'inferno' => array(
+						'label'   => 'Inferno',
+						'sub'     => 'Fire & Flames',
+						'desc'    => 'Blazing hellfire · Ember glow · Lava gradient · Scorched earth.',
+						'bg'      => '#0a0200',
+						'accent'  => '#ff4500',
+						'text'    => '#e87040',
+						'dim'     => '#6a2010',
+						'row_alt' => '#0f0400',
+						'border'  => '#3a1000',
+						'header'  => '#ff6020',
+						'glow'    => 'rgba(255,69,0,.24)',
+						'badge'   => '#ff4500',
+					),
+					'ash' => array(
+						'label'   => 'Ash',
+						'sub'     => 'Post-Apocalyptic',
+						'desc'    => 'Weathered paper · Rust · Hand-drawn wanted poster style.',
+						'bg'      => '#1a1714',
+						'accent'  => '#c8392b',
+						'text'    => '#c8b89a',
+						'dim'     => '#6a5a4a',
+						'row_alt' => '#1e1b17',
+						'border'  => '#3a2a1a',
+						'header'  => '#c8392b',
+						'glow'    => 'rgba(200,57,43,.16)',
+						'badge'   => '#c8392b',
+					),
+					'frostbite' => array(
+						'label'   => 'Frostbite',
+						'sub'     => 'Eternal Winter',
+						'desc'    => 'Ice & snow · Falling snowflakes · Frost-rimmed borders · Glacial glow.',
+						'bg'      => '#060a12',
+						'accent'  => '#5ba8e0',
+						'text'    => '#a8d4f0',
+						'dim'     => '#3a5a7a',
+						'row_alt' => '#080c18',
+						'border'  => '#1a2a4a',
+						'header'  => '#5ba8e0',
+						'glow'    => 'rgba(91,168,224,.20)',
+						'badge'   => '#5ba8e0',
+					),
+				);
+
+				/* Mock leaderboard rows shown in the preview */
+				$mock_rows = array(
+					array( '1', 'Gh0stWalker',  '4.7', '312' ),
+					array( '2', 'NomadSurvivor','3.1', '187' ),
+					array( '3', 'IronSight',    '2.6', '144' ),
 				);
 				?>
+				<div class="pf-theme-grid-wrap">
 				<div class="pf-theme-grid">
 					<?php foreach ( $themes as $slug => $theme ) : ?>
+					<?php
+					$bg      = esc_attr( $theme['bg'] );
+					$accent  = esc_attr( $theme['accent'] );
+					$text    = esc_attr( $theme['text'] );
+					$dim     = esc_attr( $theme['dim'] );
+					$row_alt = esc_attr( $theme['row_alt'] );
+					$border  = esc_attr( $theme['border'] );
+					$header  = esc_attr( $theme['header'] );
+					$glow    = esc_attr( $theme['glow'] );
+					$badge   = esc_attr( $theme['badge'] );
+					?>
 					<label class="pf-theme-card<?php echo $current_theme === $slug ? ' pf-theme-card--active' : ''; ?>">
 						<input type="radio" name="psyern_theme" value="<?php echo esc_attr( $slug ); ?>" <?php checked( $current_theme, $slug ); ?> />
-						<span class="pf-theme-card__preview" style="background:<?php echo esc_attr( $theme['swatch'] ); ?>;">
-							<span class="pf-theme-card__accent" style="background:<?php echo esc_attr( $theme['accent'] ); ?>;"></span>
+
+						<!-- ░░ Mini Leaderboard Preview ░░ -->
+						<span class="pf-theme-card__preview" style="background:<?php echo $bg; ?>; box-shadow:inset 0 0 20px <?php echo $glow; ?>;">
+
+							<!-- scanline overlay for dark themes -->
+							<span class="pf-theme-card__scanlines"></span>
+
+							<!-- mini header bar -->
+							<span class="pf-theme-card__mini-header" style="border-bottom:1px solid <?php echo $border; ?>; background:<?php echo $row_alt; ?>;">
+								<span style="color:<?php echo $accent; ?>; font-size:7px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; opacity:.9;"><?php echo esc_html( strtoupper( $slug ) ); ?></span>
+								<span class="pf-theme-card__mini-dots">
+									<span style="background:<?php echo $accent; ?>;"></span>
+									<span style="background:<?php echo $accent; ?>;"></span>
+									<span style="background:<?php echo $accent; ?>;"></span>
+								</span>
+							</span>
+
+							<!-- column labels -->
+							<span class="pf-theme-card__mini-cols" style="border-bottom:1px solid <?php echo $border; ?>;">
+								<span style="color:<?php echo $header; ?>;">#</span>
+								<span style="color:<?php echo $header; ?>; flex:1;"><?php esc_html_e( 'Player', 'psyerns-framework' ); ?></span>
+								<span style="color:<?php echo $header; ?>;">K/D</span>
+								<span style="color:<?php echo $header; ?>;">Kills</span>
+							</span>
+
+							<!-- mock data rows -->
+							<?php foreach ( $mock_rows as $i => $row ) :
+								$row_bg = $i % 2 === 1 ? $row_alt : 'transparent';
+							?>
+							<span class="pf-theme-card__mini-row" style="background:<?php echo esc_attr( $row_bg ); ?>;">
+								<span class="pf-theme-card__mini-rank" style="color:<?php echo $badge; ?>; border:1px solid <?php echo $badge; ?>;"><?php echo esc_html( $row[0] ); ?></span>
+								<span style="color:<?php echo $text; ?>; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><?php echo esc_html( $row[1] ); ?></span>
+								<span style="color:<?php echo $accent; ?>;"><?php echo esc_html( $row[2] ); ?></span>
+								<span style="color:<?php echo $dim; ?>;"><?php echo esc_html( $row[3] ); ?></span>
+							</span>
+							<?php endforeach; ?>
+
+							<!-- bottom accent bar -->
+							<span class="pf-theme-card__mini-bar" style="background:linear-gradient(90deg, <?php echo $accent; ?> 0%, transparent 100%); box-shadow:0 0 8px <?php echo $glow; ?>;"></span>
 						</span>
-						<span class="pf-theme-card__name"><?php echo esc_html( $theme['label'] ); ?></span>
+
+						<span class="pf-theme-card__name">
+							<?php echo esc_html( $theme['label'] ); ?>
+							<span class="pf-theme-card__sub" style="color:<?php echo $accent; ?>;"><?php echo esc_html( $theme['sub'] ); ?></span>
+						</span>
 						<span class="pf-theme-card__desc"><?php echo esc_html( $theme['desc'] ); ?></span>
 					</label>
 					<?php endforeach; ?>
-				</div>
+				</div><!-- .pf-theme-grid -->
+				</div><!-- .pf-theme-grid-wrap -->
 
 				<div class="pf-card pf-card--note" style="margin-top:16px;">
 					<strong><?php esc_html_e( 'Override examples:', 'psyerns-framework' ); ?></strong><br>

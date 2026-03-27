@@ -23,6 +23,14 @@
 	border-radius: 0 0 4px 4px;
 }
 
+/* Dark card grid (Theme tab) sits on a slightly inset dark bg */
+.pf-theme-grid-wrap {
+	background: #1d2327;
+	border-radius: 6px;
+	padding: 16px;
+	margin-top: 12px;
+}
+
 /* ── Cards ─────────────────────────────────────────────────── */
 .pf-card {
 	background: #fff;
@@ -151,57 +159,162 @@
 /* ── Theme Grid ────────────────────────────────────────────── */
 .pf-theme-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-	gap: 12px;
+	grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+	gap: 14px;
 	margin-top: 12px;
 }
 .pf-theme-card {
 	display: flex;
 	flex-direction: column;
 	border: 2px solid #c3c4c7;
-	border-radius: 6px;
+	border-radius: 8px;
 	padding: 0;
 	cursor: pointer;
-	transition: border-color 0.15s, box-shadow 0.15s;
+	transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
 	overflow: hidden;
 	position: relative;
+	background: #1d2327;
 }
-.pf-theme-card input[type="radio"] { position: absolute; opacity: 0; }
-.pf-theme-card:hover { border-color: #2271b1; box-shadow: 0 0 0 1px #2271b1; }
-.pf-theme-card--active { border-color: #2271b1; box-shadow: 0 0 0 1px #2271b1; }
+.pf-theme-card input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.pf-theme-card:hover {
+	border-color: #2271b1;
+	box-shadow: 0 4px 16px rgba(34,113,177,.25);
+	transform: translateY(-2px);
+}
+.pf-theme-card--active {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 2px #2271b1, 0 4px 16px rgba(34,113,177,.20);
+}
 .pf-theme-card--active::after {
-	content: '✓';
+	content: '✓ Active';
 	position: absolute;
-	top: 8px;
-	right: 10px;
-	font-size: 16px;
+	top: 7px;
+	right: 8px;
+	font-size: 10px;
 	font-weight: 700;
-	color: #2271b1;
+	color: #fff;
+	background: #2271b1;
+	border-radius: 3px;
+	padding: 2px 6px;
+	letter-spacing: .04em;
+	z-index: 10;
 }
 
+/* ── Mini preview panel ── */
 .pf-theme-card__preview {
-	height: 52px;
+	position: relative;
 	display: flex;
-	align-items: flex-end;
-	padding: 0 0 6px 8px;
+	flex-direction: column;
+	overflow: hidden;
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 9px;
+	line-height: 1;
+	height: 130px;
+	flex-shrink: 0;
 }
-.pf-theme-card__accent {
-	height: 6px;
-	width: 40%;
-	border-radius: 3px;
-	opacity: 0.8;
+
+/* CRT scanline overlay — purely decorative, pointer-events:none */
+.pf-theme-card__scanlines {
+	position: absolute;
+	inset: 0;
+	background: repeating-linear-gradient(
+		0deg,
+		transparent,
+		transparent 2px,
+		rgba(0,0,0,.12) 2px,
+		rgba(0,0,0,.12) 3px
+	);
+	pointer-events: none;
+	z-index: 2;
 }
+
+/* mini top bar */
+.pf-theme-card__mini-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 5px 8px 4px;
+	position: relative;
+	z-index: 3;
+}
+.pf-theme-card__mini-dots {
+	display: flex;
+	gap: 3px;
+}
+.pf-theme-card__mini-dots span {
+	display: block;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	opacity: .6;
+}
+
+/* column header row */
+.pf-theme-card__mini-cols {
+	display: flex;
+	gap: 4px;
+	padding: 3px 8px;
+	font-weight: 700;
+	font-size: 7px;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	position: relative;
+	z-index: 3;
+}
+
+/* data rows */
+.pf-theme-card__mini-row {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	position: relative;
+	z-index: 3;
+}
+.pf-theme-card__mini-rank {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 14px;
+	height: 14px;
+	font-size: 7px;
+	font-weight: 700;
+	border-radius: 2px;
+	flex-shrink: 0;
+}
+
+/* bottom accent bar */
+.pf-theme-card__mini-bar {
+	display: block;
+	height: 3px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 4;
+}
+
+/* ── Card text area ── */
 .pf-theme-card__name {
-	padding: 8px 12px 2px;
-	font-weight: 600;
+	padding: 9px 12px 2px;
+	font-weight: 700;
 	font-size: 13px;
-	color: #1d2327;
+	color: #f0f0f1;
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+}
+.pf-theme-card__sub {
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: .06em;
+	text-transform: uppercase;
 }
 .pf-theme-card__desc {
 	padding: 2px 12px 12px;
-	font-size: 11px;
-	color: #646970;
-	line-height: 1.4;
+	font-size: 10px;
+	color: #8c8f94;
+	line-height: 1.45;
 }
 
 /* ── Status Grid ───────────────────────────────────────────── */
