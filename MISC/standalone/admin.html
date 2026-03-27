@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Psyerns Framework</title>
+<link rel="stylesheet" href="./assets/css/pf-common.css">
+<link rel="stylesheet" href="./assets/css/pf-dark.css">
+<link rel="stylesheet" href="./assets/css/pf-light.css">
+<style>
+	.admin-auth { padding: 16px; margin-bottom: 16px; }
+	.admin-auth input { padding: 6px 12px; font-size: 14px; width: 300px; margin-right: 8px; border-radius: 4px; border: 1px solid #555; background: transparent; color: inherit; }
+	.admin-auth button, .admin-form button { padding: 6px 16px; border-radius: 4px; border: none; cursor: pointer; font-size: 14px; }
+	.admin-form { margin: 16px 0; }
+	.admin-form input { padding: 6px 12px; margin-right: 8px; border-radius: 4px; border: 1px solid #555; background: transparent; color: inherit; }
+	.admin-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+	.admin-table th, .admin-table td { padding: 8px 12px; text-align: left; }
+	.admin-table th { opacity: 0.7; text-transform: uppercase; font-size: 12px; }
+	.admin-table tr + tr td { border-top: 1px solid rgba(255,255,255,0.1); }
+	.pf-light .admin-table tr + tr td { border-top-color: #eee; }
+	.pf-light .admin-auth input, .pf-light .admin-form input { border-color: #ccc; }
+</style>
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="PF.switchTheme(document.getElementById('app'))">Theme</button>
+	<h1 style="margin-bottom:16px">Admin Panel</h1>
+
+	<div class="admin-auth pf-card">
+		<label>API Key: </label>
+		<input type="password" id="api-key" placeholder="Enter API Key" />
+		<button onclick="saveKey()">Save</button>
+	</div>
+
+	<div class="pf-tabs">
+		<button class="pf-tab active" onclick="showAdminTab('whitelist')">Whitelist</button>
+		<button class="pf-tab" onclick="showAdminTab('status')">Server Status</button>
+	</div>
+
+	<div id="tab-whitelist">
+		<div class="admin-form pf-card">
+			<h3 style="margin-bottom:8px">Add Player</h3>
+			<input type="text" id="add-steamid" placeholder="Steam64 ID" />
+			<input type="text" id="add-name" placeholder="Player Name" />
+			<button onclick="addToWhitelist()">Add</button>
+		</div>
+		<div id="wl-content"><div class="pf-loading">Enter API key to load whitelist.</div></div>
+	</div>
+	<div id="tab-status" style="display:none">
+		<div id="admin-status"><div class="pf-loading">Loading...</div></div>
+	</div>
+</div>
+<script src="./assets/js/pf-templates.js"></script>
+<script>
+PF.config.apiUrl = './api';
+
+function getKey() { return sessionStorage.getItem('pf_admin_key') || ''; }
+function saveKey() {
+	sessionStorage.setItem('pf_admin_key', document.getElementById('api-key').value);
+	loadWhitelist();
+}
+
+function showAdminTab(name) {
+	document.getElementById('tab-whitelist').style.display = name === 'whitelist' ? '' : 'none';
+	document.getElementById('tab-status').style.display = name === 'status' ? '' : 'none';
+	var tabs = document.querySelectorAll('.pf-tabs .pf-tab');
+	tabs[tabs.length - 2].classList.toggle('active', name === 'whitelist');
+	tabs[tabs.length - 1].classList.toggle('active', name === 'status');
+	if (name === 'status') loadAdminStatus();
+	if (name === 'whitelist') loadWhitelist();
+}
+
+function loadWhitelist() {
+	var key = getKey();
+	if (!key) return;
+	fetch(PF.config.apiUrl + '/whitelist.php?action=list&api_key=' + encodeURIComponent(key))
+	.then(function(r) { return r.json(); })
+	.then(function(data) {
+		if (!Array.isArray(data)) { document.getElementById('wl-content').innerHTML = '<div class="pf-loading">Error or unauthorized.</div>'; return; }
+		var h = '<p style="margin:8px 0;opacity:0.7">' + data.length + ' player(s) whitelisted</p>';
+		h += '<table class="admin-table"><tr><th>#</th><th>Steam ID</th><th>Name</th><th>Added</th><th></th></tr>';
+		for (var i = 0; i < data.length; i++) {
+			var e = data[i];
+			h += '<tr><td>' + (i+1) + '</td><td><code>' + PF.escHtml(e.steam_id) + '</code></td><td>' + PF.escHtml(e.name) + '</td><td>' + PF.escHtml(e.added_at) + '</td>';
+			h += '<td><button onclick="removeFromWL(\'' + PF.escHtml(e.steam_id) + '\')">Remove</button></td></tr>';
+		}
+		h += '</table>';
+		document.getElementById('wl-content').innerHTML = h;
+	}).catch(function() { document.getElementById('wl-content').innerHTML = '<div class="pf-loading">Failed to load.</div>'; });
+}
+
+function addToWhitelist() {
+	var key = getKey(); if (!key) { alert('Enter API key first'); return; }
+	var sid = document.getElementById('add-steamid').value;
+	var name = document.getElementById('add-name').value;
+	if (!sid) return;
+	fetch(PF.config.apiUrl + '/whitelist.php?action=add&api_key=' + encodeURIComponent(key), {
+		method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({steamId: sid, name: name})
+	}).then(function() { loadWhitelist(); document.getElementById('add-steamid').value = ''; document.getElementById('add-name').value = ''; });
+}
+
+function removeFromWL(sid) {
+	if (!confirm('Remove ' + sid + '?')) return;
+	var key = getKey();
+	fetch(PF.config.apiUrl + '/whitelist.php?action=remove&api_key=' + encodeURIComponent(key), {
+		method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({steamId: sid})
+	}).then(function() { loadWhitelist(); });
+}
+
+function loadAdminStatus() {
+	PF.fetchServerStatus().then(function(d) {
+		PF.renderServerStatus(d, document.getElementById('admin-status'));
+	}).catch(function() {});
+}
+
+document.getElementById('api-key').value = getKey();
+if (getKey()) loadWhitelist();
+</script>
+</body>
+</html>

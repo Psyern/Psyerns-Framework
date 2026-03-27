@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Card</title>
+<link rel="stylesheet" href="./assets/css/pf-common.css">
+<link rel="stylesheet" href="./assets/css/pf-dark.css">
+<link rel="stylesheet" href="./assets/css/pf-light.css">
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="PF.switchTheme(document.getElementById('app'))">Theme</button>
+	<div id="content"><div class="pf-loading">Loading player...</div></div>
+</div>
+<script src="./assets/js/pf-templates.js"></script>
+<script>
+PF.config.apiUrl = './api';
+var params = new URLSearchParams(window.location.search);
+var steamId = params.get('steam_id') || '';
+if (!steamId) {
+	document.getElementById('content').innerHTML = '<div class="pf-loading">No steam_id provided. Use ?steam_id=76561198...</div>';
+} else {
+	PF.fetchLeaderboard('pve', 1000).then(function(data) {
+		var players = data.players || data;
+		var found = null;
+		for (var i = 0; i < players.length; i++) {
+			if (players[i].steam_id === steamId) { found = players[i]; break; }
+		}
+		PF.renderPlayerCard(found, document.getElementById('content'));
+	}).catch(function() {
+		document.getElementById('content').innerHTML = '<div class="pf-loading">Failed to load.</div>';
+	});
+}
+</script>
+</body>
+</html>

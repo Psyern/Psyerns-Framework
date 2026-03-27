@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.pf-container{max-width:1100px;margin:0 auto;padding:20px 16px}
+.pf-header{border-radius:8px;padding:20px 24px;margin-bottom:16px}
+.pf-header h1{font-size:1.5rem;font-weight:700;margin-bottom:8px}
+.pf-header-stats{display:flex;gap:24px;flex-wrap:wrap;font-size:.875rem}
+.pf-header-stats span{display:inline-flex;align-items:center;gap:4px}
+.pf-error-banner{padding:10px 16px;border-radius:6px;margin-bottom:16px;font-size:.875rem;display:none}
+.pf-tabs{display:flex;gap:4px;margin-bottom:16px}
+.pf-tab{padding:10px 24px;border:none;border-radius:6px 6px 0 0;cursor:pointer;font-size:.9rem;font-weight:500;transition:background .15s,color .15s;background:transparent}
+.pf-tab:hover{opacity:.85}
+.pf-table-wrapper{border-radius:0 8px 8px 8px;overflow-x:auto}
+.pf-table{width:100%;border-collapse:collapse;font-size:.875rem}
+.pf-table thead th{text-align:left;padding:12px 14px;font-weight:600;white-space:nowrap;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
+.pf-table tbody td{padding:10px 14px;white-space:nowrap}
+.pf-table tbody tr:last-child td{border-bottom:none}
+.pf-card{border-radius:8px;padding:24px;transition:transform .2s}
+.pf-avatar-sm{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.pf-badge-online,.pf-badge-offline{display:inline-block;width:8px;height:8px;border-radius:50%}
+.pf-rank-1 td:first-child,.pf-rank-2 td:first-child,.pf-rank-3 td:first-child{border-left:3px solid transparent}
+.pf-rank-num{font-weight:700;min-width:36px;display:inline-block}
+.pf-player-name{font-weight:600}
+.pf-points{font-weight:700}
+.pf-theme-switch{position:fixed;top:12px;right:12px;z-index:1000;padding:6px 14px;border:none;border-radius:20px;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .2s}
+.pf-loading{text-align:center;padding:60px 20px;font-size:.9rem}
+@media(max-width:480px){.pf-container{padding:12px 8px}.pf-header{padding:16px}.pf-header h1{font-size:1.2rem}.pf-tab{padding:8px 16px;font-size:.85rem}.pf-table{font-size:.8rem}.pf-table thead th,.pf-table tbody td{padding:8px 10px}}
+/* Dark */
+.pf-dark{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif}
+.pf-dark .pf-header{background:rgba(22,33,62,.85);backdrop-filter:blur(8px);border:1px solid rgba(240,192,64,.2)}
+.pf-dark .pf-header h1{color:#f0c040}
+.pf-dark .pf-header-stats{color:#8892a0}
+.pf-dark .pf-tab{color:#8892a0}.pf-dark .pf-tab:hover{color:#e0e0e0}
+.pf-dark .pf-tab.active{color:#f0c040;box-shadow:0 -2px 0 #f0c040 inset;background:rgba(22,33,62,.85)}
+.pf-dark .pf-table-wrapper{background:rgba(22,33,62,.85);backdrop-filter:blur(8px);border:1px solid rgba(240,192,64,.2)}
+.pf-dark .pf-table thead th{color:#8892a0;border-bottom:2px solid rgba(240,192,64,.3)}
+.pf-dark .pf-table tbody td{border-bottom:1px solid rgba(255,255,255,.05)}
+.pf-dark .pf-table tbody tr:hover{background:rgba(240,192,64,.05)}
+.pf-dark .pf-rank-1 td:first-child{border-left-color:#f0c040}.pf-dark .pf-rank-2 td:first-child{border-left-color:#c0c0c0}.pf-dark .pf-rank-3 td:first-child{border-left-color:#cd7f32}
+.pf-dark .pf-rank-1 .pf-rank-num{color:#f0c040}.pf-dark .pf-rank-2 .pf-rank-num{color:#c0c0c0}.pf-dark .pf-rank-3 .pf-rank-num{color:#cd7f32}
+.pf-dark .pf-player-name{color:#e0e0e0}.pf-dark .pf-points{color:#f0c040}
+.pf-dark .pf-badge-online{background:#2ecc71}.pf-dark .pf-badge-offline{background:#95a5a6}
+.pf-dark .pf-theme-switch{background:#16213e;color:#e0e0e0;border:1px solid rgba(240,192,64,.3)}
+.pf-dark .pf-loading{color:#8892a0}
+.pf-dark .pf-error-banner{background:rgba(231,76,60,.15);color:#e74c3c}
+/* Light */
+.pf-light{background:#f5f5f5;color:#333;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+.pf-light .pf-header{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.pf-light .pf-header h1{color:#1a1a1a}.pf-light .pf-header-stats{color:#666}
+.pf-light .pf-tab{color:#666}.pf-light .pf-tab:hover{color:#333}
+.pf-light .pf-tab.active{color:#1a1a1a;font-weight:600;box-shadow:0 -2px 0 #3498db inset;background:#fff}
+.pf-light .pf-table-wrapper{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.pf-light .pf-table thead th{color:#555;border-bottom:2px solid #eee}
+.pf-light .pf-table tbody td{border-bottom:1px solid #f0f0f0}
+.pf-light .pf-table tbody tr:hover{background:#fafafa}
+.pf-light .pf-rank-1 td:first-child{border-left-color:#f39c12}.pf-light .pf-rank-2 td:first-child{border-left-color:#95a5a6}.pf-light .pf-rank-3 td:first-child{border-left-color:#cd6133}
+.pf-light .pf-rank-1 .pf-rank-num{color:#b8860b}.pf-light .pf-rank-2 .pf-rank-num{color:#6b7280}.pf-light .pf-rank-3 .pf-rank-num{color:#92400e}
+.pf-light .pf-player-name{color:#1a1a1a}.pf-light .pf-points{color:#3498db}
+.pf-light .pf-badge-online{background:#2ecc71}.pf-light .pf-badge-offline{background:#d1d5db}
+.pf-light .pf-theme-switch{background:#fff;color:#333;border:1px solid #d1d5db}
+.pf-light .pf-loading{color:#999}
+.pf-light .pf-error-banner{background:#fff3f3;color:#c00}
+</style>
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="switchTheme()">Theme</button>
+	<div class="pf-tabs" id="tabs">
+		<button class="pf-tab active" onclick="switchTab('pve')">PvE</button>
+		<button class="pf-tab" onclick="switchTab('pvp')">PvP</button>
+	</div>
+	<div class="pf-table-wrapper" id="content"><div class="pf-loading">Loading leaderboard...</div></div>
+</div>
+<script>
+var CONFIG = { apiUrl: "./api/leaderboard.php", refreshInterval: 300000, maxPlayers: 20 };
+var currentType = 'pve';
+function switchTheme(){var a=document.getElementById('app');a.classList.toggle('pf-dark');a.classList.toggle('pf-light')}
+function switchTab(t){currentType=t;var btns=document.querySelectorAll('.pf-tab');btns[0].classList.toggle('active',t==='pve');btns[1].classList.toggle('active',t==='pvp');loadData()}
+function escH(s){var d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML}
+function fmtN(n){return Number(n||0).toLocaleString()}
+function fmtD(iso){if(!iso)return'\u2014';var d=new Date(iso);if(isNaN(d.getTime()))return iso;return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+
+function loadData(){
+	fetch(CONFIG.apiUrl+'?type='+currentType+'&limit='+CONFIG.maxPlayers)
+	.then(function(r){if(!r.ok)throw new Error();return r.json()})
+	.then(function(data){
+		var players=data.players||data;var meta=data.generatedAt?data:{};
+		var cats={},i,j,p,keys;
+		for(i=0;i<players.length;i++){var ck=players[i].category_kills||{};keys=Object.keys(ck);for(j=0;j<keys.length;j++)cats[keys[j]]=true}
+		var cn=Object.keys(cats);
+		var h='<div class="pf-header"><h1>Leaderboard</h1><div class="pf-header-stats">';
+		h+='<span>Online: '+(meta.playerOnlineCounter||0)+'</span><span>Total: '+(meta.totalPlayers||0)+'</span><span>Updated: '+fmtD(meta.generatedAt)+'</span></div></div>';
+		h+='<table class="pf-table"><thead><tr><th>#</th><th></th><th>Name</th><th>Points</th>';
+		for(i=0;i<cn.length;i++)h+='<th>'+escH(cn[i])+'</th>';
+		h+='<th>Deaths</th><th>Range</th><th>Status</th><th>Last Login</th></tr></thead><tbody>';
+		for(i=0;i<players.length;i++){
+			p=players[i];var rank=i+1;var rc=rank<=3?' pf-rank-'+rank:'';
+			var pts=currentType==='pvp'?(p.pvp_points||0):(p.pve_points||0);
+			var deaths=currentType==='pvp'?(p.pvp_deaths||0):(p.pve_deaths||0);
+			var on=p.is_online==1;var ck2=p.category_kills||{};var ranges=p.category_longest_ranges||{};
+			var br='\u2014',rk=Object.keys(ranges),mx=0;
+			for(j=0;j<rk.length;j++){if(ranges[rk[j]]>mx)mx=ranges[rk[j]]}
+			if(mx>0)br=mx+'m';
+			h+='<tr class="'+rc.trim()+'">';
+			h+='<td><span class="pf-rank-num">'+rank+'</span></td>';
+			h+='<td>'+(p.avatar_url?'<img class="pf-avatar-sm" src="'+escH(p.avatar_url)+'" alt="">':'')+'</td>';
+			h+='<td class="pf-player-name">'+escH(p.player_name)+'</td>';
+			h+='<td class="pf-points">'+fmtN(pts)+'</td>';
+			for(j=0;j<cn.length;j++)h+='<td>'+fmtN(ck2[cn[j]]||0)+'</td>';
+			h+='<td>'+fmtN(deaths)+'</td><td>'+br+'</td>';
+			h+='<td><span class="'+(on?'pf-badge-online':'pf-badge-offline')+'"></span></td>';
+			h+='<td>'+fmtD(p.last_login)+'</td></tr>';
+		}
+		if(!players.length)h+='<tr><td colspan="'+(7+cn.length)+'" style="text-align:center;padding:40px;opacity:.6">No players.</td></tr>';
+		h+='</tbody></table>';
+		document.getElementById('content').innerHTML=h;
+	}).catch(function(){document.getElementById('content').innerHTML='<div class="pf-error-banner" style="display:block">Failed to load.</div>'});
+}
+loadData();
+setInterval(loadData,CONFIG.refreshInterval);
+</script>
+</body>
+</html>

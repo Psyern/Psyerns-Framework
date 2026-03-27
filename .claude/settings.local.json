@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Write",
+      "Bash(npm install:*)",
+      "Bash(where node:*)",
+      "Bash(where npm:*)",
+      "Bash(winget install:*)",
+      "Bash(powershell.exe -Command \"winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements\")",
+      "Bash(powershell.exe -Command \"npm install -g @anthropic-ai/claude-code\")",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\nodejs\\\\npm.cmd'' install -g @anthropic-ai/claude-code\")",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\nodejs\\\\claude.cmd'' --version\")",
+      "Bash(powershell.exe -Command \"Test-Path ''C:\\\\Users\\\\Administrator\\\\AppData\\\\Roaming\\\\npm\\\\claude.cmd''\")",
+      "Bash(powershell.exe -Command \"[Environment]::GetEnvironmentVariable\\(''Path'', ''User''\\)\")",
+      "Bash(xargs grep:*)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\admin\\\\css\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\admin\\\\js\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\includes\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\public\\\\css\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\public\\\\js\")",
+      "Bash(powershell -Command 'Get-Content \"C:\\\\Program Files \\(x86\\)\\\\CFTools Software GmbH\\\\Architect\\\\Agent\\\\deployments\\\\DME_TestServer\\\\profiles\\\\DeadmansEcho\\\\PsyernsFramework\\\\PsyernsFrameworkConfig.json\" -ErrorAction SilentlyContinue | ConvertFrom-Json | Select-Object ConfigVersion, EnableLeaderboardExport, LeaderboardExportIntervalSeconds, NinjinPlayersPath, LeaderboardMaxPlayers, @{N=\"WordPress\";E={$_.Endpoints | Where-Object Name -eq \"WordPress\"}} | Format-List')",
+      "Bash(powershell -Command 'Get-Content \"C:\\\\Program Files \\(x86\\)\\\\CFTools Software GmbH\\\\Architect\\\\Agent\\\\deployments\\\\DME_TestServer\\\\profiles\\\\DeadmansEcho\\\\PsyernsFramework\\\\PsyernsFrameworkConfig.json\" | ConvertFrom-Json | Select-Object ConfigVersion, EnableLeaderboardExport, LeaderboardExportIntervalSeconds, NinjinPlayersPath, LeaderboardMaxPlayers | Format-List')"
+    ]
+  }
+}

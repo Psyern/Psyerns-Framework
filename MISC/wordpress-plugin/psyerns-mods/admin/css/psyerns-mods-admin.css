@@ -1,0 +1,430 @@
+/**
+ * Psyerns Mods Showreel — Admin Stylesheet
+ *
+ * Scoped to plugin admin screens. All selectors prefixed with .psm- to
+ * avoid collisions with WordPress core or other plugins.
+ *
+ * @package Psyerns_Mods
+ * @since   1.0.0
+ */
+
+/* ==========================================================================
+   Meta Box Sections
+   ========================================================================== */
+
+.psm-meta-section {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #ddd;
+}
+
+.psm-meta-section:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.psm-meta-section__title {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0 0 10px;
+	padding-left: 10px;
+	border-left: 3px solid #f97316;
+	line-height: 1.4;
+	color: #1d2327;
+}
+
+.psm-meta-section__row {
+	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.psm-meta-section__row:last-child {
+	margin-bottom: 0;
+}
+
+.psm-meta-section__label {
+	width: 160px;
+	font-weight: 500;
+	flex-shrink: 0;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.psm-meta-section__field {
+	flex: 1;
+	min-width: 0;
+}
+
+/* ==========================================================================
+   Inputs
+   ========================================================================== */
+
+.psm-input {
+	width: 100%;
+	max-width: 400px;
+	padding: 6px 10px;
+	font-size: 13px;
+	line-height: 1.5;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	background: #ffffff;
+	color: #2c3338;
+	box-sizing: border-box;
+	transition: border-color 150ms ease;
+}
+
+.psm-input:focus {
+	border-color: #f97316;
+	box-shadow: 0 0 0 1px #f97316;
+	outline: none;
+}
+
+.psm-input--url {
+	max-width: 500px;
+}
+
+.psm-input--price {
+	max-width: 120px;
+}
+
+.psm-input--order {
+	max-width: 80px;
+}
+
+.psm-input:disabled {
+	opacity: 0.5;
+	background: #f0f0f0;
+	cursor: not-allowed;
+}
+
+textarea.psm-input {
+	min-height: 80px;
+	resize: vertical;
+}
+
+/* ==========================================================================
+   Toggle Switch (CSS-only)
+   ========================================================================== */
+
+.psm-toggle {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 22px;
+	vertical-align: middle;
+}
+
+.psm-toggle input[type="checkbox"] {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+
+.psm-toggle__track {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #ccc;
+	border-radius: 11px;
+	cursor: pointer;
+	transition: background-color 200ms ease;
+}
+
+.psm-toggle__track::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	background: #ffffff;
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	transition: left 200ms ease;
+}
+
+.psm-toggle input[type="checkbox"]:checked + .psm-toggle__track {
+	background: var(--pf-accent, #f97316);
+}
+
+.psm-toggle input[type="checkbox"]:checked + .psm-toggle__track::after {
+	left: 20px;
+}
+
+.psm-toggle input[type="checkbox"]:focus-visible + .psm-toggle__track {
+	box-shadow: 0 0 0 2px #f97316;
+}
+
+/* ==========================================================================
+   Steam Preview
+   ========================================================================== */
+
+.psm-steam-preview {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	padding: 10px;
+	background: #f9f9f9;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	margin-top: 10px;
+}
+
+.psm-steam-preview__image {
+	width: 120px;
+	height: 68px;
+	-o-object-fit: cover;
+	object-fit: cover;
+	border-radius: 4px;
+	flex-shrink: 0;
+	background: #e0e0e0;
+}
+
+.psm-steam-preview__info {
+	flex: 1;
+	min-width: 0;
+}
+
+.psm-steam-preview__title {
+	font-weight: 600;
+	font-size: 13px;
+	color: #1d2327;
+	margin: 0 0 4px;
+	line-height: 1.3;
+}
+
+.psm-steam-preview__meta {
+	font-size: 12px;
+	color: #646970;
+	margin: 0;
+}
+
+/* ==========================================================================
+   Fetch Button
+   ========================================================================== */
+
+.psm-btn-fetch {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: #f97316;
+	color: #ffffff;
+	border: none;
+	padding: 6px 14px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+	transition: background-color 150ms ease;
+}
+
+.psm-btn-fetch:hover {
+	background: #ea580c;
+	color: #ffffff;
+}
+
+.psm-btn-fetch:focus-visible {
+	outline: 2px solid #f97316;
+	outline-offset: 2px;
+}
+
+.psm-btn-fetch--loading {
+	opacity: 0.7;
+	pointer-events: none;
+	cursor: wait;
+}
+
+.psm-btn-fetch__spinner {
+	display: none;
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-top-color: #ffffff;
+	border-radius: 50%;
+	animation: psm-spin 600ms linear infinite;
+}
+
+.psm-btn-fetch--loading .psm-btn-fetch__spinner {
+	display: inline-block;
+}
+
+@keyframes psm-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ==========================================================================
+   Custom Column Thumbnail
+   ========================================================================== */
+
+.psm-column-thumb {
+	width: 80px;
+	height: 45px;
+	-o-object-fit: cover;
+	object-fit: cover;
+	border-radius: 3px;
+	display: block;
+	background: #e0e0e0;
+}
+
+/* ==========================================================================
+   Settings / Overview Page
+   ========================================================================== */
+
+.psm-settings-wrap h1 {
+	margin-bottom: 16px;
+}
+
+/* Overview Box — card-like sections */
+.psm-overview-box {
+	background: #ffffff;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	padding: 20px 24px;
+	margin-bottom: 20px;
+}
+
+.psm-overview-box h2 {
+	font-size: 15px;
+	font-weight: 600;
+	margin: 0 0 8px;
+	padding: 0 0 10px;
+	border-bottom: 2px solid #f97316;
+	color: #1d2327;
+}
+
+.psm-overview-box .form-table {
+	margin-top: 0;
+}
+
+.psm-overview-box .form-table th {
+	width: 200px;
+	padding-left: 0;
+}
+
+/* Shortcode info box — highlighted */
+.psm-overview-box--shortcode {
+	background: #fef3c7;
+	border-color: #f59e0b;
+}
+
+.psm-overview-box--shortcode h2 {
+	border-bottom-color: #f59e0b;
+}
+
+.psm-shortcode-display {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.psm-shortcode-display code {
+	display: inline-block;
+	background: #1d2327;
+	color: #f9fafb;
+	font-size: 16px;
+	font-weight: 600;
+	padding: 10px 20px;
+	border-radius: 6px;
+	letter-spacing: 0.03em;
+	font-family: Consolas, Monaco, "Courier New", monospace;
+	user-select: all;
+}
+
+.psm-copy-btn {
+	white-space: nowrap;
+}
+
+.psm-copy-btn--copied {
+	color: #16a34a !important;
+	border-color: #16a34a !important;
+}
+
+/* Stats row */
+.psm-overview-stats {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.psm-stat-card {
+	flex: 1;
+	background: #ffffff;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	padding: 20px;
+	text-align: center;
+}
+
+.psm-stat-card__number {
+	display: block;
+	font-size: 28px;
+	font-weight: 700;
+	color: #f97316;
+	line-height: 1.2;
+}
+
+.psm-stat-card__label {
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-top: 4px;
+}
+
+/* ==========================================================================
+   Helper: Description text below fields
+   ========================================================================== */
+
+.psm-meta-section__description {
+	font-size: 12px;
+	color: #646970;
+	margin: 4px 0 0;
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Responsive — Stack labels on narrow screens
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+
+	.psm-meta-section__row {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.psm-meta-section__label {
+		width: 100%;
+		margin-bottom: 4px;
+	}
+
+	.psm-input,
+	.psm-input--url,
+	.psm-input--price,
+	.psm-input--order {
+		max-width: 100%;
+	}
+
+	.psm-steam-preview {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.psm-steam-preview__image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+	}
+}

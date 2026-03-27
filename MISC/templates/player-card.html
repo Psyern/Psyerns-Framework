@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Card</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.pf-container{max-width:1100px;margin:0 auto;padding:20px 16px}
+.pf-card{border-radius:8px;padding:24px}
+.pf-avatar-xl{width:80px;height:80px;border-radius:50%;object-fit:cover}
+.pf-player-name{font-weight:600}
+.pf-badge-online,.pf-badge-offline{display:inline-block;width:10px;height:10px;border-radius:50%}
+.pf-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pf-stat-item{padding:8px}
+.pf-stat-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.pf-stat-value{font-size:1.1rem;font-weight:700}
+.pf-category-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pf-category-tag{padding:2px 8px;border-radius:12px;font-size:.75rem}
+.pf-theme-switch{position:fixed;top:12px;right:12px;z-index:1000;padding:6px 14px;border:none;border-radius:20px;cursor:pointer;font-size:.8rem;font-weight:500}
+.pf-loading{text-align:center;padding:60px 20px;font-size:.9rem}
+@media(max-width:480px){.pf-stats-grid{grid-template-columns:1fr}}
+.pf-dark{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif}
+.pf-dark .pf-card{background:rgba(22,33,62,.85);backdrop-filter:blur(8px);border:1px solid rgba(240,192,64,.2)}
+.pf-dark .pf-stat-label{color:#8892a0}.pf-dark .pf-stat-value{color:#e0e0e0}
+.pf-dark .pf-badge-online{background:#2ecc71}.pf-dark .pf-badge-offline{background:#95a5a6}
+.pf-dark .pf-category-tag{background:rgba(240,192,64,.15);color:#f0c040}
+.pf-dark .pf-theme-switch{background:#16213e;color:#e0e0e0;border:1px solid rgba(240,192,64,.3)}
+.pf-dark .pf-loading{color:#8892a0}
+.pf-light{background:#f5f5f5;color:#333;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+.pf-light .pf-card{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.pf-light .pf-stat-label{color:#888}.pf-light .pf-stat-value{color:#333}
+.pf-light .pf-badge-online{background:#2ecc71}.pf-light .pf-badge-offline{background:#d1d5db}
+.pf-light .pf-category-tag{background:#e8f4fd;color:#2980b9}
+.pf-light .pf-theme-switch{background:#fff;color:#333;border:1px solid #d1d5db}
+.pf-light .pf-loading{color:#999}
+</style>
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="var a=document.getElementById('app');a.classList.toggle('pf-dark');a.classList.toggle('pf-light')">Theme</button>
+	<div id="content"><div class="pf-loading">Loading player...</div></div>
+</div>
+<script>
+var CONFIG = { apiUrl: "./api/leaderboard.php" };
+function escH(s){var d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML}
+function fmtN(n){return Number(n||0).toLocaleString()}
+function fmtD(iso){if(!iso)return'\u2014';var d=new Date(iso);if(isNaN(d.getTime()))return iso;return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function kd(k,d){k=Number(k||0);d=Number(d||0);if(d===0)return k>0?k.toFixed(1):'0.0';return(k/d).toFixed(2)}
+
+var params=new URLSearchParams(window.location.search);
+var steamId=params.get('steam_id')||'';
+
+if(!steamId){
+	document.getElementById('content').innerHTML='<div class="pf-loading">No steam_id provided. Use ?steam_id=76561198...</div>';
+} else {
+	fetch(CONFIG.apiUrl+'?type=pve&limit=1000')
+	.then(function(r){return r.json()})
+	.then(function(data){
+		var players=data.players||data;var p=null;
+		for(var i=0;i<players.length;i++){if(players[i].steam_id===steamId){p=players[i];break}}
+		if(!p){document.getElementById('content').innerHTML='<div class="pf-loading">Player not found.</div>';return}
+		var on=p.is_online==1;
+		var h='<div class="pf-card" style="max-width:480px;margin:0 auto">';
+		h+='<div style="text-align:center;margin-bottom:16px">';
+		h+='<img class="pf-avatar-xl" src="'+escH(p.avatar_url||'')+'" alt="">';
+		h+='<h2 class="pf-player-name" style="margin-top:8px">'+escH(p.player_name)+'</h2>';
+		h+='<span class="'+(on?'pf-badge-online':'pf-badge-offline')+'"></span> ';
+		h+='<span style="font-size:.85rem">'+(on?'Online':'Offline')+'</span></div>';
+		h+='<div class="pf-stats-grid">';
+		var stats=[['PvE Points',fmtN(p.pve_points)],['PvP Points',fmtN(p.pvp_points)],['Kills',fmtN(p.kills)],['Deaths',fmtN(p.deaths)],['K/D Ratio',kd(p.kills,p.deaths)],['Longest Shot',(p.longest_shot||0).toFixed(0)+'m'],['AI Kills',fmtN(p.ai_kills)],['Playtime',(p.playtime||0).toFixed(1)+'h']];
+		for(var si=0;si<stats.length;si++)h+='<div class="pf-stat-item"><div class="pf-stat-label">'+stats[si][0]+'</div><div class="pf-stat-value">'+stats[si][1]+'</div></div>';
+		h+='</div>';
+		h+='<div style="margin-top:8px;font-size:.8rem;opacity:.7">Last Login: '+fmtD(p.last_login)+'</div>';
+		if(p.category_kills){var ck=p.category_kills;var cks=Object.keys(ck);h+='<div class="pf-category-tags">';for(var ci=0;ci<cks.length;ci++)h+='<span class="pf-category-tag">'+escH(cks[ci])+': '+ck[cks[ci]]+'</span>';h+='</div>'}
+		h+='</div>';
+		document.getElementById('content').innerHTML=h;
+	}).catch(function(){document.getElementById('content').innerHTML='<div class="pf-loading">Failed to load.</div>'});
+}
+</script>
+</body>
+</html>
