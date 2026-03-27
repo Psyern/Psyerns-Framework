@@ -140,8 +140,7 @@ class PF_LeaderboardReader
 	{
 		PF_NinjinPlayerData raw = new PF_NinjinPlayerData();
 
-		string errorMsg;
-		bool loaded = JsonFileLoader<PF_NinjinPlayerData>.JsonLoadFile(fullPath, raw);
+		JsonFileLoader<PF_NinjinPlayerData>.JsonLoadFile(fullPath, raw);
 
 		if (!raw.PlayerName || raw.PlayerName == "")
 		{

@@ -24,6 +24,8 @@ modded class MissionServer
 		PF_RestConfig restCfg = PF_RestConfig.GetInstance();
 		string baseUrl = restCfg.GetBaseUrl();
 		string apiKey = restCfg.GetApiKey();
+		string leaderboardBaseUrl = restCfg.GetLeaderboardBaseUrl();
+		string leaderboardApiKey = restCfg.GetLeaderboardApiKey();
 
 		PF_Logger.Log("Initializing REST subsystems...");
 
@@ -67,7 +69,7 @@ modded class MissionServer
 
 		if (restCfg.IsLeaderboardExportEnabled())
 		{
-			g_PF_LeaderboardExport = new PF_LeaderboardExport(baseUrl, apiKey, restCfg.GetLeaderboardExportInterval(), restCfg.GetNinjinPlayersPath(), restCfg.GetLeaderboardMaxPlayers());
+			g_PF_LeaderboardExport = new PF_LeaderboardExport(leaderboardBaseUrl, leaderboardApiKey, restCfg.GetLeaderboardExportInterval(), restCfg.GetNinjinPlayersPath(), restCfg.GetLeaderboardMaxPlayers());
 			enabledCount++;
 			PF_Logger.Log("LeaderboardExport initialized (interval: " + restCfg.GetLeaderboardExportInterval().ToString() + "s)");
 		}

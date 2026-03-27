@@ -45,6 +45,24 @@ class PF_RestConfig
 		return "";
 	}
 
+	string GetLeaderboardBaseUrl()
+	{
+		PF_WebEndpoint ep = m_Config.GetEndpoint("Leaderboard");
+		if (ep)
+			return ep.BaseUrl;
+
+		return GetBaseUrl();
+	}
+
+	string GetLeaderboardApiKey()
+	{
+		PF_WebEndpoint ep = m_Config.GetEndpoint("Leaderboard");
+		if (ep)
+			return ep.ApiKey;
+
+		return GetApiKey();
+	}
+
 	// Feature toggles — read directly from PF_WebConfig
 	bool IsWhitelistEnabled() { return m_Config.EnableWhitelist; }
 	bool IsPlayerLookupEnabled() { return m_Config.EnablePlayerLookup; }
