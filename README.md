@@ -434,14 +434,37 @@ The `psyerns-framework` WordPress plugin is included with the mod and handles al
 
 | Shortcode | Description |
 |---|---|
-| `[pf_leaderboard]` | Full leaderboard with PvE/PvP tabs |
+| `[pf_leaderboard]` | Full leaderboard with PvP/PvE tabs, search, pagination |
 | `[pf_server_status]` | Current server status widget |
 | `[pf_top3_monthly]` | Top 3 players of the month |
 | `[pf_top3_deadliest]` | Top 3 deadliest players |
 | `[pf_top3_bosskills]` | Top 3 boss slayers |
 | `[pf_player_card steam_id="..."]` | Single player stats card |
 
-Optional shortcode attributes: `theme="dark"` / `theme="light"`, `type="pve"` / `type="pvp"`, `limit="20"`
+**Shortcode Attributes:**
+
+| Attribute | Values | Default | Description |
+|---|---|---|---|
+| `theme` | `military` `ops` `stalker` `outbreak` `cyberpunk` `inferno` `ash` `frostbite` | Admin setting | Visual theme |
+| `type` | `pvp` `pve` | `pvp` | Default leaderboard tab |
+| `limit` | `10` `20` `50` | `10` | Rows per page |
+| `show_avatar` | `1` `0` | `1` | Show Steam avatars |
+| `show_playtime` | `1` `0` | `1` | Show playtime column |
+
+**Available Themes:**
+
+| Theme | Style |
+|---|---|
+| `military` | Phosphor green · Tactical HUD · CRT scanlines |
+| `ops` | Neon green CRT · Vignette · Flicker effects |
+| `stalker` | Radiation amber · S.T.A.L.K.E.R. · Geiger aesthetic |
+| `outbreak` | Hazard amber · Warning stripes · Biohazard |
+| `cyberpunk` | Matrix green · Magenta neon · Glitch effects |
+| `inferno` | Blazing orange · Ember glow · Lava gradient |
+| `ash` | Rust red · Weathered paper · Post-apocalyptic |
+| `frostbite` | Ice blue · Snowflakes · Frost-rimmed borders |
+
+Example: `[pf_leaderboard theme="stalker" type="pvp" limit="20"]`
 
 ---
 
