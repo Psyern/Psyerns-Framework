@@ -169,7 +169,7 @@
 			var dur = 15 + Math.random() * 20;
 			var rot = Math.random() * 360;
 			sym.textContent = '\u2622';
-			sym.style.cssText = 'position:absolute;left:' + x + '%;top:' + y + '%;font-size:' + size + 'px;color:rgba(255,140,0,0.025);pointer-events:none;z-index:0;transform:rotate(' + rot + 'deg);will-change:transform;animation:psyern-js-biohazard-float ' + dur + 's ease-in-out infinite alternate;filter:blur(2px);';
+			sym.style.cssText = 'position:absolute;left:' + x + '%;top:' + y + '%;font-size:' + size + 'px;color:rgba(255,140,0,0.03);pointer-events:none;z-index:-1;transform:rotate(' + rot + 'deg);will-change:transform;animation:psyern-js-biohazard-float ' + dur + 's ease-in-out infinite alternate;filter:blur(2px);';
 			container.appendChild(sym);
 		}
 	}
@@ -376,7 +376,7 @@
 	   KEYFRAME INJECTION (for JS-spawned elements)
 	   ═══════════════════════════════════════ */
 	var style = document.createElement('style');
-	style.textContent = '@keyframes psyern-js-ember-rise{0%{opacity:0;transform:translateY(0) translateX(0)}15%{opacity:0.9}50%{transform:translateY(-60px) translateX(' + (Math.random()>0.5?'':'-') + '15px)}100%{opacity:0;transform:translateY(-120px) translateX(' + (Math.random()>0.5?'':'-') + '30px)}}@keyframes psyern-js-biohazard-float{0%{transform:translateY(0) rotate(0deg);opacity:0.03}50%{transform:translateY(-10px) rotate(5deg);opacity:0.05}100%{transform:translateY(5px) rotate(-3deg);opacity:0.03}}@keyframes psyern-js-scanmove{0%{top:-4px}100%{top:100%}}';
+	style.textContent = '@keyframes psyern-js-ember-rise{0%{opacity:0;transform:translateY(0) translateX(0)}15%{opacity:0.9}50%{transform:translateY(-60px) translateX(' + (Math.random()>0.5?'':'-') + '15px)}100%{opacity:0;transform:translateY(-120px) translateX(' + (Math.random()>0.5?'':'-') + '30px)}}@keyframes psyern-js-biohazard-float{0%{transform:translateY(0) rotate(0deg);opacity:0.02}50%{transform:translateY(-10px) rotate(5deg);opacity:0.03}100%{transform:translateY(5px) rotate(-3deg);opacity:0.02}}@keyframes psyern-js-scanmove{0%{top:-4px}100%{top:100%}}';
 	document.head.appendChild(style);
 
 	// Expose re-init for use after dynamic content updates (innerHTML)
