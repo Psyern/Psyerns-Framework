@@ -283,12 +283,14 @@ const PF = {
 		var p = player;
 		if (!p) { container.innerHTML = '<div class="psyern-lb__loading">Player not found.</div>'; return; }
 		var online = p.is_online == 1;
-		var h = '<div class="psyern-lb__top3-card" style="max-width:480px;margin:0 auto;text-align:center">';
-		h += '<img class="psyern-lb__top3-avatar" src="' + PF.escHtml(p.avatar_url || '') + '" alt="" loading="lazy" />';
-		h += '<div class="psyern-lb__top3-name" style="font-size:1.2rem;margin:8px 0">' + PF.escHtml(p.player_name) + PF.factionBadge(p.war_faction) + '</div>';
-		h += '<span class="' + (online ? 'psyern-lb__badge-online' : 'psyern-lb__badge-offline') + '" style="width:10px;height:10px"></span> ';
-		h += '<span style="font-size:0.85rem">' + (online ? 'Online' : 'Offline') + '</span>';
-		h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin-top:16px">';
+		var h = '<div class="psyern-lb__player-card">';
+		h += '<img class="psyern-lb__player-avatar" src="' + PF.escHtml(p.avatar_url || '') + '" alt="" loading="lazy" />';
+		h += '<div class="psyern-lb__player-name">' + PF.escHtml(p.player_name) + PF.factionBadge(p.war_faction) + '</div>';
+		h += '<div class="psyern-lb__player-status">';
+		h += '<span class="' + (online ? 'psyern-lb__badge-online' : 'psyern-lb__badge-offline') + '"></span>';
+		h += '<span class="psyern-lb__player-status-label">' + (online ? 'Online' : 'Offline') + '</span>';
+		h += '</div>';
+		h += '<div class="psyern-lb__player-stats-grid">';
 		var stats = [
 			['PvE Points', PF.formatNumber(p.pve_points)], ['PvP Points', PF.formatNumber(p.pvp_points)],
 			['Kills', PF.formatNumber(p.kills)], ['Deaths', PF.formatNumber(p.deaths)],
@@ -298,15 +300,15 @@ const PF = {
 		if (p.war_boss_kills > 0) stats.push(['Boss Kills', p.war_boss_kills]);
 		if (p.hardline_reputation > 0) stats.push(['Reputation', PF.formatNumber(p.hardline_reputation)]);
 		for (var i = 0; i < stats.length; i++) {
-			h += '<div style="padding:6px"><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.6;margin-bottom:2px">' + stats[i][0] + '</div><div style="font-size:1rem;font-weight:700">' + stats[i][1] + '</div></div>';
+			h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">' + stats[i][0] + '</div><div class="psyern-lb__stat-value">' + stats[i][1] + '</div></div>';
 		}
 		h += '</div>';
-		h += '<div style="margin-top:8px;font-size:0.8rem;opacity:0.7">Last Login: ' + PF.formatDate(p.last_login) + '</div>';
+		h += '<div class="psyern-lb__player-last-login">Last Login: ' + PF.formatDate(p.last_login) + '</div>';
 		if (p.category_kills) {
 			var ck = p.category_kills; var cks = Object.keys(ck);
 			if (cks.length > 0) {
-				h += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;justify-content:center">';
-				for (var ci = 0; ci < cks.length; ci++) h += '<span class="psyern-lb__faction psyern-lb__faction--neutral" style="font-size:0.7rem">' + PF.escHtml(cks[ci]) + ': ' + ck[cks[ci]] + '</span>';
+				h += '<div class="psyern-lb__player-kills">';
+				for (var ci = 0; ci < cks.length; ci++) h += '<span class="psyern-lb__faction psyern-lb__faction--neutral psyern-lb__faction--sm">' + PF.escHtml(cks[ci]) + ': ' + ck[cks[ci]] + '</span>';
 				h += '</div>';
 			}
 		}
@@ -323,15 +325,15 @@ const PF = {
 		var upMin = Math.floor((status.uptimeSeconds || 0) / 60);
 		var upH = Math.floor(upMin / 60);
 		var upM = upMin % 60;
-		var h = '<div class="psyern-lb__top3-card" style="text-align:left">';
-		h += '<div class="psyern-lb__top3-name" style="font-size:1.2rem;margin-bottom:16px">' + PF.escHtml(status.serverName || 'Server') + '</div>';
-		h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-		h += '<div style="padding:6px"><div style="font-size:0.7rem;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Players</div><div style="font-size:1rem;font-weight:700">' + (status.playerCount || 0) + '</div></div>';
-		h += '<div style="padding:6px"><div style="font-size:0.7rem;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Map</div><div style="font-size:1rem;font-weight:700">' + PF.escHtml(status.mapName || '\u2014') + '</div></div>';
-		h += '<div style="padding:6px"><div style="font-size:0.7rem;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Day Time</div><div style="font-size:1rem;font-weight:700">' + PF.escHtml(status.dayTime || '\u2014') + '</div></div>';
-		h += '<div style="padding:6px"><div style="font-size:0.7rem;text-transform:uppercase;opacity:0.6;margin-bottom:2px">Uptime</div><div style="font-size:1rem;font-weight:700">' + upH + 'h ' + upM + 'm</div></div>';
+		var h = '<div class="psyern-lb__server-card">';
+		h += '<div class="psyern-lb__server-name">' + PF.escHtml(status.serverName || 'Server') + '</div>';
+		h += '<div class="psyern-lb__player-stats-grid">';
+		h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">Players</div><div class="psyern-lb__stat-value">' + (status.playerCount || 0) + '</div></div>';
+		h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">Map</div><div class="psyern-lb__stat-value">' + PF.escHtml(status.mapName || '\u2014') + '</div></div>';
+		h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">Day Time</div><div class="psyern-lb__stat-value">' + PF.escHtml(status.dayTime || '\u2014') + '</div></div>';
+		h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">Uptime</div><div class="psyern-lb__stat-value">' + upH + 'h ' + upM + 'm</div></div>';
 		h += '</div>';
-		h += '<div style="margin-top:12px;font-size:0.8rem;opacity:0.7">Last update: ' + PF.formatDate(status.timestamp || status.received_at) + '</div>';
+		h += '<div class="psyern-lb__player-last-login">Last update: ' + PF.formatDate(status.timestamp || status.received_at) + '</div>';
 		h += '</div>';
 		container.innerHTML = h;
 		if (window.PsyernEffects) PsyernEffects.init(container);

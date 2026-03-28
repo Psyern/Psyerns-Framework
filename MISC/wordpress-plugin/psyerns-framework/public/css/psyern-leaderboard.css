@@ -744,6 +744,108 @@
 	opacity: 0.6;
 }
 
+/* ─── Player Card (single view) ─── */
+
+.psyern-lb__player-card {
+	max-width: 480px;
+	width: 100%;
+	margin: 0 auto;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+.psyern-lb__player-avatar {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin: 0 auto 8px;
+	display: block;
+}
+
+.psyern-lb__player-name {
+	font-size: 1.2rem;
+	font-weight: 700;
+	margin: 8px 0;
+	word-break: break-word;
+}
+
+.psyern-lb__player-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 4px;
+}
+
+.psyern-lb__player-status-label {
+	font-size: 0.85rem;
+}
+
+/* Stats grid — 2 columns, collapses to 1 on narrow viewports */
+.psyern-lb__player-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 8px;
+	text-align: left;
+	margin-top: 16px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.psyern-lb__stat-item {
+	padding: 6px 8px;
+	min-width: 0;
+}
+
+.psyern-lb__stat-label {
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	opacity: 0.6;
+	margin-bottom: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.psyern-lb__stat-value {
+	font-size: 1rem;
+	font-weight: 700;
+	word-break: break-word;
+}
+
+.psyern-lb__player-last-login {
+	margin-top: 10px;
+	font-size: 0.8rem;
+	opacity: 0.7;
+}
+
+.psyern-lb__player-kills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 12px;
+	justify-content: center;
+}
+
+.psyern-lb__faction--sm {
+	font-size: 0.7rem;
+}
+
+/* Server status card */
+.psyern-lb__server-card {
+	text-align: left;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.psyern-lb__server-name {
+	font-size: 1.2rem;
+	font-weight: 700;
+	margin-bottom: 16px;
+	word-break: break-word;
+}
+
 /* ─── Responsive ─── */
 
 /* Tablet */
@@ -755,6 +857,12 @@
 	/* Top 3 bleibt 3-spaltig auf Tablet — nur Padding kleiner */
 	.psyern-lb__top3-card {
 		padding: 12px 8px;
+	}
+
+	/* Player card avatar on tablet */
+	.psyern-lb__player-avatar {
+		width: 68px;
+		height: 68px;
 	}
 
 	.psyern-lb__controls {
@@ -824,6 +932,20 @@
 	.psyern-lb__top3 {
 		grid-template-columns: 1fr !important;
 		gap: 8px !important;
+	}
+
+	/* Player card: 1-spaltig auf Mobile, kleinerer Avatar */
+	.psyern-lb__player-stats-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.psyern-lb__player-avatar {
+		width: 60px;
+		height: 60px;
+	}
+
+	.psyern-lb__player-name {
+		font-size: 1rem;
 	}
 
 	.psyern-lb__top3-card--1 {
@@ -902,6 +1024,21 @@
 	.psyern-lb__avatar {
 		width: 22px;
 		height: 22px;
+	}
+}
+
+/* Very small screens (≤ 360px, e.g. iPhone SE) */
+@media (max-width: 360px) {
+	.psyern-lb__player-stats-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.psyern-lb__player-card {
+		padding: 0 4px;
+	}
+
+	.psyern-lb__stat-value {
+		font-size: 0.9rem;
 	}
 }
 
