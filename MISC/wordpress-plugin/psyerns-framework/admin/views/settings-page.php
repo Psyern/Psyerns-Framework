@@ -316,6 +316,20 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 						'glow'    => 'rgba(91,168,224,.20)',
 						'badge'   => '#5ba8e0',
 					),
+					'bubblegum' => array(
+						'label'   => 'Bubblegum',
+						'sub'     => 'Candy Pop',
+						'desc'    => 'Sweet & playful · Rising bubbles · Candy glow · Pink shimmer.',
+						'bg'      => '#120818',
+						'accent'  => '#ff69b4',
+						'text'    => '#f0d8e8',
+						'dim'     => '#7a3a60',
+						'row_alt' => '#1a0e22',
+						'border'  => '#2a1240',
+						'header'  => '#ff69b4',
+						'glow'    => 'rgba(255,105,180,.20)',
+						'badge'   => '#ffb6da',
+					),
 				);
 
 				/* Mock leaderboard rows shown in the preview */
@@ -397,7 +411,8 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					<code>[pf_leaderboard theme="stalker"]</code> &nbsp;
 					<code>[pf_leaderboard theme="cyberpunk"]</code> &nbsp;
 					<code>[pf_leaderboard theme="frostbite"]</code> &nbsp;
-					<code>[pf_leaderboard theme="inferno"]</code>
+					<code>[pf_leaderboard theme="inferno"]</code> &nbsp;
+					<code>[pf_leaderboard theme="bubblegum"]</code>
 				</div>
 			</div>
 			<?php submit_button( __( 'Save Theme', 'psyerns-framework' ) ); ?>
@@ -467,7 +482,7 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					<th><?php esc_html_e( 'Description', 'psyerns-framework' ); ?></th>
 				</tr></thead>
 				<tbody>
-					<tr><td><code>theme</code></td><td><code>military</code> <code>ops</code> <code>stalker</code> <code>outbreak</code> <code>cyberpunk</code> <code>inferno</code> <code>ash</code> <code>frostbite</code></td><td><?php echo esc_html( get_option( 'psyern_theme', 'military' ) ); ?></td><td><?php esc_html_e( 'Visual theme', 'psyerns-framework' ); ?></td></tr>
+					<tr><td><code>theme</code></td><td><code>military</code> <code>ops</code> <code>stalker</code> <code>outbreak</code> <code>cyberpunk</code> <code>inferno</code> <code>ash</code> <code>frostbite</code> <code>bubblegum</code></td><td><?php echo esc_html( get_option( 'psyern_theme', 'military' ) ); ?></td><td><?php esc_html_e( 'Visual theme', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>type</code></td><td><code>pvp</code> <code>pve</code></td><td><code>pvp</code></td><td><?php esc_html_e( 'Default board mode', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>limit</code></td><td><code>10</code> <code>20</code> <code>50</code></td><td><code>10</code></td><td><?php esc_html_e( 'Default number of rows', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>show_avatar</code></td><td><code>1</code> <code>0</code></td><td><code>1</code></td><td><?php esc_html_e( 'Show Steam avatars', 'psyerns-framework' ); ?></td></tr>
