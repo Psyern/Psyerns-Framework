@@ -169,6 +169,18 @@ class Psyern_Admin {
 				'rank'  => '#a0d4ff',
 				'font'  => "'Nunito Sans', sans-serif",
 			),
+			'bubblegum' => array(
+				'label' => __( 'Bubblegum — Candy Pop', 'psyerns-framework' ),
+				'desc'  => __( 'Sweet & playful. Rising bubbles, candy glow, pink shimmer, sugar sparkle.', 'psyerns-framework' ),
+				'color' => '#ff69b4',
+				'bg'    => '#120818',
+				'card'  => '#1a0e22',
+				'border' => '#2a1240',
+				'text'  => '#f0d8e8',
+				'muted' => '#7a3a60',
+				'rank'  => '#ffb6da',
+				'font'  => "'Quicksand', sans-serif",
+			),
 		);
 	}
 

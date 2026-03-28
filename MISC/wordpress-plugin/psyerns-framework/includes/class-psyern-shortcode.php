@@ -56,7 +56,7 @@ class Psyern_Shortcode {
 		);
 
 		// Load ALL theme CSS — scoped by .psyern-lb--{theme}, only active one applies.
-		$all_themes = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno' );
+		$all_themes = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno', 'frostbite', 'bubblegum' );
 		foreach ( $all_themes as $t ) {
 			wp_enqueue_style(
 				'psyern-theme-' . $t,
@@ -75,6 +75,8 @@ class Psyern_Shortcode {
 			'cyberpunk' => 'family=Orbitron:wght@400;700;900|JetBrains+Mono:wght@400;700',
 			'stalker'   => 'family=Courier+Prime:wght@400;700',
 			'inferno'   => 'family=Teko:wght@400;500;700',
+			'frostbite' => 'family=Nunito+Sans:wght@400;600;700;800',
+			'bubblegum' => 'family=Quicksand:wght@300;400;500;600;700',
 		);
 		if ( isset( $fonts[ $theme ] ) ) {
 			wp_enqueue_style(

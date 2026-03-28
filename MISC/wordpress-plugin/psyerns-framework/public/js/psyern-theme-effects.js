@@ -42,6 +42,11 @@
 		if (cl.contains('psyern-lb--military')) {
 			createMovingScanline(el);
 		}
+
+		// Bubblegum — floating bubble canvas
+		if (cl.contains('psyern-lb--bubblegum')) {
+			createBubbleSystem(el);
+		}
 	}
 
 	/* ═══════════════════════════════════════
@@ -248,6 +253,66 @@
 		}
 		update();
 		setInterval(update, 1000);
+	}
+
+	/* ═══════════════════════════════════════
+	   BUBBLEGUM — Floating Bubble Canvas
+	   ═══════════════════════════════════════ */
+	function createBubbleSystem(container) {
+		var canvas = document.createElement('canvas');
+		canvas.setAttribute('data-pf-effect', 'bubbles');
+		canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
+		container.appendChild(canvas);
+		var ctx = canvas.getContext('2d');
+
+		function resize() {
+			canvas.width = container.offsetWidth;
+			canvas.height = container.offsetHeight;
+		}
+		resize();
+
+		var colors = [[255,105,180],[255,158,207],[255,182,218],[255,20,147],[255,130,195]];
+		var bubbles = [];
+		for (var i = 0; i < 18; i++) {
+			bubbles.push({
+				x: Math.random() * canvas.width,
+				y: canvas.height + Math.random() * 40,
+				r: 2 + Math.random() * 6,
+				vx: (Math.random() - 0.5) * 0.2,
+				vy: -(0.2 + Math.random() * 0.5),
+				life: Math.random(),
+				c: colors[Math.floor(Math.random() * colors.length)]
+			});
+		}
+
+		function draw() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for (var i = 0; i < bubbles.length; i++) {
+				var b = bubbles[i];
+				b.x += b.vx + Math.sin(b.y * 0.02) * 0.3;
+				b.y += b.vy;
+				b.life -= 0.003;
+				if (b.life <= 0 || b.y < -10) {
+					b.x = Math.random() * canvas.width;
+					b.y = canvas.height + Math.random() * 20;
+					b.r = 2 + Math.random() * 6;
+					b.life = 0.7 + Math.random() * 0.3;
+				}
+				var a = Math.max(0, b.life * 0.5);
+				ctx.beginPath();
+				ctx.arc(b.x, b.y, b.r, 0, 6.28);
+				ctx.strokeStyle = 'rgba(' + b.c[0] + ',' + b.c[1] + ',' + b.c[2] + ',' + a + ')';
+				ctx.lineWidth = 1;
+				ctx.stroke();
+				// Inner highlight
+				ctx.beginPath();
+				ctx.arc(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.3, 0, 6.28);
+				ctx.fillStyle = 'rgba(255,255,255,' + (a * 0.4) + ')';
+				ctx.fill();
+			}
+			requestAnimationFrame(draw);
+		}
+		draw();
 	}
 
 	/* ═══════════════════════════════════════
