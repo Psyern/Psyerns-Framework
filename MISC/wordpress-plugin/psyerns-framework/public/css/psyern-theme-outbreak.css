@@ -1,6 +1,6 @@
 /* THEME: Outbreak — Quarantine Zone / Hazard Amber */
 
-.psyern-lb--outbreak {
+.psyern-lb.psyern-lb--outbreak {
 	--psyern-bg: #0d0d00;
 	background: #0d0d00;
 	color: #fde68a;
@@ -11,12 +11,12 @@
 }
 
 /* Noise texture */
-.psyern-lb--outbreak {
+.psyern-lb.psyern-lb--outbreak {
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 /* Warning stripes top */
-.psyern-lb--outbreak::before {
+.psyern-lb.psyern-lb--outbreak::before {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -34,7 +34,7 @@
 }
 
 /* Warning stripes bottom */
-.psyern-lb--outbreak::after {
+.psyern-lb.psyern-lb--outbreak::after {
 	content: '';
 	position: absolute;
 	bottom: 0;
@@ -51,17 +51,17 @@
 	z-index: 2;
 }
 
-.psyern-lb--outbreak {
+.psyern-lb.psyern-lb--outbreak {
 	padding-top: 28px;
 	padding-bottom: 28px;
 }
 
 /* Header */
-.psyern-lb--outbreak .psyern-lb__header {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__header {
 	border-bottom: 1px solid #78350f;
 }
 
-.psyern-lb--outbreak .psyern-lb__title {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__title {
 	font-family: 'Rajdhani', sans-serif;
 	font-weight: 700;
 	color: #fbbf24;
@@ -70,12 +70,12 @@
 	text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
 }
 
-.psyern-lb--outbreak .psyern-lb__title::before {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__title::before {
 	content: '\26A0  ';
 	color: #dc2626;
 }
 
-.psyern-lb--outbreak .psyern-lb__meta {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__meta {
 	color: #a8621f;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -83,7 +83,7 @@
 }
 
 /* Mode buttons */
-.psyern-lb--outbreak .psyern-lb__mode-btn {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__mode-btn {
 	color: #a8621f;
 	border: 1px solid #78350f;
 	border-radius: 2px;
@@ -91,7 +91,7 @@
 	font-weight: 600;
 }
 
-.psyern-lb--outbreak .psyern-lb__mode-btn.active {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__mode-btn.active {
 	color: #fbbf24;
 	border-color: #d97706;
 	background: rgba(245, 158, 11, 0.1);
@@ -99,34 +99,34 @@
 }
 
 /* Limit buttons */
-.psyern-lb--outbreak .psyern-lb__limit-btn {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__limit-btn {
 	color: #a8621f;
 	border-color: #a8621f;
 }
 
-.psyern-lb--outbreak .psyern-lb__limit-btn.active {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__limit-btn.active {
 	color: #f59e0b;
 	border-color: #d97706;
 }
 
 /* Top 3 */
-.psyern-lb--outbreak .psyern-lb__top3-card {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card {
 	background: #111100;
 	border: 1px solid #78350f;
 	border-radius: 2px;
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-card--1 {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1 {
 	border-color: #d97706;
 	box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-card--1 .psyern-lb__top3-name {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1 .psyern-lb__top3-name {
 	color: #fbbf24;
 	text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-card--1::before {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1::before {
 	content: '\2622';
 	position: absolute;
 	top: -12px;
@@ -138,30 +138,30 @@
 	padding: 0 6px;
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-rank {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-rank {
 	font-family: 'Rajdhani', sans-serif;
 	font-weight: 700;
 	color: #f59e0b;
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-name {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-name {
 	font-family: 'Rajdhani', sans-serif;
 	font-weight: 600;
 	color: #fde68a;
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-avatar {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-avatar {
 	border: 2px solid #78350f;
 	filter: sepia(40%) brightness(0.85);
 }
 
-.psyern-lb--outbreak .psyern-lb__top3-stats {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-stats {
 	color: #92400e;
 	font-family: 'Inconsolata', monospace;
 }
 
 /* Table */
-.psyern-lb--outbreak .psyern-lb__table th {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table th {
 	color: #92400e;
 	border-bottom: 1px solid #78350f;
 	font-family: 'Rajdhani', sans-serif;
@@ -169,45 +169,45 @@
 	letter-spacing: 0.08em;
 }
 
-.psyern-lb--outbreak .psyern-lb__table td {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table td {
 	border-bottom: 1px solid rgba(120, 53, 15, 0.3);
 	font-family: 'Inconsolata', monospace;
 }
 
-.psyern-lb--outbreak .psyern-lb__table tbody tr:hover {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table tbody tr:hover {
 	background: rgba(245, 158, 11, 0.04);
 }
 
-.psyern-lb--outbreak .psyern-lb__rank {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__rank {
 	color: #f59e0b;
 	font-family: 'Rajdhani', sans-serif;
 	font-weight: 700;
 }
 
-.psyern-lb--outbreak .psyern-lb__name {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__name {
 	color: #fef9c3;
 	font-family: 'Exo 2', sans-serif;
 }
 
-.psyern-lb--outbreak .psyern-lb__kd {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__kd {
 	color: #dc2626;
 	text-shadow: 0 0 4px rgba(220, 38, 38, 0.3);
 }
 
-.psyern-lb--outbreak .psyern-lb__avatar {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__avatar {
 	border: 1px solid #78350f;
 	filter: sepia(30%) brightness(0.9);
 }
 
-.psyern-lb--outbreak .psyern-lb__playtime {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__playtime {
 	color: #6b4a10;
 }
 
-.psyern-lb--outbreak .psyern-lb__loading {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__loading {
 	color: #a8621f;
 }
 
-.psyern-lb--outbreak .psyern-lb__separator {
+.psyern-lb.psyern-lb--outbreak .psyern-lb__separator {
 	border: none;
 	height: 2px;
 	background: repeating-linear-gradient(
@@ -220,3 +220,10 @@
 	margin: 16px 0;
 	opacity: 0.5;
 }
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__boss-kills { color: #f59e0b; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__reputation { color: #d4a020; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table td { color: #d4b860; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--east { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--west { background: rgba(253, 230, 138, 0.12); color: #fde68a; border-color: rgba(253, 230, 138, 0.3); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--neutral { background: rgba(120, 53, 15, 0.15); color: #78350f; border-color: rgba(120, 53, 15, 0.3); }
