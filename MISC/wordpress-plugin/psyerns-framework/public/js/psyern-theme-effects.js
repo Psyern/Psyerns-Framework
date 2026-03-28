@@ -158,19 +158,65 @@
 
 	/* ═══════════════════════════════════════
 	   STALKER — Floating Biohazard Symbols
+	   Uses <img> because WordPress converts ☢ unicode to
+	   <img class="emoji"> SVGs — CSS `color` has no effect on <img>.
+	   We use opacity + filter (blur, sepia, hue-rotate) instead.
 	   ═══════════════════════════════════════ */
 	function createBiohazardBg(container) {
+		// Animation class names cycle through 5 variants for varied motion
+		var animClasses = [
+			'psyern-bh--a',
+			'psyern-bh--b',
+			'psyern-bh--c',
+			'psyern-bh--d',
+			'psyern-bh--e',
+		];
 		for (var i = 0; i < 5; i++) {
-			var sym = document.createElement('div');
-			sym.setAttribute('data-pf-effect', 'biohazard');
-			var size = 30 + Math.random() * 50;
-			var x = 5 + Math.random() * 85;
-			var y = 30 + Math.random() * 60;
-			var dur = 15 + Math.random() * 20;
-			var rot = Math.random() * 360;
-			sym.textContent = '\u2622';
-			sym.style.cssText = 'position:absolute;left:' + x + '%;top:' + y + '%;font-size:' + size + 'px;color:rgba(255,140,0,0.03);pointer-events:none;z-index:-1;transform:rotate(' + rot + 'deg);will-change:transform;animation:psyern-js-biohazard-float ' + dur + 's ease-in-out infinite alternate;filter:blur(2px);';
-			container.appendChild(sym);
+			var wrap = document.createElement('div');
+			wrap.setAttribute('data-pf-effect', 'biohazard');
+
+			var size   = 36 + Math.floor(Math.random() * 48);   // 36–84 px
+			var x      = 4  + Math.random() * 88;               // 4–92 %
+			var y      = 8  + Math.random() * 78;               // 8–86 %
+			var dur    = 14 + Math.random() * 22;               // 14–36 s
+			var delay  = -(Math.random() * dur);                // staggered start
+			var rot    = Math.floor(Math.random() * 360);       // initial rotation
+			var blurPx = (1 + Math.random() * 3).toFixed(1);   // 1–4 px blur
+			var opBase = (0.04 + Math.random() * 0.07).toFixed(3); // 0.04–0.11
+
+			// Wrapper positions the icon and handles the float animation
+			wrap.style.cssText = [
+				'position:absolute',
+				'left:'  + x    + '%',
+				'top:'   + y    + '%',
+				'width:' + size + 'px',
+				'height:'+ size + 'px',
+				'pointer-events:none',
+				'z-index:-1',
+				'will-change:transform,opacity',
+				'animation:' + animClasses[i] + ' ' + dur.toFixed(1) + 's ' + delay.toFixed(1) + 's ease-in-out infinite alternate',
+				'transform:rotate(' + rot + 'deg)',
+			].join(';');
+
+			// <img> — immune to WP emoji conversion because it's created via JS DOM,
+			// not parsed from HTML. Opacity + filter give us the tint effect.
+			var img = document.createElement('img');
+			img.src = 'https://s.w.org/images/core/emoji/17.0.2/svg/2622.svg';
+			img.alt = '';
+			img.setAttribute('aria-hidden', 'true');
+			img.style.cssText = [
+				'width:100%',
+				'height:100%',
+				'display:block',
+				'opacity:' + opBase,
+				// sepia(1) + hue-rotate pushes the SVG toward orange; brightness boosts it
+				'filter:sepia(1) saturate(4) hue-rotate(10deg) brightness(0.9) blur(' + blurPx + 'px)',
+				'user-select:none',
+				'-webkit-user-drag:none',
+			].join(';');
+
+			wrap.appendChild(img);
+			container.appendChild(wrap);
 		}
 	}
 
@@ -376,7 +422,42 @@
 	   KEYFRAME INJECTION (for JS-spawned elements)
 	   ═══════════════════════════════════════ */
 	var style = document.createElement('style');
-	style.textContent = '@keyframes psyern-js-ember-rise{0%{opacity:0;transform:translateY(0) translateX(0)}15%{opacity:0.9}50%{transform:translateY(-60px) translateX(' + (Math.random()>0.5?'':'-') + '15px)}100%{opacity:0;transform:translateY(-120px) translateX(' + (Math.random()>0.5?'':'-') + '30px)}}@keyframes psyern-js-biohazard-float{0%{transform:translateY(0) rotate(0deg);opacity:0.02}50%{transform:translateY(-10px) rotate(5deg);opacity:0.03}100%{transform:translateY(5px) rotate(-3deg);opacity:0.02}}@keyframes psyern-js-scanmove{0%{top:-4px}100%{top:100%}}';
+	// 5 biohazard float variants — different Y-travel, rotation arc, and scale pulse.
+	// All use transform only (no top/left) for GPU compositing. opacity is on the <img>
+	// child so the wrapper animation can stay transform-only for best performance.
+	var bhKf = [
+		'@keyframes psyern-bh--a{' +
+			'0%  {transform:translateY(  0px) translateX(  0px) rotate(  0deg) scale(1.00)}' +
+			'33% {transform:translateY(-14px) translateX(  4px) rotate(  6deg) scale(1.02)}' +
+			'66% {transform:translateY( -6px) translateX( -5px) rotate( -3deg) scale(0.98)}' +
+			'100%{transform:translateY(-18px) translateX(  2px) rotate(  8deg) scale(1.01)}' +
+		'}',
+		'@keyframes psyern-bh--b{' +
+			'0%  {transform:translateY(  0px) translateX(  0px) rotate(  0deg) scale(1.00)}' +
+			'40% {transform:translateY(-22px) translateX( -7px) rotate(-10deg) scale(1.03)}' +
+			'70% {transform:translateY(-10px) translateX(  6px) rotate(  4deg) scale(0.97)}' +
+			'100%{transform:translateY(-28px) translateX( -4px) rotate(-12deg) scale(1.02)}' +
+		'}',
+		'@keyframes psyern-bh--c{' +
+			'0%  {transform:translateY(  0px) translateX(  0px) rotate(  0deg) scale(1.00)}' +
+			'25% {transform:translateY( -8px) translateX(  8px) rotate(  5deg) scale(1.01)}' +
+			'75% {transform:translateY(-16px) translateX( -3px) rotate( -7deg) scale(1.03)}' +
+			'100%{transform:translateY(-10px) translateX(  5px) rotate(  3deg) scale(0.99)}' +
+		'}',
+		'@keyframes psyern-bh--d{' +
+			'0%  {transform:translateY(  0px) translateX(  0px) rotate(  0deg) scale(1.00)}' +
+			'50% {transform:translateY(-30px) translateX( 10px) rotate( 14deg) scale(1.04)}' +
+			'100%{transform:translateY(-12px) translateX( -8px) rotate( -6deg) scale(0.98)}' +
+		'}',
+		'@keyframes psyern-bh--e{' +
+			'0%  {transform:translateY(  0px) translateX(  0px) rotate(  0deg) scale(1.00)}' +
+			'35% {transform:translateY(-20px) translateX( -6px) rotate(-11deg) scale(1.02)}' +
+			'80% {transform:translateY( -5px) translateX(  9px) rotate(  7deg) scale(0.96)}' +
+			'100%{transform:translateY(-24px) translateX( -2px) rotate( -9deg) scale(1.01)}' +
+		'}',
+	].join('');
+
+	style.textContent = '@keyframes psyern-js-ember-rise{0%{opacity:0;transform:translateY(0) translateX(0)}15%{opacity:0.9}50%{transform:translateY(-60px) translateX(' + (Math.random()>0.5?'':'-') + '15px)}100%{opacity:0;transform:translateY(-120px) translateX(' + (Math.random()>0.5?'':'-') + '30px)}}' + bhKf + '@keyframes psyern-js-scanmove{0%{top:-4px}100%{top:100%}}';
 	document.head.appendChild(style);
 
 	// Expose re-init for use after dynamic content updates (innerHTML)
