@@ -110,6 +110,10 @@ Admins can reload the config live without restarting the server:
 4. Enable endpoints → restart → done
 ```
 
+<p align="center">
+  <img src="data/LeaderBoard.PNG" alt="Leaderboard Preview" width="800">
+</p>
+
 ---
 
 ## Project Structure
@@ -408,6 +412,14 @@ The framework logs to both server RPT and a dedicated log file:
 
 ---
 
+### <img src="https://img.shields.io/badge/WordPress-API-21759B?style=flat-square&logo=wordpress&logoColor=white" alt="API">
+
+<p align="center">
+  <img src="data/API.PNG" alt="API Settings" width="800">
+</p>
+
+---
+
 ### <img src="https://img.shields.io/badge/Discord-Setup-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord">
 
 1. Discord Server → **Server Settings** → **Integrations** → **Webhooks**
@@ -429,6 +441,10 @@ The `psyerns-framework` WordPress plugin is included with the mod and handles al
    - `ApiKey`: the auto-generated key
    - `Enabled`: `true`
 5. Restart the DayZ server
+
+<p align="center">
+  <img src="data/Shortcodes.PNG" alt="Shortcodes & WordPress Plugin" width="800">
+</p>
 
 **Available Shortcodes:**
 
@@ -466,6 +482,10 @@ The `psyerns-framework` WordPress plugin is included with the mod and handles al
 
 Example: `[pf_leaderboard theme="stalker" type="pvp" limit="20"]`
 
+<p align="center">
+  <img src="data/Themes.PNG" alt="Theme Selection" width="800">
+</p>
+
 ---
 
 ### <img src="https://img.shields.io/badge/Connection-Test-2ECC40?style=flat-square" alt="Test"> Testing the Connection
@@ -482,6 +502,10 @@ Expected response:
 ```
 
 The Ping URL is also shown in the WordPress admin under **Psyerns Framework → Settings → Connection Test**, with a **"Test Now"** button.
+
+<p align="center">
+  <img src="data/ServerStatus.PNG" alt="Server Status" width="800">
+</p>
 
 ---
 
