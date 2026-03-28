@@ -340,20 +340,26 @@
 
 /* ─── Pagination ─── */
 .psyern-lb.psyern-lb--frostbite .psyern-lb__page-btn {
-	color: #3a6080;
+	color: #3a6080 !important;
 	border: 1px solid #152540;
 }
 
 .psyern-lb.psyern-lb--frostbite .psyern-lb__page-btn.active {
-	color: #e8f4ff;
+	color: #e8f4ff !important;
 	border-color: #5ba8e0;
 	background: rgba(91, 168, 224, 0.15);
 	box-shadow: 0 0 8px rgba(91, 168, 224, 0.2);
 }
 
-.psyern-lb.psyern-lb--frostbite .psyern-lb__page-btn:hover {
+.psyern-lb.psyern-lb--frostbite .psyern-lb__page-btn:hover:not([disabled]) {
+	color: #5ba8e0 !important;
 	border-color: #3a6080;
 	background: rgba(91, 168, 224, 0.06);
+}
+
+.psyern-lb.psyern-lb--frostbite .psyern-lb__page-btn[disabled] {
+	color: #152540 !important;
+	opacity: 0.4;
 }
 
 .psyern-lb.psyern-lb--frostbite .psyern-lb__table td { color: #b0c8e0; }

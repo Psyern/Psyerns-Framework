@@ -261,3 +261,24 @@
 }
 
 .psyern-lb.psyern-lb--ops .psyern-lb__name { color: #4ade80; }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--ops .psyern-lb__page-btn {
+color: #007a20 !important;
+border-color: #007a20;
+}
+.psyern-lb.psyern-lb--ops .psyern-lb__page-btn.active {
+color: #00ff41 !important;
+border-color: #00ff41;
+background: rgba(0, 255, 65, 0.1);
+}
+.psyern-lb.psyern-lb--ops .psyern-lb__page-btn:hover:not([disabled]) {
+color: #00ff41 !important;
+border-color: #00ff41;
+background: rgba(0, 255, 65, 0.06);
+}
+.psyern-lb.psyern-lb--ops .psyern-lb__page-btn[disabled] {
+color: #007a20 !important;
+border-color: #007a20;
+opacity: 0.3;
+}

@@ -304,3 +304,24 @@
 }
 
 .psyern-lb.psyern-lb--stalker .psyern-lb__table td { color: #c4b890; }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--stalker .psyern-lb__page-btn {
+color: #6a5a30 !important;
+border-color: #6a5a30;
+}
+.psyern-lb.psyern-lb--stalker .psyern-lb__page-btn.active {
+color: #d4c8a0 !important;
+border-color: #d4c8a0;
+background: rgba(212, 200, 160, 0.1);
+}
+.psyern-lb.psyern-lb--stalker .psyern-lb__page-btn:hover:not([disabled]) {
+color: #d4c8a0 !important;
+border-color: #d4c8a0;
+background: rgba(212, 200, 160, 0.06);
+}
+.psyern-lb.psyern-lb--stalker .psyern-lb__page-btn[disabled] {
+color: #6a5a30 !important;
+border-color: #6a5a30;
+opacity: 0.3;
+}

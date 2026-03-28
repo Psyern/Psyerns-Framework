@@ -336,21 +336,27 @@
 
 /* --- Pagination --- */
 .psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn {
-	color: #7a3a60;
+	color: #7a3a60 !important;
 	border: 1px solid #2a1240;
 	border-radius: 20px;
 }
 
 .psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn.active {
-	color: #fff0f6;
+	color: #fff0f6 !important;
 	border-color: #ff69b4;
 	background: rgba(255, 105, 180, 0.15);
 	box-shadow: 0 0 8px rgba(255, 105, 180, 0.2);
 }
 
-.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn:hover {
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn:hover:not([disabled]) {
+	color: #ff69b4 !important;
 	border-color: #7a3a60;
 	background: rgba(255, 105, 180, 0.06);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn[disabled] {
+	color: #3a1a30 !important;
+	opacity: 0.4;
 }
 
 .psyern-lb.psyern-lb--bubblegum .psyern-lb__table td { color: #c8b8c0; }

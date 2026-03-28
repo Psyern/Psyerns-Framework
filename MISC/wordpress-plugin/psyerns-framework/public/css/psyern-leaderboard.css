@@ -541,29 +541,31 @@
 
 .psyern-lb__page-btn {
 	padding: 6px 12px;
-	border: 1px solid currentColor;
+	border: 1px solid rgba(255, 255, 255, 0.25);
 	border-radius: 3px;
 	background: transparent;
-	color: inherit;
+	color: rgba(255, 255, 255, 0.55) !important;
 	font-family: inherit;
 	font-size: 0.8rem;
 	cursor: pointer;
-	opacity: 0.6;
-	transition: opacity 0.15s, background 0.15s;
+	transition: opacity 0.15s, background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .psyern-lb__page-btn:hover:not([disabled]) {
-	opacity: 1;
+	color: rgba(255, 255, 255, 0.9) !important;
+	border-color: rgba(255, 255, 255, 0.5);
 }
 
 .psyern-lb__page-btn.active {
-	opacity: 1;
+	color: #fff !important;
+	border-color: rgba(255, 255, 255, 0.6);
 	font-weight: 700;
 	background: rgba(255, 255, 255, 0.08);
 }
 
 .psyern-lb__page-btn[disabled] {
-	opacity: 0.2;
+	color: rgba(255, 255, 255, 0.2) !important;
+	border-color: rgba(255, 255, 255, 0.1);
 	cursor: default;
 }
 
@@ -704,19 +706,6 @@
 	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
 	border: 0;
-}
-
-.psyern-lb__skip-link {
-	position: absolute;
-	top: -40px;
-	left: 0;
-	padding: 8px 16px;
-	z-index: 100;
-	font-size: 0.85rem;
-}
-
-.psyern-lb__skip-link:focus {
-	top: 0;
 }
 
 /* ─── Animations ─── */

@@ -199,3 +199,24 @@
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--east { background: rgba(200, 57, 43, 0.12); color: #c8392b; border-color: rgba(200, 57, 43, 0.3); }
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--west { background: rgba(212, 168, 83, 0.12); color: #d4a853; border-color: rgba(212, 168, 83, 0.3); }
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--neutral { background: rgba(138, 126, 112, 0.15); color: #8a7e70; border-color: rgba(138, 126, 112, 0.3); }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--ash .psyern-lb__page-btn {
+color: #7a7060 !important;
+border-color: #7a7060;
+}
+.psyern-lb.psyern-lb--ash .psyern-lb__page-btn.active {
+color: #c8b8a0 !important;
+border-color: #c8b8a0;
+background: rgba(200, 184, 160, 0.1);
+}
+.psyern-lb.psyern-lb--ash .psyern-lb__page-btn:hover:not([disabled]) {
+color: #c8b8a0 !important;
+border-color: #c8b8a0;
+background: rgba(200, 184, 160, 0.06);
+}
+.psyern-lb.psyern-lb--ash .psyern-lb__page-btn[disabled] {
+color: #7a7060 !important;
+border-color: #7a7060;
+opacity: 0.3;
+}

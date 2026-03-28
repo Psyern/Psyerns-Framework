@@ -34,8 +34,6 @@ $col = function( $key ) use ( &$_enabled_cols ) {
 	 role="region"
 	 aria-label="<?php esc_attr_e( 'Leaderboard', 'psyerns-framework' ); ?>">
 
-	<a class="psyern-lb__skip-link" href="#psyern-lb-table"><?php esc_html_e( 'Skip to leaderboard table', 'psyerns-framework' ); ?></a>
-
 	<div class="psyern-lb__header">
 		<h2 class="psyern-lb__title">
 			<?php echo esc_html( apply_filters( 'psyerns-framework/leaderboard_title', __( 'Survivor Registry', 'psyerns-framework' ) ) ); ?>

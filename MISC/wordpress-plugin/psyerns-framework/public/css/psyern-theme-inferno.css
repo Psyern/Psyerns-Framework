@@ -281,3 +281,24 @@
 }
 
 .psyern-lb.psyern-lb--inferno .psyern-lb__table td { color: #d8b890; }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--inferno .psyern-lb__page-btn {
+color: #7a4010 !important;
+border-color: #7a4010;
+}
+.psyern-lb.psyern-lb--inferno .psyern-lb__page-btn.active {
+color: #f0a040 !important;
+border-color: #f0a040;
+background: rgba(240, 160, 64, 0.1);
+}
+.psyern-lb.psyern-lb--inferno .psyern-lb__page-btn:hover:not([disabled]) {
+color: #f0a040 !important;
+border-color: #f0a040;
+background: rgba(240, 160, 64, 0.06);
+}
+.psyern-lb.psyern-lb--inferno .psyern-lb__page-btn[disabled] {
+color: #7a4010 !important;
+border-color: #7a4010;
+opacity: 0.3;
+}

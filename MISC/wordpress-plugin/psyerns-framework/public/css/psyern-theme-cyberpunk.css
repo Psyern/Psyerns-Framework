@@ -399,3 +399,24 @@
 }
 
 .psyern-lb.psyern-lb--cyberpunk .psyern-lb__table td { color: #c0c0c0; }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn {
+color: #006666 !important;
+border-color: #006666;
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn.active {
+color: #00ffff !important;
+border-color: #00ffff;
+background: rgba(0, 255, 255, 0.1);
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn:hover:not([disabled]) {
+color: #00ffff !important;
+border-color: #00ffff;
+background: rgba(0, 255, 255, 0.06);
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn[disabled] {
+color: #006666 !important;
+border-color: #006666;
+opacity: 0.3;
+}
