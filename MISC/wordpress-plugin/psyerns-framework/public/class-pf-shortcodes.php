@@ -57,20 +57,22 @@ class PF_Shortcodes {
 		wp_enqueue_style( 'psyern-leaderboard', PF_PLUGIN_URL . 'public/css/psyern-leaderboard.css', array(), PF_VERSION );
 
 		// Load ALL theme CSS files — they are scoped by .psyern-lb--{theme} so only the active one applies.
-		$all_themes = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno' );
+		$all_themes = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno', 'frostbite', 'bubblegum' );
 		foreach ( $all_themes as $t ) {
 			wp_enqueue_style( 'psyern-theme-' . $t, PF_PLUGIN_URL . 'public/css/psyern-theme-' . $t . '.css', array( 'psyern-leaderboard' ), PF_VERSION );
 		}
 
 		// Google Fonts for the active theme.
 		$fonts = array(
-			'military' => 'family=Share+Tech+Mono|Oswald:wght@400;700',
-			'ash'      => 'family=Playfair+Display:wght@400;700|DM+Mono:wght@400',
-			'ops'      => 'family=Orbitron:wght@400;700;900|Share+Tech+Mono',
-			'outbreak' => 'family=Rajdhani:wght@400;600;700|Exo+2:wght@300;400;600|Inconsolata:wght@400;700',
+			'military'  => 'family=Share+Tech+Mono|Oswald:wght@400;700',
+			'ash'       => 'family=Playfair+Display:wght@400;700|DM+Mono:wght@400',
+			'ops'       => 'family=Orbitron:wght@400;700;900|Share+Tech+Mono',
+			'outbreak'  => 'family=Rajdhani:wght@400;600;700|Exo+2:wght@300;400;600|Inconsolata:wght@400;700',
 			'cyberpunk' => 'family=Orbitron:wght@400;700;900|JetBrains+Mono:wght@400;700',
 			'stalker'   => 'family=Courier+Prime:wght@400;700',
 			'inferno'   => 'family=Teko:wght@400;500;700',
+			'frostbite' => 'family=Exo+2:wght@300;400;600|Share+Tech+Mono',
+			'bubblegum' => 'family=Quicksand:wght@400;600;700|Nunito:wght@400;600',
 		);
 		if ( isset( $fonts[ $theme ] ) ) {
 			wp_enqueue_style( 'psyern-fonts', 'https://fonts.googleapis.com/css2?' . $fonts[ $theme ] . '&display=swap', array(), null );
