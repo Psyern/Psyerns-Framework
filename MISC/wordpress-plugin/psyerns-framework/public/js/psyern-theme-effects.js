@@ -182,7 +182,7 @@
 			var delay  = -(Math.random() * dur);                // staggered start
 			var rot    = Math.floor(Math.random() * 360);       // initial rotation
 			var blurPx = (1 + Math.random() * 3).toFixed(1);   // 1–4 px blur
-			var opBase = (0.04 + Math.random() * 0.07).toFixed(3); // 0.04–0.11
+			var opBase = (0.18 + Math.random() * 0.07).toFixed(3); // 0.18–0.25
 
 			// Wrapper positions the icon and handles the float animation
 			wrap.style.cssText = [
