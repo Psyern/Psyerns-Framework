@@ -605,6 +605,18 @@
 .psyern-lb--inferno .psyern-lb__badge-online { background: #ff6a00; box-shadow: 0 0 6px rgba(255, 106, 0, 0.6); }
 .psyern-lb--inferno .psyern-lb__badge-offline { background: #2a1000; }
 
+.psyern-lb--frostbite .psyern-lb__rank-1 td:first-child { border-left-color: #5ba8e0; }
+.psyern-lb--frostbite .psyern-lb__rank-2 td:first-child { border-left-color: #a0d4ff; }
+.psyern-lb--frostbite .psyern-lb__rank-3 td:first-child { border-left-color: #3a6080; }
+.psyern-lb--frostbite .psyern-lb__badge-online { background: #5ba8e0; box-shadow: 0 0 6px rgba(91, 168, 224, 0.6); }
+.psyern-lb--frostbite .psyern-lb__badge-offline { background: #152540; }
+
+.psyern-lb--bubblegum .psyern-lb__rank-1 td:first-child { border-left-color: #ff69b4; }
+.psyern-lb--bubblegum .psyern-lb__rank-2 td:first-child { border-left-color: #ffb6da; }
+.psyern-lb--bubblegum .psyern-lb__rank-3 td:first-child { border-left-color: #d090b0; }
+.psyern-lb--bubblegum .psyern-lb__badge-online { background: #ff69b4; box-shadow: 0 0 6px rgba(255, 105, 180, 0.6); }
+.psyern-lb--bubblegum .psyern-lb__badge-offline { background: #2a1240; }
+
 /* ─── Cell Styles ─── */
 .psyern-lb__rank {
 	font-weight: 700;

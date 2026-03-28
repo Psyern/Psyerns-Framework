@@ -43,6 +43,11 @@
 			createMovingScanline(el);
 		}
 
+		// Frostbite — snowfall canvas + frost breath
+		if (cl.contains('psyern-lb--frostbite')) {
+			createSnowfallSystem(el);
+		}
+
 		// Bubblegum — floating bubble canvas
 		if (cl.contains('psyern-lb--bubblegum')) {
 			createBubbleSystem(el);
@@ -253,6 +258,58 @@
 		}
 		update();
 		setInterval(update, 1000);
+	}
+
+	/* ═══════════════════════════════════════
+	   FROSTBITE — Snowfall Canvas
+	   ═══════════════════════════════════════ */
+	function createSnowfallSystem(container) {
+		var canvas = document.createElement('canvas');
+		canvas.setAttribute('data-pf-effect', 'snowfall');
+		canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
+		container.appendChild(canvas);
+		var ctx = canvas.getContext('2d');
+
+		function resize() {
+			canvas.width = container.offsetWidth;
+			canvas.height = container.offsetHeight;
+		}
+		resize();
+
+		var flakes = [];
+		for (var i = 0; i < 35; i++) {
+			flakes.push({
+				x: Math.random() * canvas.width,
+				y: Math.random() * canvas.height - canvas.height,
+				r: 0.5 + Math.random() * 2.5,
+				vx: (Math.random() - 0.5) * 0.3,
+				vy: 0.2 + Math.random() * 0.8,
+				opacity: 0.3 + Math.random() * 0.5,
+				wobble: Math.random() * Math.PI * 2
+			});
+		}
+
+		function draw() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for (var i = 0; i < flakes.length; i++) {
+				var f = flakes[i];
+				f.wobble += 0.01;
+				f.x += f.vx + Math.sin(f.wobble) * 0.3;
+				f.y += f.vy;
+				if (f.y > canvas.height + 10) {
+					f.y = -10;
+					f.x = Math.random() * canvas.width;
+				}
+				if (f.x > canvas.width + 10) f.x = -10;
+				if (f.x < -10) f.x = canvas.width + 10;
+				ctx.beginPath();
+				ctx.arc(f.x, f.y, f.r, 0, 6.28);
+				ctx.fillStyle = 'rgba(200, 230, 255, ' + f.opacity + ')';
+				ctx.fill();
+			}
+			requestAnimationFrame(draw);
+		}
+		draw();
 	}
 
 	/* ═══════════════════════════════════════

@@ -4,7 +4,7 @@
 .psyern-lb--bubblegum {
 	--psyern-bg: #120818;
 	background: #120818;
-	color: #f0d8e8;
+	color: #d8ccd2;
 	font-family: 'Quicksand', 'Nunito', sans-serif;
 	border: 2px solid #3a1850;
 	border-radius: 8px;
@@ -284,13 +284,13 @@
 .psyern-lb--bubblegum .psyern-lb__table tbody tr:nth-child(3) .psyern-lb__rank { color: #d090b0; }
 
 .psyern-lb--bubblegum .psyern-lb__rank { color: #7a3a60; }
-.psyern-lb--bubblegum .psyern-lb__name { color: #f0d8e8; }
-.psyern-lb--bubblegum .psyern-lb__kd { color: #ff69b4; text-shadow: 0 0 4px rgba(255, 105, 180, 0.3); }
+.psyern-lb--bubblegum .psyern-lb__name { color: #e0d4da; }
+.psyern-lb--bubblegum .psyern-lb__kd { color: #d890b0; }
 .psyern-lb--bubblegum .psyern-lb__avatar { border: 1px solid #3a1850; border-radius: 50%; filter: brightness(1.05) saturate(1.1); }
-.psyern-lb--bubblegum .psyern-lb__boss-kills { color: #ffb6da; text-shadow: 0 0 4px rgba(255, 182, 218, 0.3); }
-.psyern-lb--bubblegum .psyern-lb__reputation { color: #ff9ecf; }
-.psyern-lb--bubblegum .psyern-lb__playtime { color: #3a1850; }
-.psyern-lb--bubblegum .psyern-lb__loading { color: #3a1850; }
+.psyern-lb--bubblegum .psyern-lb__boss-kills { color: #c8a0b8; }
+.psyern-lb--bubblegum .psyern-lb__reputation { color: #c8a0b8; }
+.psyern-lb--bubblegum .psyern-lb__playtime { color: #5a2a48; }
+.psyern-lb--bubblegum .psyern-lb__loading { color: #5a2a48; }
 
 /* --- Badges --- */
 .psyern-lb--bubblegum .psyern-lb__badge-online {
