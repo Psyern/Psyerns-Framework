@@ -344,8 +344,59 @@
 /* ── Shortcodes Table ──────────────────────────────────────── */
 .pf-sc-table td, .pf-sc-table th { padding: 8px 12px; vertical-align: middle; }
 .pf-sc-table code { font-size: 12px; white-space: nowrap; }
-.pf-sc-examples { margin-top: 16px; line-height: 2.2; }
-.pf-sc-examples h4 { margin-bottom: 6px; }
+.pf-sc-examples { margin-top: 16px; }
+.pf-sc-examples h4 { margin-bottom: 10px; }
+
+/* ── Copy-to-Clipboard Rows ────────────────────────────────── */
+.pf-copy-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+.pf-copy-row code {
+	flex: 1;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 6px 10px;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: Consolas, monospace;
+}
+.pf-copy-btn {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 10px;
+	font-size: 12px;
+	line-height: 1.4;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	color: #2271b1;
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s, color 0.15s;
+	white-space: nowrap;
+}
+.pf-copy-btn:hover { background: #f0f6fc; border-color: #2271b1; }
+.pf-copy-btn.copied {
+	background: #edfaef;
+	border-color: #00a32a;
+	color: #00a32a;
+}
+.pf-copy-btn .dashicons { font-size: 14px; width: 14px; height: 14px; }
+
+/* ── Theme Override Grid ────────────────────────────────────── */
+.pf-override-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+	gap: 6px 16px;
+	margin-top: 10px;
+}
 
 /* ── Legacy (Whitelist page still used) ────────────────────── */
 .pf-status-card {

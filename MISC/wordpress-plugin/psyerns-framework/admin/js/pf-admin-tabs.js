@@ -35,5 +35,48 @@
 			cb.addEventListener('change', update);
 		});
 
+		// ── Copy-to-Clipboard Buttons ────────────────────────────────
+		document.querySelectorAll('.pf-copy-btn').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var text = btn.getAttribute('data-copy');
+				if (!text) return;
+
+				var icon = btn.querySelector('.dashicons');
+				var originalHtml = btn.innerHTML;
+
+				navigator.clipboard.writeText(text).then(function () {
+					btn.classList.add('copied');
+					if (icon) {
+						icon.classList.remove('dashicons-clipboard');
+						icon.classList.add('dashicons-yes');
+					}
+					btn.childNodes[btn.childNodes.length - 1].textContent = ' Copied!';
+					setTimeout(function () {
+						btn.classList.remove('copied');
+						btn.innerHTML = originalHtml;
+					}, 2000);
+				}).catch(function () {
+					// Fallback für ältere Browser
+					var ta = document.createElement('textarea');
+					ta.value = text;
+					ta.style.position = 'fixed';
+					ta.style.opacity = '0';
+					document.body.appendChild(ta);
+					ta.select();
+					document.execCommand('copy');
+					document.body.removeChild(ta);
+					btn.classList.add('copied');
+					if (icon) {
+						icon.classList.remove('dashicons-clipboard');
+						icon.classList.add('dashicons-yes');
+					}
+					setTimeout(function () {
+						btn.classList.remove('copied');
+						btn.innerHTML = originalHtml;
+					}, 2000);
+				});
+			});
+		});
+
 	});
 })();

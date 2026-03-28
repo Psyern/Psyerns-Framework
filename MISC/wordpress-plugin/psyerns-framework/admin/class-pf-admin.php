@@ -287,7 +287,7 @@ class PF_Admin {
 		if ( false === strpos( $hook, 'pf-' ) ) {
 			return;
 		}
-		wp_enqueue_style( 'pf-admin', PF_PLUGIN_URL . 'admin/css/pf-admin.css', array(), PF_VERSION );
+		wp_enqueue_style( 'pf-admin', PF_PLUGIN_URL . 'admin/css/pf-admin.css', array( 'dashicons' ), PF_VERSION );
 		wp_enqueue_script( 'pf-admin-tabs', PF_PLUGIN_URL . 'admin/js/pf-admin-tabs.js', array(), PF_VERSION, true );
 	}
 }

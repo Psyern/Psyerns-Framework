@@ -407,12 +407,33 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 				</div><!-- .pf-theme-grid-wrap -->
 
 				<div class="pf-card pf-card--note" style="margin-top:16px;">
-					<strong><?php esc_html_e( 'Override examples:', 'psyerns-framework' ); ?></strong><br>
-					<code>[pf_leaderboard theme="stalker"]</code> &nbsp;
-					<code>[pf_leaderboard theme="cyberpunk"]</code> &nbsp;
-					<code>[pf_leaderboard theme="frostbite"]</code> &nbsp;
-					<code>[pf_leaderboard theme="inferno"]</code> &nbsp;
-					<code>[pf_leaderboard theme="bubblegum"]</code>
+					<strong><?php esc_html_e( 'Override examples:', 'psyerns-framework' ); ?></strong>
+					<p class="description" style="margin:4px 0 10px;"><?php esc_html_e( 'Use the theme attribute in any shortcode to override the global default per-page.', 'psyerns-framework' ); ?></p>
+					<div class="pf-override-grid">
+						<?php
+						$override_themes = array(
+							array( 'slug' => 'military',  'label' => 'Military',  'color' => '#4ade80' ),
+							array( 'slug' => 'ops',       'label' => 'Ops',       'color' => '#00ff41' ),
+							array( 'slug' => 'stalker',   'label' => 'Stalker',   'color' => '#d4c8a0' ),
+							array( 'slug' => 'outbreak',  'label' => 'Outbreak',  'color' => '#fde68a' ),
+							array( 'slug' => 'cyberpunk', 'label' => 'Cyberpunk', 'color' => '#00ffff' ),
+							array( 'slug' => 'inferno',   'label' => 'Inferno',   'color' => '#f0a040' ),
+							array( 'slug' => 'ash',       'label' => 'Ash',       'color' => '#c8b8a0' ),
+							array( 'slug' => 'frostbite', 'label' => 'Frostbite', 'color' => '#5ba8e0' ),
+							array( 'slug' => 'bubblegum', 'label' => 'Bubblegum', 'color' => '#ff69b4' ),
+						);
+						foreach ( $override_themes as $ot ) :
+							$sc = '[pf_leaderboard theme="' . esc_attr( $ot['slug'] ) . '"]';
+						?>
+						<div class="pf-copy-row">
+							<span style="flex-shrink:0;width:10px;height:10px;border-radius:50%;background:<?php echo esc_attr( $ot['color'] ); ?>;display:inline-block;"></span>
+							<code title="<?php echo esc_attr( $sc ); ?>"><?php echo esc_html( $sc ); ?></code>
+							<button type="button" class="pf-copy-btn" data-copy="<?php echo esc_attr( $sc ); ?>">
+								<span class="dashicons dashicons-clipboard"></span><?php esc_html_e( 'Copy', 'psyerns-framework' ); ?>
+							</button>
+						</div>
+						<?php endforeach; ?>
+					</div>
 				</div>
 			</div>
 			<?php submit_button( __( 'Save Theme', 'psyerns-framework' ) ); ?>
@@ -492,9 +513,28 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 
 			<div class="pf-sc-examples">
 				<h4><?php esc_html_e( 'Examples', 'psyerns-framework' ); ?></h4>
-				<code>[pf_leaderboard theme="stalker" type="pvp" limit="20"]</code><br>
-				<code>[pf_leaderboard theme="military" type="pve" show_playtime="0"]</code><br>
-				<code>[pf_player_card steam_id="76561198000000000"]</code>
+				<?php
+				$sc_examples = array(
+					'[pf_leaderboard theme="stalker" type="pvp" limit="20"]',
+					'[pf_leaderboard theme="military" type="pve" show_playtime="0"]',
+					'[pf_leaderboard theme="cyberpunk" type="pvp" limit="50"]',
+					'[pf_leaderboard theme="ops" type="pve"]',
+					'[pf_leaderboard theme="outbreak" type="pvp"]',
+					'[pf_leaderboard theme="inferno" type="pve" limit="10"]',
+					'[pf_leaderboard theme="ash" type="pve"]',
+					'[pf_leaderboard theme="frostbite" type="pvp" limit="20"]',
+					'[pf_leaderboard theme="bubblegum" type="pve"]',
+					'[pf_player_card steam_id="76561198000000000"]',
+				);
+				foreach ( $sc_examples as $sc ) :
+				?>
+				<div class="pf-copy-row">
+					<code title="<?php echo esc_attr( $sc ); ?>"><?php echo esc_html( $sc ); ?></code>
+					<button type="button" class="pf-copy-btn" data-copy="<?php echo esc_attr( $sc ); ?>">
+						<span class="dashicons dashicons-clipboard"></span><?php esc_html_e( 'Copy', 'psyerns-framework' ); ?>
+					</button>
+				</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 
