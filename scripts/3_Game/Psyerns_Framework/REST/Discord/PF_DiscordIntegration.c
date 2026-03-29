@@ -35,14 +35,6 @@ class PF_DiscordIntegration
 
 	void PF_DiscordIntegration(string webhookId, string webhookToken)
 	{
-		if (webhookId == "" || webhookToken == "")
-		{
-			Print("[PF-REST] [ERROR] DiscordIntegration — empty webhook ID or token");
-			return;
-		}
-
-		m_Webhook = new PF_DiscordWebhook(webhookId, webhookToken);
-
 		// Map event types to colors
 		m_EventColors = new map<string, int>();
 		m_EventColors.Set("player.login", COLOR_GREEN);
@@ -56,6 +48,14 @@ class PF_DiscordIntegration
 		m_EventTitles.Set("player.logout", "Player Disconnected");
 		m_EventTitles.Set("player.kill", "Kill Event");
 		m_EventTitles.Set("player.loot", "Loot Event");
+
+		if (webhookId == "" || webhookToken == "")
+		{
+			Print("[PF-REST] [ERROR] DiscordIntegration — empty webhook ID or token");
+			return;
+		}
+
+		m_Webhook = new PF_DiscordWebhook(webhookId, webhookToken);
 
 		Print("[PF-REST] DiscordIntegration initialized");
 	}
@@ -152,7 +152,12 @@ class PF_DiscordIntegration
 	// Returns ISO-style timestamp string
 	protected string GetTimestamp()
 	{
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";

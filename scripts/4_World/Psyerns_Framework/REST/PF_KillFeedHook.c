@@ -14,7 +14,7 @@ modded class PlayerBase
 	{
 		super.EEKilled(killer);
 
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game || !g_Game.IsDedicatedServer())
 			return;
 
 		string victimName = "Unknown";

@@ -18,7 +18,7 @@ modded class MissionServer
 	{
 		super.OnInit();
 
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game || !g_Game.IsDedicatedServer())
 			return;
 
 		PF_RestConfig restCfg = PF_RestConfig.GetInstance();
@@ -90,6 +90,8 @@ modded class MissionServer
 
 	override void OnMissionFinish()
 	{
+		super.OnMissionFinish();
+
 		g_PF_WhitelistManager = null;
 		g_PF_PlayerLookup = null;
 		g_PF_ServerStatus = null;
@@ -99,6 +101,5 @@ modded class MissionServer
 		g_PF_LeaderboardExport = null;
 
 		PF_Logger.Log("REST subsystems shut down.");
-		super.OnMissionFinish();
 	}
 }

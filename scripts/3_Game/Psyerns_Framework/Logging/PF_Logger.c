@@ -52,7 +52,12 @@ class PF_Logger
 
 	protected static void WriteToFile(string message)
 	{
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 

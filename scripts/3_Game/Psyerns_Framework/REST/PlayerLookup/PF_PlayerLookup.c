@@ -101,7 +101,8 @@ class PF_CB_PlayerData : RestCallback
 		m_PlayerData = new PF_PlayerData();
 		string error;
 		JsonSerializer js = new JsonSerializer();
-		bool parsed = js.ReadFromString(m_PlayerData, data, error);
+		js.ReadFromString(m_PlayerData, data, error);
+		bool parsed = (error == "");
 		if (!parsed)
 		{
 			Print("[PF-REST] [ERROR] Failed to parse PlayerData: " + error);

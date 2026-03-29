@@ -4,7 +4,7 @@ modded class MissionBase
 	{
 		super.OnInit();
 
-		if (GetGame().IsClient() || !GetGame().IsMultiplayer())
+		if (!g_Game || !g_Game.IsDedicatedServer())
 		{
 			GetRPCManager().AddRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_RESPONSE, this, SingleplayerExecutionType.Client);
 		}
@@ -14,14 +14,15 @@ modded class MissionBase
 	{
 		super.OnUpdate(timeslice);
 
-		if (!GetGame().IsClient() && GetGame().IsMultiplayer())
+		if (g_Game && g_Game.IsDedicatedServer())
 			return;
 
 		UAInput reloadInput = GetUApi().GetInputByName("PF_ReloadConfig");
 		if (reloadInput && reloadInput.LocalPress())
 		{
 			GetRPCManager().SendRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_REQUEST, null, true);
-			GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", "Psyerns Framework: Reload requested...", ""));
+			if (g_Game && g_Game.GetMission())
+				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", "Psyerns Framework: Reload requested...", ""));
 		}
 	}
 
@@ -38,9 +39,12 @@ modded class MissionBase
 		string message = data.param2;
 
 		string prefix = "Psyerns Framework: ";
-		if (success)
-			GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + message, ""));
-		else
-			GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + "ERROR: " + message, ""));
+		if (g_Game && g_Game.GetMission())
+		{
+			if (success)
+				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + message, ""));
+			else
+				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + "ERROR: " + message, ""));
+		}
 	}
 }

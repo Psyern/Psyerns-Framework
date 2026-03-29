@@ -8,7 +8,8 @@ class PF_WebQueueItem
 	void PF_WebQueueItem(PF_WebRequest request, int maxRetries = 3)
 	{
 		m_Request = request;
-		m_QueuedAt = GetGame().GetTickTime();
+		if (g_Game)
+			m_QueuedAt = g_Game.GetTickTime();
 		m_RetryCount = 0;
 		m_MaxRetries = maxRetries;
 	}

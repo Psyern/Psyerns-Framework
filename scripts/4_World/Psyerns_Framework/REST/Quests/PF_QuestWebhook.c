@@ -7,10 +7,13 @@
  */
 modded class MissionBaseWorld
 {
-	void Expansion_OnQuestCompletion(ExpansionQuest quest)
-	{
+	protected static ref PF_DiscordWebhook s_PF_PendingQuestWebhook;
 
-		if (!GetGame().IsDedicatedServer())
+	override void Expansion_OnQuestCompletion(ExpansionQuest quest)
+	{
+		super.Expansion_OnQuestCompletion(quest);
+
+		if (!g_Game || !g_Game.IsDedicatedServer())
 			return;
 
 		PF_WebConfig config = PF_WebConfig.GetInstance();
@@ -59,13 +62,19 @@ modded class MissionBaseWorld
 		embed.AddField("Quest ID", questId.ToString(), true);
 		embed.AddField("Player", playerName, true);
 
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 		string ts = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 		embed.SetTimestamp(ts);
 		embed.SetAuthor("Psyerns Framework");
 
+		s_PF_PendingQuestWebhook = webhook;
 		webhook.Send(payload);
 		PF_Logger.Log("Quest completion webhook sent for: " + questTitle);
 	}

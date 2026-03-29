@@ -10,6 +10,8 @@ class PF_ServerNotifications
 	protected static float s_HeartbeatTimer;
 	protected static float s_HeartbeatInterval;
 	protected static float s_ServerStartTime;
+	protected static ref array<ref PF_DiscordWebhook> s_PendingWebhooks = new array<ref PF_DiscordWebhook>();
+	protected static ref array<ref PF_RestBase> s_PendingRestBases = new array<ref PF_RestBase>();
 
 	/**
 	 * Initialize notifications. Called from PF_MissionInit.OnInit().
@@ -17,7 +19,8 @@ class PF_ServerNotifications
 	static void Init()
 	{
 		s_HeartbeatTimer = 0;
-		s_ServerStartTime = GetGame().GetTickTime();
+		if (!g_Game) return;
+		s_ServerStartTime = g_Game.GetTickTime();
 		PF_WebConfig config = PF_WebConfig.GetInstance();
 		s_HeartbeatInterval = config.HeartbeatIntervalSeconds;
 		if (s_HeartbeatInterval < 10)
@@ -56,8 +59,9 @@ class PF_ServerNotifications
 		if (!GetDiscordWebhook(webhookId, webhookToken))
 			return;
 
-		float uptimeSeconds = GetGame().GetTickTime() - s_ServerStartTime;
-		int uptimeMin = (int)(uptimeSeconds / 60.0);
+		if (!g_Game) return;
+		float uptimeSeconds = g_Game.GetTickTime() - s_ServerStartTime;
+		int uptimeMin = uptimeSeconds / 60.0;
 		int uptimeH = uptimeMin / 60;
 		int uptimeM = uptimeMin % 60;
 		string uptimeStr = uptimeH.ToString() + "h " + uptimeM.ToString() + "m";
@@ -72,6 +76,7 @@ class PF_ServerNotifications
 		embed.AddField("Uptime", uptimeStr, true);
 		embed.SetAuthor("Psyerns Framework");
 		webhook.Send(payload);
+		s_PendingWebhooks.Insert(webhook);
 		PF_Logger.Log("Server stop notification sent");
 	}
 
@@ -88,8 +93,9 @@ class PF_ServerNotifications
 			return;
 		}
 
+		if (!g_Game) return;
 		array<Man> players = new array<Man>();
-		GetGame().GetPlayers(players);
+		g_Game.GetPlayers(players);
 		int playerCount = players.Count();
 
 		PF_JsonBuilder b = PF_JsonBuilder.Begin();
@@ -100,6 +106,7 @@ class PF_ServerNotifications
 
 		PF_RestBase restBase = new PF_RestBase(wpEp.BaseUrl, wpEp.ApiKey);
 		restBase.PostJson("/server/heartbeat", json);
+		s_PendingRestBases.Insert(restBase);
 		PF_Logger.Debug("Heartbeat sent: " + playerCount.ToString() + " players");
 	}
 
@@ -146,8 +153,8 @@ class PF_ServerNotifications
 		{
 			string added = "";
 			string removed = "";
-			ref array<string> prevList = SplitModString(previousMods);
-			ref array<string> currList = SplitModString(currentMods);
+			array<string> prevList = SplitModString(previousMods);
+			array<string> currList = SplitModString(currentMods);
 
 			int ci;
 			for (ci = 0; ci < currList.Count(); ci++)
@@ -181,6 +188,7 @@ class PF_ServerNotifications
 			embed.AddField("Total Mods", currList.Count().ToString(), true);
 			embed.SetAuthor("Psyerns Framework");
 			webhook.Send(payload);
+			s_PendingWebhooks.Insert(webhook);
 			PF_Logger.Log("Mod update notification sent");
 		}
 		else
@@ -198,12 +206,13 @@ class PF_ServerNotifications
 
 	protected static string GetCurrentModList()
 	{
+		if (!g_Game) return "";
 		string mods = "";
-		int count = GetGame().ConfigGetChildrenCount("CfgMods");
+		int count = g_Game.ConfigGetChildrenCount("CfgMods");
 		for (int i = 0; i < count; i++)
 		{
 			string name;
-			GetGame().ConfigGetChildName("CfgMods", i, name);
+			g_Game.ConfigGetChildName("CfgMods", i, name);
 			if (name != "")
 				mods = mods + name + ";";
 		}
@@ -228,9 +237,9 @@ class PF_ServerNotifications
 		return true;
 	}
 
-	protected static ref array<string> SplitModString(string mods)
+	protected static array<string> SplitModString(string mods)
 	{
-		ref array<string> result = new array<string>();
+		array<string> result = new array<string>();
 		string current = "";
 		for (int i = 0; i < mods.Length(); i++)
 		{
@@ -263,7 +272,12 @@ class PF_ServerNotifications
 
 	protected static string GetTimestamp()
 	{
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";

@@ -29,7 +29,8 @@ class PF_ServerStatus : PF_RestBase
 	{
 		m_Timer = 0;
 		m_Interval = intervalSeconds;
-		m_StartTime = GetGame().GetTickTime();
+		if (g_Game)
+			m_StartTime = g_Game.GetTickTime();
 		Print("[PF-REST] ServerStatus initialized (interval: " + intervalSeconds.ToString() + "s)");
 	}
 
@@ -52,22 +53,30 @@ class PF_ServerStatus : PF_RestBase
 	 */
 	void PushStatus()
 	{
+		if (!g_Game)
+			return;
+
 		// Player count
 		array<Man> players = new array<Man>();
-		GetGame().GetPlayers(players);
+		g_Game.GetPlayers(players);
 		int playerCount = players.Count();
 
 		// Uptime
-		float uptimeSeconds = GetGame().GetTickTime() - m_StartTime;
-		int uptimeInt = (int)uptimeSeconds;
+		float uptimeSeconds = g_Game.GetTickTime() - m_StartTime;
+		int uptimeInt = uptimeSeconds;
 
 		// Map name
 		string mapName = "unknown";
-		GetGame().GetWorldName(mapName);
+		g_Game.GetWorldName(mapName);
 
 		// In-game time of day
-		int year, month, day, hour, minute;
-		GetGame().GetWorld().GetDate(year, month, day, hour, minute);
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		if (g_Game.GetWorld())
+			g_Game.GetWorld().GetDate(year, month, day, hour, minute);
 		string dayTime = hour.ToStringLen(2) + ":" + minute.ToStringLen(2);
 
 		// Server name from config
@@ -90,7 +99,12 @@ class PF_ServerStatus : PF_RestBase
 	// Returns ISO-style timestamp string
 	protected string GetTimestamp()
 	{
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";

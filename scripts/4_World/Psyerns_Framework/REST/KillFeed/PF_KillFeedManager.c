@@ -131,7 +131,10 @@ class PF_KillFeedManager
 			}
 
 			// Weapon from killer's hands
-			EntityAI itemInHands = killerPlayer.GetHumanInventory().GetEntityInHands();
+			EntityAI itemInHands;
+			HumanInventory inv = killerPlayer.GetHumanInventory();
+			if (inv)
+				itemInHands = inv.GetEntityInHands();
 			if (itemInHands)
 				killEvent.killerWeapon = itemInHands.GetType();
 
@@ -145,7 +148,12 @@ class PF_KillFeedManager
 		}
 
 		// Timestamp
-		int year, month, day, hour, minute, second;
+		int year;
+		int month;
+		int day;
+		int hour;
+		int minute;
+		int second;
 		GetYearMonthDay(year, month, day);
 		GetHourMinuteSecond(hour, minute, second);
 		killEvent.timestamp = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";

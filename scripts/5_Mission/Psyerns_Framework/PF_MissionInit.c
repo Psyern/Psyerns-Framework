@@ -1,6 +1,7 @@
 modded class MissionServer
 {
 	protected ref PF_WebQueueProcessor m_PF_QueueProcessor;
+	protected static ref PF_DiscordWebhook s_PF_PendingStartWebhook;
 	protected float m_PF_StartNotifyTimer;
 	protected bool m_PF_StartNotifySent;
 
@@ -121,6 +122,7 @@ modded class MissionServer
 		}
 
 		PF_DiscordWebhook webhook = new PF_DiscordWebhook(webhookId, webhookToken);
+		s_PF_PendingStartWebhook = webhook;
 
 		PF_DiscordPayload payload = new PF_DiscordPayload();
 		payload.username = "Psyerns Framework";
@@ -182,12 +184,13 @@ modded class MissionServer
 
 	override void OnMissionFinish()
 	{
+		super.OnMissionFinish();
+
 		PF_ServerNotifications.SendServerStopNotification();
 
 		if (m_PF_QueueProcessor)
 			m_PF_QueueProcessor.Stop();
 
 		PF_Logger.Log("Psyerns Framework shutdown.");
-		super.OnMissionFinish();
 	}
 }

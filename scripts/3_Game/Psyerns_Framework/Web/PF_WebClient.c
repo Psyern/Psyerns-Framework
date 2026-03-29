@@ -1,7 +1,7 @@
 class PF_WebClient
 {
 	protected static ref PF_WebClient s_Instance;
-	protected RestApi m_RestApi;
+	protected ref RestApi m_RestApi;
 	protected ref map<string, RestContext> m_Contexts;
 
 	void PF_WebClient()
