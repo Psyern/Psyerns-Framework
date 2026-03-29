@@ -26,6 +26,7 @@ class PF_Admin {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_init', array( $this, 'handle_whitelist_actions' ) );
+		add_action( 'admin_init', array( $this, 'handle_leaderboard_reset' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
@@ -275,6 +276,37 @@ class PF_Admin {
 			wp_safe_redirect( admin_url( 'admin.php?page=pf-whitelist&msg=removed' ) );
 			exit;
 		}
+	}
+
+	/**
+	 * Process leaderboard reset form submission.
+	 * Double-secured: nonce + typed confirmation word.
+	 *
+	 * @return void
+	 */
+	public function handle_leaderboard_reset() {
+		if ( ! isset( $_POST['pf_leaderboard_reset'] ) ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'psyerns-framework' ) );
+		}
+
+		check_admin_referer( 'pf_leaderboard_reset_nonce' );
+
+		$confirm = sanitize_text_field( wp_unslash( $_POST['pf_reset_confirm'] ?? '' ) );
+		if ( 'RESET' !== $confirm ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=pf-settings&tab=leaderboard&reset=wrong_confirm' ) );
+			exit;
+		}
+
+		global $wpdb;
+		$table = PF_Database::get_table_name( 'leaderboard' );
+		$wpdb->query( "TRUNCATE TABLE {$table}" );
+		delete_transient( 'pf_leaderboard_meta' );
+
+		wp_safe_redirect( admin_url( 'admin.php?page=pf-settings&tab=leaderboard&reset=success' ) );
+		exit;
 	}
 
 	/**

@@ -19,7 +19,9 @@
       "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\public\\\\css\")",
       "Bash(mkdir -p \"C:\\\\Users\\\\Administrator\\\\Desktop\\\\Psyerns_Framework\\\\MISC\\\\wordpress-plugin\\\\psyerns-mods\\\\public\\\\js\")",
       "Bash(powershell -Command 'Get-Content \"C:\\\\Program Files \\(x86\\)\\\\CFTools Software GmbH\\\\Architect\\\\Agent\\\\deployments\\\\DME_TestServer\\\\profiles\\\\DeadmansEcho\\\\PsyernsFramework\\\\PsyernsFrameworkConfig.json\" -ErrorAction SilentlyContinue | ConvertFrom-Json | Select-Object ConfigVersion, EnableLeaderboardExport, LeaderboardExportIntervalSeconds, NinjinPlayersPath, LeaderboardMaxPlayers, @{N=\"WordPress\";E={$_.Endpoints | Where-Object Name -eq \"WordPress\"}} | Format-List')",
-      "Bash(powershell -Command 'Get-Content \"C:\\\\Program Files \\(x86\\)\\\\CFTools Software GmbH\\\\Architect\\\\Agent\\\\deployments\\\\DME_TestServer\\\\profiles\\\\DeadmansEcho\\\\PsyernsFramework\\\\PsyernsFrameworkConfig.json\" | ConvertFrom-Json | Select-Object ConfigVersion, EnableLeaderboardExport, LeaderboardExportIntervalSeconds, NinjinPlayersPath, LeaderboardMaxPlayers | Format-List')"
+      "Bash(powershell -Command 'Get-Content \"C:\\\\Program Files \\(x86\\)\\\\CFTools Software GmbH\\\\Architect\\\\Agent\\\\deployments\\\\DME_TestServer\\\\profiles\\\\DeadmansEcho\\\\PsyernsFramework\\\\PsyernsFrameworkConfig.json\" | ConvertFrom-Json | Select-Object ConfigVersion, EnableLeaderboardExport, LeaderboardExportIntervalSeconds, NinjinPlayersPath, LeaderboardMaxPlayers | Format-List')",
+      "Bash(grep:*)",
+      "Bash(git push:*)"
     ]
   }
 }

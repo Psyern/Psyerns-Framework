@@ -179,6 +179,105 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 			<?php submit_button( __( 'Save Leaderboard Settings', 'psyerns-framework' ) ); ?>
 		</form>
 
+		<!-- ── Danger Zone: Reset ── -->
+		<?php
+		if ( isset( $_GET['reset'] ) ) {
+			if ( 'success' === $_GET['reset'] ) {
+				echo '<div class="notice notice-success is-dismissible"><p>⚠️ ' . esc_html__( 'Leaderboard successfully reset. All player data has been deleted.', 'psyerns-framework' ) . '</p></div>';
+			} elseif ( 'wrong_confirm' === $_GET['reset'] ) {
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Reset cancelled: Confirmation word was incorrect.', 'psyerns-framework' ) . '</p></div>';
+			}
+		}
+		?>
+
+		<div class="pf-card" style="border:2px solid #c0392b;margin-top:24px;">
+			<h3 style="color:#c0392b;">⚠️ <?php esc_html_e( 'Danger Zone', 'psyerns-framework' ); ?></h3>
+			<p><?php esc_html_e( 'This will permanently delete ALL player data from the leaderboard (kills, deaths, points, etc.). This cannot be undone.', 'psyerns-framework' ); ?></p>
+
+			<button type="button" id="pf-reset-open-btn" class="button" style="background:#c0392b;color:#fff;border-color:#a93226;">
+				🗑️ <?php esc_html_e( 'Reset Leaderboard', 'psyerns-framework' ); ?>
+			</button>
+		</div>
+
+		<!-- ── Reset Modal (Step 1: Warning) ── -->
+		<div id="pf-reset-modal-1" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;align-items:center;justify-content:center;">
+			<div style="background:#fff;padding:32px;border-radius:8px;max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.3);">
+				<h2 style="color:#c0392b;margin-top:0;">⚠️ <?php esc_html_e( 'Are you sure?', 'psyerns-framework' ); ?></h2>
+				<p><?php esc_html_e( 'You are about to delete ALL leaderboard data. This action is irreversible.', 'psyerns-framework' ); ?></p>
+				<p><strong><?php esc_html_e( 'All kills, deaths, points and player records will be permanently lost.', 'psyerns-framework' ); ?></strong></p>
+				<div style="display:flex;gap:12px;margin-top:24px;">
+					<button type="button" id="pf-reset-cancel-1" class="button button-secondary"><?php esc_html_e( 'Cancel', 'psyerns-framework' ); ?></button>
+					<button type="button" id="pf-reset-next-btn" class="button" style="background:#c0392b;color:#fff;border-color:#a93226;"><?php esc_html_e( 'Yes, I want to reset', 'psyerns-framework' ); ?></button>
+				</div>
+			</div>
+		</div>
+
+		<!-- ── Reset Modal (Step 2: Type RESET) ── -->
+		<div id="pf-reset-modal-2" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;align-items:center;justify-content:center;">
+			<div style="background:#fff;padding:32px;border-radius:8px;max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.3);">
+				<h2 style="color:#c0392b;margin-top:0;">🔐 <?php esc_html_e( 'Final Confirmation', 'psyerns-framework' ); ?></h2>
+				<p><?php echo wp_kses_post( __( 'Type <strong>RESET</strong> in the field below to confirm:', 'psyerns-framework' ) ); ?></p>
+				<input type="text" id="pf-reset-confirm-input" placeholder="RESET" autocomplete="off"
+					style="width:100%;padding:8px;font-size:16px;border:2px solid #c0392b;border-radius:4px;box-sizing:border-box;" />
+				<p id="pf-reset-confirm-error" style="color:#c0392b;display:none;margin-top:8px;">
+					<?php esc_html_e( 'Please type RESET exactly.', 'psyerns-framework' ); ?>
+				</p>
+				<form method="post" id="pf-reset-form" style="display:inline;">
+					<?php wp_nonce_field( 'pf_leaderboard_reset_nonce' ); ?>
+					<input type="hidden" name="pf_leaderboard_reset" value="1" />
+					<input type="hidden" name="pf_reset_confirm" id="pf-reset-confirm-hidden" value="" />
+					<div style="display:flex;gap:12px;margin-top:24px;">
+						<button type="button" id="pf-reset-cancel-2" class="button button-secondary"><?php esc_html_e( 'Cancel', 'psyerns-framework' ); ?></button>
+						<button type="button" id="pf-reset-submit-btn" class="button" style="background:#c0392b;color:#fff;border-color:#a93226;">
+							🗑️ <?php esc_html_e( 'Delete all data now', 'psyerns-framework' ); ?>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script>
+		(function(){
+			var btn    = document.getElementById('pf-reset-open-btn');
+			var m1     = document.getElementById('pf-reset-modal-1');
+			var m2     = document.getElementById('pf-reset-modal-2');
+			var nextBtn= document.getElementById('pf-reset-next-btn');
+			var c1     = document.getElementById('pf-reset-cancel-1');
+			var c2     = document.getElementById('pf-reset-cancel-2');
+			var input  = document.getElementById('pf-reset-confirm-input');
+			var hidden = document.getElementById('pf-reset-confirm-hidden');
+			var submit = document.getElementById('pf-reset-submit-btn');
+			var form   = document.getElementById('pf-reset-form');
+			var error  = document.getElementById('pf-reset-confirm-error');
+
+			function showModal(el){ el.style.display = 'flex'; }
+			function hideModal(el){ el.style.display = 'none'; }
+			function closeAll(){ hideModal(m1); hideModal(m2); input.value = ''; error.style.display = 'none'; }
+
+			btn.addEventListener('click', function(){ showModal(m1); });
+			c1.addEventListener('click', closeAll);
+			c2.addEventListener('click', closeAll);
+			nextBtn.addEventListener('click', function(){ hideModal(m1); showModal(m2); input.focus(); });
+
+			submit.addEventListener('click', function(){
+				if( input.value.trim() !== 'RESET' ){
+					error.style.display = 'block';
+					input.focus();
+					return;
+				}
+				hidden.value = input.value.trim();
+				form.submit();
+			});
+
+			// Close on backdrop click
+			[m1, m2].forEach(function(modal){
+				modal.addEventListener('click', function(e){
+					if(e.target === modal){ closeAll(); }
+				});
+			});
+		})();
+		</script>
+
 	<?php /* ════════════════════════════════════ TAB: THEMES ══ */ ?>
 	<?php elseif ( 'themes' === $active_tab ) : ?>
 
