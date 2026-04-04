@@ -1,7 +1,7 @@
 class PF_WebApiBase
 {
-	protected ref RestApi m_Rest;
-	protected ref RestContext m_RestContext;
+	protected RestApi m_Rest;
+	protected RestContext m_RestContext;
 	protected string m_BaseUrl;
 
 	void PF_WebApiBase()

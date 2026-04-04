@@ -1,4 +1,4 @@
-#ifdef EXPANSIONMODQUESTS
+#ifdef EXPANSIONMODQUESTS_QUESTWEBHOOK_COMPAT
 /**
  * PF_QuestWebhook — Quest completion webhook for Expansion Quests
  *

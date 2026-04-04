@@ -11,7 +11,7 @@ class PF_ServerNotifications
 	protected static float s_HeartbeatInterval;
 	protected static float s_ServerStartTime;
 	protected static ref array<ref PF_DiscordWebhook> s_PendingWebhooks = new array<ref PF_DiscordWebhook>();
-	protected static ref array<ref PF_RestBase> s_PendingRestBases = new array<ref PF_RestBase>();
+	protected static ref PF_RestBase s_HeartbeatRestBase;
 
 	/**
 	 * Initialize notifications. Called from PF_MissionInit.OnInit().
@@ -104,9 +104,9 @@ class PF_ServerNotifications
 		b.AddInt("playerCount", playerCount);
 		string json = b.Build();
 
-		PF_RestBase restBase = new PF_RestBase(wpEp.BaseUrl, wpEp.ApiKey);
-		restBase.PostJson("/server/heartbeat", json);
-		s_PendingRestBases.Insert(restBase);
+		if (!s_HeartbeatRestBase)
+			s_HeartbeatRestBase = new PF_RestBase(wpEp.BaseUrl, wpEp.ApiKey);
+		s_HeartbeatRestBase.PostJson("/server/heartbeat", json);
 		PF_Logger.Debug("Heartbeat sent: " + playerCount.ToString() + " players");
 	}
 
