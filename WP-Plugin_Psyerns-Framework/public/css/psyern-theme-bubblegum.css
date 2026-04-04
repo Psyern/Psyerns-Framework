@@ -1,0 +1,362 @@
+/* THEME: Bubblegum — Candy Pop / Sweet & Playful / Neon Pink */
+/* Effects: Rising bubbles, candy glow borders, pink shimmer, soft pulse, sugar sparkle */
+
+.psyern-lb.psyern-lb--bubblegum {
+	--psyern-bg: #120818;
+	background: #120818;
+	color: #d8ccd2;
+	font-family: 'Quicksand', 'Nunito', sans-serif;
+	border: 2px solid #3a1850;
+	border-radius: 8px;
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+}
+
+/* All direct content children sit above the effect layers */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__header,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-bar,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__mode-wrap,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__separator,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table-wrap,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__pagination,
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__loading {
+	position: relative;
+	z-index: 3;
+}
+
+/* --- Rising Bubbles Layer --- */
+.psyern-lb.psyern-lb--bubblegum::before {
+	content: '';
+	position: absolute;
+	inset: -20px;
+	z-index: 1;
+	pointer-events: none;
+	background-image:
+		radial-gradient(6px 6px at 8% 90%, rgba(255, 105, 180, 0.25), transparent 70%),
+		radial-gradient(4px 4px at 15% 80%, rgba(255, 182, 218, 0.2), transparent 70%),
+		radial-gradient(8px 8px at 25% 85%, rgba(255, 20, 147, 0.15), transparent 70%),
+		radial-gradient(3px 3px at 35% 75%, rgba(255, 158, 207, 0.25), transparent 70%),
+		radial-gradient(5px 5px at 45% 92%, rgba(255, 105, 180, 0.2), transparent 70%),
+		radial-gradient(7px 7px at 55% 88%, rgba(255, 182, 218, 0.18), transparent 70%),
+		radial-gradient(4px 4px at 65% 78%, rgba(255, 20, 147, 0.22), transparent 70%),
+		radial-gradient(6px 6px at 75% 95%, rgba(255, 158, 207, 0.2), transparent 70%),
+		radial-gradient(3px 3px at 82% 82%, rgba(255, 105, 180, 0.25), transparent 70%),
+		radial-gradient(5px 5px at 92% 90%, rgba(255, 182, 218, 0.15), transparent 70%),
+		radial-gradient(4px 4px at 20% 60%, rgba(255, 105, 180, 0.18), transparent 70%),
+		radial-gradient(6px 6px at 40% 55%, rgba(255, 20, 147, 0.12), transparent 70%),
+		radial-gradient(3px 3px at 60% 65%, rgba(255, 158, 207, 0.2), transparent 70%),
+		radial-gradient(5px 5px at 80% 50%, rgba(255, 182, 218, 0.15), transparent 70%),
+		radial-gradient(7px 7px at 50% 40%, rgba(255, 105, 180, 0.1), transparent 70%);
+	background-size: 100% 200%;
+	animation: psyern-bubble-rise 14s linear infinite;
+	opacity: 0.7;
+}
+
+@keyframes psyern-bubble-rise {
+	0% { background-position: 0 100%; }
+	100% { background-position: 0 -100%; }
+}
+
+/* --- Candy Glow Border (inner pink shimmer) --- */
+.psyern-lb.psyern-lb--bubblegum::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	border-radius: 7px;
+	box-shadow:
+		inset 0 0 30px rgba(255, 105, 180, 0.1),
+		inset 0 0 60px rgba(255, 20, 147, 0.05),
+		inset 0 2px 4px rgba(255, 182, 218, 0.12),
+		inset 0 -2px 4px rgba(255, 182, 218, 0.08),
+		inset 2px 0 4px rgba(255, 158, 207, 0.06),
+		inset -2px 0 4px rgba(255, 158, 207, 0.06);
+	background:
+		linear-gradient(180deg, rgba(255, 182, 218, 0.08) 0%, transparent 8%),
+		linear-gradient(0deg, rgba(255, 105, 180, 0.06) 0%, transparent 6%),
+		linear-gradient(90deg, rgba(255, 158, 207, 0.04) 0%, transparent 5%),
+		linear-gradient(270deg, rgba(255, 158, 207, 0.04) 0%, transparent 5%);
+	animation: psyern-bubble-glow 5s ease-in-out infinite;
+}
+
+@keyframes psyern-bubble-glow {
+	0%, 100% { opacity: 0.7; }
+	50% { opacity: 1; }
+}
+
+/* Scrollbar */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table-wrap::-webkit-scrollbar-thumb { background: #3a1850; border-radius: 4px; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table-wrap::-webkit-scrollbar-thumb:hover { background: #ff69b4; }
+
+/* ::selection */
+.psyern-lb.psyern-lb--bubblegum ::selection { background: rgba(255, 105, 180, 0.35); color: #fff0f6; }
+
+/* --- Header --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__header {
+	border-bottom: 1px solid #2a1240;
+}
+
+/* Candy shimmer title */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__title {
+	font-weight: 700;
+	color: #fff0f6;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	position: relative;
+	text-shadow: 0 0 12px rgba(255, 105, 180, 0.6), 0 0 40px rgba(255, 20, 147, 0.2), 0 1px 2px rgba(0, 0, 0, 0.5);
+	animation: psyern-bubble-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes psyern-bubble-shimmer {
+	0%, 100% { text-shadow: 0 0 12px rgba(255, 105, 180, 0.6), 0 0 40px rgba(255, 20, 147, 0.2); }
+	25% { text-shadow: 0 0 16px rgba(255, 158, 207, 0.8), 0 0 50px rgba(255, 105, 180, 0.3), 2px 0 8px rgba(255, 182, 218, 0.3); }
+	50% { text-shadow: 0 0 20px rgba(255, 182, 218, 0.7), 0 0 60px rgba(255, 20, 147, 0.25), -2px 0 8px rgba(255, 158, 207, 0.3); }
+	75% { text-shadow: 0 0 14px rgba(255, 130, 195, 0.7), 0 0 45px rgba(255, 105, 180, 0.25); }
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__title::before {
+	content: '\25CF  ';
+	color: #ff69b4;
+	text-shadow: 0 0 8px rgba(255, 105, 180, 0.6);
+	animation: psyern-bubble-pop 3s ease-in-out infinite;
+	display: inline-block;
+}
+
+@keyframes psyern-bubble-pop {
+	0%, 100% { transform: scale(1); opacity: 0.8; }
+	50% { transform: scale(1.3); opacity: 1; }
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__meta {
+	color: #7a3a60;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+/* --- Mode Buttons --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__mode-btn {
+	color: #7a3a60;
+	border: 1px solid #2a1240;
+	border-radius: 20px;
+	letter-spacing: 0.06em;
+	transition: all 0.25s ease, box-shadow 0.3s;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__mode-btn.active {
+	color: #ff9ecf;
+	border-color: #ff69b4;
+	background: rgba(255, 105, 180, 0.1);
+	text-shadow: 0 0 6px rgba(255, 105, 180, 0.4);
+	box-shadow: 0 0 12px rgba(255, 105, 180, 0.15), inset 0 0 8px rgba(255, 105, 180, 0.05);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__mode-btn:hover {
+	border-color: #7a3a60;
+	background: rgba(255, 105, 180, 0.06);
+}
+
+/* --- Limit Buttons --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__limit-btn { color: #7a3a60; border-color: #2a1240; border-radius: 20px; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__limit-btn.active { color: #ffb6da; border-color: #ffb6da; }
+
+/* --- Top 3 Cards --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card {
+	background: #1a0e22;
+	border: 1px solid #2a1240;
+	border-radius: 12px;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Candy stripe top-edge on all cards */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, transparent, rgba(255, 158, 207, 0.3) 20%, rgba(255, 105, 180, 0.5) 50%, rgba(255, 158, 207, 0.3) 80%, transparent);
+	pointer-events: none;
+}
+
+/* #1 — Bubblegum glow */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--1 {
+	border-color: #ff69b4;
+	box-shadow: 0 0 25px rgba(255, 105, 180, 0.25), 0 0 60px rgba(255, 20, 147, 0.08), inset 0 0 20px rgba(255, 105, 180, 0.05);
+	animation: psyern-bubble-card1 5s ease-in-out infinite;
+}
+
+@keyframes psyern-bubble-card1 {
+	0%, 100% { box-shadow: 0 0 25px rgba(255, 105, 180, 0.25), 0 0 60px rgba(255, 20, 147, 0.08); transform: scale(1.04); }
+	50% { box-shadow: 0 0 35px rgba(255, 158, 207, 0.35), 0 0 80px rgba(255, 105, 180, 0.12); transform: scale(1.05); }
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--1 .psyern-lb__top3-name {
+	color: #fff0f6;
+	text-shadow: 0 0 10px rgba(255, 105, 180, 0.6), 0 0 20px rgba(255, 158, 207, 0.3);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--2 {
+	border-color: #ffb6da;
+	box-shadow: 0 0 15px rgba(255, 182, 218, 0.15);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--2 .psyern-lb__top3-name {
+	color: #ffb6da;
+	text-shadow: 0 0 6px rgba(255, 182, 218, 0.4);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--3 {
+	border-color: #7a3a60;
+	box-shadow: 0 0 10px rgba(122, 58, 96, 0.12);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-card--3 .psyern-lb__top3-name { color: #d090b0; }
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-rank {
+	font-weight: 700;
+	color: #ffb6da;
+	text-shadow: 0 0 8px rgba(255, 182, 218, 0.5);
+}
+
+/* Soft pink filter on avatars */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-avatar {
+	border: 2px solid #3a1850;
+	border-radius: 50%;
+	filter: brightness(1.05) contrast(1.05) saturate(1.1) hue-rotate(-10deg);
+	box-shadow: 0 0 8px rgba(255, 105, 180, 0.2);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__top3-stats { color: #7a3a60; }
+
+/* --- Table --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table th {
+	color: #7a3a60;
+	border-bottom: 1px solid #2a1240;
+	letter-spacing: 0.1em;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table td { border-bottom: 1px solid #1e0c2a; }
+
+/* Candy hover — sweet highlight */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr {
+	position: relative;
+	transition: all 0.2s ease;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr:hover {
+	background: rgba(255, 105, 180, 0.06);
+	text-shadow: 0 0 4px rgba(255, 158, 207, 0.25);
+}
+
+/* Pink edge on hover */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr:hover::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background: linear-gradient(180deg, rgba(255, 105, 180, 0.8), rgba(255, 182, 218, 0.4), rgba(255, 105, 180, 0.8));
+	box-shadow: 0 0 8px rgba(255, 105, 180, 0.4);
+	border-radius: 0 2px 2px 0;
+	animation: psyern-bubble-edge 0.3s ease-out forwards;
+}
+
+@keyframes psyern-bubble-edge {
+	0% { opacity: 0; height: 0; }
+	100% { opacity: 1; height: 100%; }
+}
+
+/* Rank colors — candy tiers */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr:nth-child(1) .psyern-lb__rank {
+	color: #fff0f6;
+	text-shadow: 0 0 10px rgba(255, 182, 218, 0.7), 0 0 20px rgba(255, 105, 180, 0.4);
+}
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr:nth-child(2) .psyern-lb__rank {
+	color: #ffb6da;
+	text-shadow: 0 0 6px rgba(255, 182, 218, 0.5);
+}
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table tbody tr:nth-child(3) .psyern-lb__rank { color: #d090b0; }
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__rank { color: #7a3a60; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__name { color: #e0d4da; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__kd { color: #d890b0; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__avatar { border: 1px solid #3a1850; border-radius: 50%; filter: brightness(1.05) saturate(1.1); }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__boss-kills { color: #c8a0b8; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__reputation { color: #c8a0b8; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__playtime { color: #5a2a48; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__loading { color: #5a2a48; }
+
+/* --- Badges --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__badge-online {
+	background: #ff69b4;
+	box-shadow: 0 0 6px rgba(255, 105, 180, 0.6), 0 0 12px rgba(255, 105, 180, 0.2);
+}
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__badge-offline { background: #2a1240; }
+
+/* --- Faction --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction--east { background: rgba(255, 105, 180, 0.12); color: #ff69b4; border-color: rgba(255, 105, 180, 0.3); }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction--west { background: rgba(255, 182, 218, 0.12); color: #ffb6da; border-color: rgba(255, 182, 218, 0.3); }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction--neutral { background: rgba(122, 58, 96, 0.15); color: #7a3a60; border-color: rgba(122, 58, 96, 0.3); }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-bar-track { background: #1a0e22; border: 1px solid #2a1240; border-radius: 10px; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-bar-east { background: linear-gradient(90deg, #a03070, #ff69b4); box-shadow: 0 0 8px rgba(255, 105, 180, 0.3); border-radius: 10px; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-bar-west { background: linear-gradient(90deg, #d090b0, #ffb6da); box-shadow: 0 0 8px rgba(255, 182, 218, 0.3); border-radius: 10px; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-label-east { color: #ff69b4; }
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__faction-label-west { color: #ffb6da; }
+
+/* --- Separator — Candy drip line --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__separator {
+	border: none;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, rgba(255, 105, 180, 0.2) 15%, rgba(255, 158, 207, 0.5) 30%, rgba(255, 182, 218, 0.6) 50%, rgba(255, 158, 207, 0.5) 70%, rgba(255, 105, 180, 0.2) 85%, transparent);
+	margin: 20px 0;
+	position: relative;
+	border-radius: 2px;
+	animation: psyern-bubble-drip 4s ease-in-out infinite;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__separator::before {
+	content: '';
+	position: absolute;
+	inset: -2px 0;
+	background: linear-gradient(90deg, transparent, rgba(255, 182, 218, 0.15) 30%, rgba(255, 182, 218, 0.25) 50%, rgba(255, 182, 218, 0.15) 70%, transparent);
+	filter: blur(4px);
+	pointer-events: none;
+}
+
+@keyframes psyern-bubble-drip {
+	0%, 100% { opacity: 0.6; }
+	50% { opacity: 1; }
+}
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn {
+	color: #7a3a60 !important;
+	border: 1px solid #2a1240;
+	border-radius: 20px;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn.active {
+	color: #fff0f6 !important;
+	border-color: #ff69b4;
+	background: rgba(255, 105, 180, 0.15);
+	box-shadow: 0 0 8px rgba(255, 105, 180, 0.2);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn:hover:not([disabled]) {
+	color: #ff69b4 !important;
+	border-color: #7a3a60;
+	background: rgba(255, 105, 180, 0.06);
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__page-btn[disabled] {
+	color: #3a1a30 !important;
+	opacity: 0.4;
+}
+
+.psyern-lb.psyern-lb--bubblegum .psyern-lb__table td { color: #c8b8c0; }
