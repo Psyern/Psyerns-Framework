@@ -113,13 +113,19 @@ class PF_WebConfig
 		if (FileExist(path))
 		{
 			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, this);
+			bool changed = EnsureDefaultEndpoints();
 			AutoGenerateApiKeys();
 
 			if (ConfigVersion < CURRENT_VERSION)
 			{
 				ConfigVersion = CURRENT_VERSION;
-				Save();
+				changed = true;
 				Print("[Psyerns Framework] Config upgraded to version " + CURRENT_VERSION.ToString() + " — new fields added");
+			}
+
+			if (changed)
+			{
+				Save();
 			}
 
 			Print("[Psyerns Framework] Config v" + ConfigVersion.ToString() + " loaded from " + path);
@@ -141,6 +147,9 @@ class PF_WebConfig
 		for (int i = 0; i < Endpoints.Count(); i++)
 		{
 			PF_WebEndpoint ep = Endpoints[i];
+			if (!ShouldAutoGenerateApiKey(ep))
+				continue;
+
 			if (ep.ApiKey == "" || ep.ApiKey == "YOUR_API_KEY_HERE")
 			{
 				ep.ApiKey = GenerateRandomKey();
@@ -151,6 +160,20 @@ class PF_WebConfig
 
 		if (changed)
 			Save();
+	}
+
+	protected bool ShouldAutoGenerateApiKey(PF_WebEndpoint endpoint)
+	{
+		if (!endpoint)
+			return false;
+
+		string endpointName = endpoint.Name;
+		endpointName.ToLower();
+
+		if (endpointName == "topgames")
+			return false;
+
+		return true;
 	}
 
 	static string GenerateRandomKey()
@@ -235,6 +258,14 @@ class PF_WebConfig
 		leaderboard.RateLimitMs = 5000;
 		Endpoints.Insert(leaderboard);
 
+		PF_WebEndpoint topGames = new PF_WebEndpoint();
+		topGames.Name = "TopGames";
+		topGames.BaseUrl = "https://api.top-games.net";
+		topGames.ApiKey = "";
+		topGames.Enabled = false;
+		topGames.RateLimitMs = 1000;
+		Endpoints.Insert(topGames);
+
 		// Webhook Notifications
 		EnableServerStopNotification = false;
 		EnableHeartbeat = false;
@@ -257,6 +288,34 @@ class PF_WebConfig
 		exampleRule.WebhookUrl = "https://your-site.com/wp-json/psyern/v1/alerts";
 		exampleRule.MessageTemplate = "Player {playerName} entered zone at {posX},{posZ}";
 		AlertRules.Insert(exampleRule);
+	}
+
+	protected bool EnsureDefaultEndpoints()
+	{
+		bool changed = false;
+
+		changed = EnsureEndpoint("WordPress", "https://your-site.com/wp-json/psyern/v1", "YOUR_API_KEY_HERE", false, 5000) || changed;
+		changed = EnsureEndpoint("Discord", "https://discord.com/api/webhooks", "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN", false, 1000) || changed;
+		changed = EnsureEndpoint("Leaderboard", "https://your-site.com/wp-json/psyern/v1", "YOUR_API_KEY_HERE", false, 5000) || changed;
+		changed = EnsureEndpoint("TopGames", "https://api.top-games.net", "", false, 1000) || changed;
+
+		return changed;
+	}
+
+	protected bool EnsureEndpoint(string name, string baseUrl, string apiKey, bool enabled, int rateLimitMs)
+	{
+		PF_WebEndpoint endpoint = GetEndpoint(name);
+		if (endpoint)
+			return false;
+
+		endpoint = new PF_WebEndpoint();
+		endpoint.Name = name;
+		endpoint.BaseUrl = baseUrl;
+		endpoint.ApiKey = apiKey;
+		endpoint.Enabled = enabled;
+		endpoint.RateLimitMs = rateLimitMs;
+		Endpoints.Insert(endpoint);
+		return true;
 	}
 
 	PF_WebEndpoint GetEndpoint(string name)

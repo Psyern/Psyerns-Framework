@@ -63,6 +63,29 @@ class PF_RestConfig
 		return GetApiKey();
 	}
 
+	string GetTopGamesBaseUrl()
+	{
+		PF_WebEndpoint ep = m_Config.GetEndpoint("TopGames");
+		if (ep)
+			return ep.BaseUrl;
+
+		return "";
+	}
+
+	string GetTopGamesApiKey()
+	{
+		PF_WebEndpoint ep = m_Config.GetEndpoint("TopGames");
+		if (ep)
+			return ep.ApiKey;
+
+		return "";
+	}
+
+	bool IsTopGamesEnabled()
+	{
+		return m_Config.IsEndpointEnabled("TopGames");
+	}
+
 	// Feature toggles — read directly from PF_WebConfig
 	bool IsWhitelistEnabled() { return m_Config.EnableWhitelist; }
 	bool IsPlayerLookupEnabled() { return m_Config.EnablePlayerLookup; }
