@@ -1,48 +1,48 @@
 # Psyerns AuctionHouse — WordPress Plugin
 
-Brücke zwischen der DayZ-Mod **DME_Auction_House** und einer WordPress-Seite. Spieler sehen aktive Auktionen, Historie und Statistiken im Web und können eingeloggt (Steam) **direkt vom Browser aus kaufen und bieten**.
+Bridge between the DayZ mod **DME_Auction_House** and a WordPress site. Players see active auctions, history and statistics in the browser and, once logged in via Steam, can **buy and bid directly from the web**.
 
-> **Status:** Design-Phase. Dieses Dokument ist die lebende Spec während der Planung. Sobald die Spec freigegeben ist, wird daraus ein Implementierungs-Plan in `docs/superpowers/specs/`.
+> **Status:** Design phase. This document is the living spec during planning. Once the spec is approved, it becomes an implementation plan in `docs/superpowers/specs/`.
 
 ---
 
-## 1. Projekt-Identität
+## 1. Project Identity
 
-| Feld | Wert |
+| Field | Value |
 |---|---|
-| Plugin-Name | Psyerns AuctionHouse |
-| Plugin-Slug | `psyerns-auctionhouse` |
-| Text-Domain | `psyerns-auctionhouse` |
-| REST-Namespace | `psyern-ah/v1` |
-| Klassen-Prefix | `Psyern_AH_` |
-| DB-Tabellen-Prefix | `{wp_prefix}psyern_ah_` |
-| Autor | Psyern / Deadmans Echo |
-| Lizenz | MIT |
+| Plugin Name | Psyerns AuctionHouse |
+| Plugin Slug | `psyerns-auctionhouse` |
+| Text Domain | `psyerns-auctionhouse` |
+| REST Namespace | `psyern-ah/v1` |
+| Class Prefix | `Psyern_AH_` |
+| DB Table Prefix | `{wp_prefix}psyern_ah_` |
+| Author | Psyern / Deadmans Echo |
+| License | MIT |
 | WP min | 5.8 |
 | PHP min | 7.4 |
-| Pfad | `C:\Users\Administrator\Desktop\Psyerns_Framework\WP-Plugin_Psyerns_AuctionHouse` |
+| Path | `C:\Users\Administrator\Desktop\Psyerns_Framework\WP-Plugin_Psyerns_AuctionHouse` |
 
 ---
 
-## 2. Datenquellen (DayZ-Server-Seite)
+## 2. Data Sources (DayZ Server Side)
 
 ### DME_Auction_House Mod
-Pfad: `C:\Users\Administrator\Desktop\DME_Auction_House`
+Path: `C:\Users\Administrator\Desktop\DME_Auction_House`
 
-JSON-Storage (auf Server): `$profile:DME_AH\Data\`
+JSON storage (on server): `$profile:DME_AH\Data\`
 
-| Datei | Inhalt | Klasse |
+| File | Content | Class |
 |---|---|---|
-| `ActiveListings.json` | Alle aktiven Listings | `DME_AH_ListingArray` → `array<DME_AH_Listing>` |
-| `CompletedListings.json` | Transaktions-Historie | `DME_AH_TransactionArray` → `array<DME_AH_Transaction>` |
-| `PlayerData.json` | Internal Balances + Pending Pickups | `DME_AH_PlayerData` |
+| `ActiveListings.json` | All active listings | `DME_AH_ListingArray` → `array<DME_AH_Listing>` |
+| `CompletedListings.json` | Transaction history | `DME_AH_TransactionArray` → `array<DME_AH_Transaction>` |
+| `PlayerData.json` | Internal balances + pending pickups | `DME_AH_PlayerData` |
 
 Config: `$profile:DME_AH\Config\Settings.json`, `Categories.json`, `NPCs.json`
 
-### Listing-Datenstruktur (Auszug)
+### Listing Data Structure (excerpt)
 ```
 DME_AH_Listing {
-    string  ListingID;                 // z.B. "1712233412_84592"
+    string  ListingID;                 // e.g. "1712233412_84592"
     string  SellerUID, SellerName;
     string  ItemClassName, ItemDisplayName;
     int     CategoryID;
@@ -56,39 +56,39 @@ DME_AH_Listing {
 }
 ```
 
-### Expansion-ATM (für Internal Currency Mirror, optional)
-Pfad: `$profile:ExpansionMod\ATM\{PlayerUID}.json`
+### Expansion ATM (for Internal Currency mirror, optional)
+Path: `$profile:ExpansionMod\ATM\{PlayerUID}.json`
 ```
 ExpansionMarketATM_Data { string PlayerID; int MoneyDeposited; }
 ```
 
-### Currency-Modi der Mod
-- `Expansion` — Expansion-Wallet-Integration
-- `Item` — physisches Geld-Item im Inventar (z.B. `MoneyRuble100`)
-- `Internal` — Mod-eigene Balance in `PlayerData.json` (die einzige, die für Web-Käufe ohne laufenden DayZ-Client funktioniert)
+### Currency Modes of the Mod
+- `Expansion` — Expansion wallet integration
+- `Item` — physical money item in inventory (e.g. `MoneyRuble100`)
+- `Internal` — mod's own balance in `PlayerData.json` (the only one that works for web purchases without a running DayZ client)
 
-Web-Käufe/Gebote funktionieren mit **Expansion** (ATM-Balance wird gelesen) und **Internal**. **Nicht** mit `Item`.
+Web purchases/bids work with **Expansion** (ATM balance is read) and **Internal**. **Not** with `Item`.
 
 ---
 
-## 3. Entscheidungen aus dem Brainstorming
+## 3. Decisions from Brainstorming
 
-| # | Frage | Entscheidung |
+| # | Question | Decision |
 |---|---|---|
-| 1 | Datentransport Mod → WP | **A** — HTTP-Push via Psyerns_Framework |
-| 2 | Scope / Phasierung | **A** — View + BuyNow + Bidding komplett in einem Rutsch |
-| 3 | Steam-Login | **B** — Steam OpenID im Plugin selbst implementieren |
-| 4 | Mod-Code-Organisation | **C** — Als Modul im `Psyerns_Framework` (`PF_AH_Sync`) |
-| 5 | Naming | **C** — Klassen `Psyern_AH_*`, REST `psyern-ah/v1`, DB `psyern_ah_*` |
-| 6 | Theming | **B** — Framework-Plugin als Soft-Dependency, dessen Themes wiederverwenden, Fallback-CSS im Plugin |
-| 7 | Shortcodes | **B** — 5 Einzel-Shortcodes (marketplace, listing, my, history, stats) |
-| 8 | Filter/Sort | **B** — Standard (Kategorie, Typ, Preis-Range, Suche + Sort + Pagination 20/S.) |
-| 9 | Admin-Panel | **B** — Standard (API-Key, Listings-Viewer, History, Balance-Viewer, Pending-Actions-Log, Settings) |
-| 10 | Public Visibility | **A** — Alles öffentlich sichtbar (Kaufen/Bieten nur mit Login) |
+| 1 | Data transport Mod → WP | **A** — HTTP push via Psyerns_Framework |
+| 2 | Scope / phasing | **A** — View + BuyNow + Bidding all in one go |
+| 3 | Steam login | **B** — Implement Steam OpenID inside the plugin |
+| 4 | Mod code organization | **C** — As a module inside `Psyerns_Framework` (`PF_AH_Sync`) |
+| 5 | Naming | **C** — Classes `Psyern_AH_*`, REST `psyern-ah/v1`, DB `psyern_ah_*` |
+| 6 | Theming | **B** — Framework plugin as soft dependency, reuse its themes, fallback CSS in plugin |
+| 7 | Shortcodes | **B** — 5 individual shortcodes (marketplace, listing, my, history, stats) |
+| 8 | Filter/sort | **B** — Standard (category, type, price range, search + sort + pagination 20/p.) |
+| 9 | Admin panel | **B** — Standard (API key, listings viewer, history, balance viewer, pending-actions log, settings) |
+| 10 | Public visibility | **A** — Everything publicly visible (buying/bidding only with login) |
 
 ---
 
-## 4. Architektur & Datenfluss
+## 4. Architecture & Data Flow
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -123,58 +123,58 @@ Web-Käufe/Gebote funktionieren mit **Expansion** (ATM-Balance wird gelesen) und
                       ▲
                       │ Browser
               ┌───────┴───────┐
-              │ Spieler / Web │
+              │ Player / Web  │
               └───────────────┘
 ```
 
-### Kernprinzipien
-1. **Mod = Single Source of Truth** für Balances und Listing-Status. Website ist stets Mirror.
-2. **Zwei Transport-Richtungen**:
-   - **Push** (Mod → WP, 30 s): Listings, Transaktionen, Balances hochladen
-   - **Poll** (Mod → WP, 10 s): offene Web-Aufträge abholen, ausführen, Ergebnis zurückmelden
-3. **Asynchrones Command-Pattern**: Web-Käufe/Gebote sind keine synchronen Calls sondern Aufträge mit State-Machine:
+### Core Principles
+1. **Mod = Single Source of Truth** for balances and listing status. The website is always a mirror.
+2. **Two transport directions**:
+   - **Push** (Mod → WP, 30 s): upload listings, transactions, balances
+   - **Poll** (Mod → WP, 10 s): fetch open web actions, execute, report result
+3. **Asynchronous command pattern**: Web purchases/bids are not synchronous calls but jobs with a state machine:
    ```
    queued → dispatched → executing → (success | failed_{reason})
    ```
-4. **Atomare Balance-Reservierung**: Beim Platzieren eines Gebots wird die Summe mod-seitig reserviert (abgezogen + als `reserved` markiert). Bei Outbid: zurück. Bei Auktions-Gewinn: endgültig abgezogen. Verhindert Doppel-Spending.
+4. **Atomic balance reservation**: When placing a bid, the amount is reserved mod-side (deducted + marked as `reserved`). On outbid: returned. On auction win: finally deducted. Prevents double-spending.
 
 ### Trade-offs
-- Web-Aktion zeigt Ergebnis nach nächstem Mod-Poll (max. 10 s, Schnitt 5 s) — für AH OK.
-- DayZ-Server offline → Website read-only, neue Aufträge bleiben `queued` bis Server zurück ist.
+- A web action shows its result after the next mod poll (max 10 s, avg 5 s) — fine for an AH.
+- DayZ server offline → website is read-only, new jobs stay `queued` until the server is back.
 
 ---
 
-## 5. Komponenten-Überblick
+## 5. Component Overview
 
-### WordPress-Plugin (dieses Verzeichnis)
-- **Datenbank-Layer** (`class-psyern-ah-database.php`) — 5 Tabellen
-- **REST-API** (`class-psyern-ah-api.php`) — 3 Bereiche: `/public/*`, `/user/*` (auth), `/internal/*` (API-Key)
-- **Steam OpenID** (`class-psyern-ah-steam-auth.php`) — Redirect, Callback, UID ↔ WP-User-Mapping
-- **Auth** (`class-psyern-ah-auth.php`) — API-Key Validation für Mod-Endpoints
-- **Data-Services** (`class-psyern-ah-listings.php`, `-transactions.php`, `-balances.php`, `-pending-actions.php`)
-- **Shortcodes** (`class-psyern-ah-shortcodes.php`) — 5 Shortcodes
-- **Frontend Assets** — JS für Filter/AJAX + Fallback-CSS, nutzt Framework-Themes via Soft-Dependency
-- **Admin** (`class-psyern-ah-admin.php`) — Settings-Page + Viewer-Tabs
+### WordPress plugin (this directory)
+- **Database layer** (`class-psyern-ah-database.php`) — 5 tables
+- **REST API** (`class-psyern-ah-api.php`) — 3 areas: `/public/*`, `/user/*` (auth), `/internal/*` (API key)
+- **Steam OpenID** (`class-psyern-ah-steam-auth.php`) — redirect, callback, UID ↔ WP user mapping
+- **Auth** (`class-psyern-ah-auth.php`) — API key validation for mod endpoints
+- **Data services** (`class-psyern-ah-listings.php`, `-transactions.php`, `-balances.php`, `-pending-actions.php`)
+- **Shortcodes** (`class-psyern-ah-shortcodes.php`) — 5 shortcodes
+- **Frontend assets** — JS for filter/AJAX + fallback CSS, uses framework themes via soft dependency
+- **Admin** (`class-psyern-ah-admin.php`) — settings page + viewer tabs
 
-### DayZ-Mod (im `Psyerns_Framework`)
-Neuer Ordner: `scripts/3_Game/Psyerns_Framework/Integrations/AuctionHouse/`
-- `PF_AH_Sync.c` — Main orchestrator, Timer-Logik
-- `PF_AH_Uploader.c` — Builds Payloads, POST via `PF_WebClient`
-- `PF_AH_PendingPoller.c` — GET /internal/pending, Handoff an Executor
-- `PF_AH_ActionExecutor.c` — Führt Purchase/Bid/Cancel via `DME_AH_AuctionManager` aus, reportet Ergebnis
-- `PF_AH_BalanceReader.c` — Liest Expansion ATM-Files / DME_AH PlayerData
-- `PF_AH_Config.c` — WP-URL + API-Key + Intervalle (in `PsyernsFrameworkConfig.json` als Block `AuctionHouse`)
+### DayZ mod (inside `Psyerns_Framework`)
+New folder: `scripts/3_Game/Psyerns_Framework/Integrations/AuctionHouse/`
+- `PF_AH_Sync.c` — main orchestrator, timer logic
+- `PF_AH_Uploader.c` — builds payloads, POST via `PF_WebClient`
+- `PF_AH_PendingPoller.c` — GET /internal/pending, handoff to executor
+- `PF_AH_ActionExecutor.c` — executes purchase/bid/cancel via `DME_AH_AuctionManager`, reports result
+- `PF_AH_BalanceReader.c` — reads Expansion ATM files / DME_AH PlayerData
+- `PF_AH_Config.c` — WP URL + API key + intervals (in `PsyernsFrameworkConfig.json` as block `AuctionHouse`)
 
 ---
 
-## 6. Datenbank-Schema (Planung)
+## 6. Database Schema (Plan)
 
-Tabellen (alle mit Prefix `{wp_prefix}psyern_ah_`):
+Tables (all prefixed `{wp_prefix}psyern_ah_`):
 
-### `listings` — Mirror aktiver Listings
+### `listings` — mirror of active listings
 ```sql
 id               BIGINT UNSIGNED PK AUTO_INCREMENT
-listing_id       VARCHAR(64) UNIQUE KEY         -- mod-seitig generiert
+listing_id       VARCHAR(64) UNIQUE KEY         -- generated by the mod
 seller_uid       VARCHAR(32)     INDEX
 seller_name      VARCHAR(128)
 item_class       VARCHAR(128)    INDEX
@@ -193,7 +193,7 @@ status           TINYINT          INDEX  -- 0 Active
 last_sync        DATETIME
 ```
 
-### `transactions` — abgeschlossene Käufe
+### `transactions` — completed purchases
 ```sql
 id               BIGINT UNSIGNED PK
 transaction_id   VARCHAR(64) UNIQUE
@@ -206,7 +206,7 @@ type             TINYINT          -- 0 BuyNow, 1 AuctionWon, 2 Expired, 3 Cancel
 timestamp        BIGINT           INDEX
 ```
 
-### `balances` — Balance-Mirror pro Spieler + Currency-Source
+### `balances` — balance mirror per player + currency source
 ```sql
 id               BIGINT UNSIGNED PK
 player_uid       VARCHAR(32)      INDEX
@@ -216,14 +216,14 @@ updated_at       DATETIME
 UNIQUE KEY (player_uid, currency_source)
 ```
 
-### `pending_actions` — Web-Aufträge (Purchase/Bid/Cancel)
+### `pending_actions` — web jobs (purchase/bid/cancel)
 ```sql
 id               BIGINT UNSIGNED PK
-action_uuid      VARCHAR(36) UNIQUE      -- für Idempotenz
+action_uuid      VARCHAR(36) UNIQUE      -- idempotency key
 action_type      VARCHAR(16)             -- "purchase" | "bid" | "cancel"
 player_uid       VARCHAR(32)    INDEX
 listing_id       VARCHAR(64)    INDEX
-amount           BIGINT                  -- bei bid: Gebot; bei purchase: BuyNowPrice-Snapshot
+amount           BIGINT                  -- bid: offer; purchase: BuyNowPrice snapshot
 nonce            VARCHAR(64)
 status           VARCHAR(16)    INDEX    -- queued/dispatched/executing/success/failed_*
 result_code      VARCHAR(32)
@@ -233,7 +233,7 @@ dispatched_at    DATETIME
 completed_at     DATETIME
 ```
 
-### `users` — Mapping WordPress-User ↔ Steam-UID
+### `users` — mapping WordPress user ↔ Steam UID
 ```sql
 id               BIGINT UNSIGNED PK
 wp_user_id       BIGINT UNSIGNED UNIQUE
@@ -246,31 +246,31 @@ last_login       DATETIME
 
 ---
 
-## 7. REST-API (Planung)
+## 7. REST API (Plan)
 
-| Method | Route | Auth | Zweck |
+| Method | Route | Auth | Purpose |
 |---|---|---|---|
-| GET  | `/public/listings` | none | Marketplace (Paginierung, Filter, Sort) |
+| GET  | `/public/listings` | none | Marketplace (pagination, filter, sort) |
 | GET  | `/public/listings/{id}` | none | Detail |
-| GET  | `/public/history` | none | Letzte Transaktionen |
-| GET  | `/public/stats` | none | Top-Seller, beliebteste Items, Ø-Preise |
-| GET  | `/public/price-history` | none | Preis-Zeitreihe pro `item_class` (Query: `item_class`, `period=24h\|7d\|30d\|all`) |
-| GET  | `/public/categories` | none | Kategorien-Liste |
-| GET  | `/auth/steam/login` | none | Redirect zu Steam OpenID |
-| GET  | `/auth/steam/callback` | none | OpenID Callback, WP-Login setzen |
+| GET  | `/public/history` | none | Recent transactions |
+| GET  | `/public/stats` | none | Top sellers, popular items, avg prices |
+| GET  | `/public/price-history` | none | Price time series per `item_class` (query: `item_class`, `period=24h\|7d\|30d\|all`) |
+| GET  | `/public/categories` | none | Category list |
+| GET  | `/auth/steam/login` | none | Redirect to Steam OpenID |
+| GET  | `/auth/steam/callback` | none | OpenID callback, set WP login |
 | POST | `/auth/logout` | session | Logout |
-| GET  | `/user/me` | session | Eigene Info (UID, Balance-Mirror, offene Aufträge) |
-| GET  | `/user/listings` | session | Eigene Listings |
-| GET  | `/user/bids` | session | Eigene Gebote |
-| POST | `/user/purchase` | session + nonce | BuyNow-Auftrag anlegen |
-| POST | `/user/bid` | session + nonce | Gebot-Auftrag anlegen |
-| POST | `/user/cancel` | session + nonce | Eigenes Listing canceln |
-| POST | `/internal/upload` | API-Key | Mod lädt Listings/Transaktionen/Balances hoch |
-| GET  | `/internal/pending` | API-Key | Mod holt offene Aufträge (mit Dispatch-Lock) |
-| PATCH| `/internal/pending/{uuid}` | API-Key | Mod meldet Ergebnis zurück |
-| GET  | `/internal/ping` | API-Key | Health-Check |
+| GET  | `/user/me` | session | Own info (UID, balance mirror, open jobs) |
+| GET  | `/user/listings` | session | Own listings |
+| GET  | `/user/bids` | session | Own bids |
+| POST | `/user/purchase` | session + nonce | Create BuyNow job |
+| POST | `/user/bid` | session + nonce | Create bid job |
+| POST | `/user/cancel` | session + nonce | Cancel own listing |
+| POST | `/internal/upload` | API key | Mod uploads listings/transactions/balances |
+| GET  | `/internal/pending` | API key | Mod fetches open jobs (with dispatch lock) |
+| PATCH| `/internal/pending/{uuid}` | API key | Mod reports result |
+| GET  | `/internal/ping` | API key | Health check |
 
-### Payload-Beispiele
+### Payload examples
 
 **POST `/internal/upload`** (Mod → WP):
 ```json
@@ -278,8 +278,8 @@ last_login       DATETIME
   "generatedAt": "2026-04-20T14:00:00Z",
   "serverTimeEpoch": 1713621600,
   "currencyMode": "Expansion",
-  "listings": [ { /* DME_AH_Listing Shape */ } ],
-  "recentTransactions": [ { /* DME_AH_Transaction Shape, nur neue seit letzter Sync */ } ],
+  "listings": [ { /* DME_AH_Listing shape */ } ],
+  "recentTransactions": [ { /* DME_AH_Transaction shape, new since last sync */ } ],
   "balances": [ { "uid": "...", "source": "Expansion", "balance": 12340 } ]
 }
 ```
@@ -294,7 +294,7 @@ last_login       DATETIME
 ```
 → `{ "action_uuid": "...", "status": "queued" }`
 
-**GET `/internal/pending`** (Mod → WP) — liefert bis zu N offene Aufträge und setzt sie atomar auf `dispatched`:
+**GET `/internal/pending`** (Mod → WP) — returns up to N open jobs and atomically sets them to `dispatched`:
 ```json
 {
   "actions": [
@@ -308,74 +308,74 @@ last_login       DATETIME
 
 ## 8. Shortcodes (Frontend)
 
-| Shortcode | Zweck |
+| Shortcode | Purpose |
 |---|---|
-| `[psyerns_auctionhouse_marketplace theme="stalker" per_page="20"]` | Marketplace mit Filter, Sort, Pagination |
-| `[psyerns_auctionhouse_listing id="..."]` | Einzel-Detail, Buy/Bid-Buttons, Gebots-Historie |
-| `[psyerns_auctionhouse_my]` | Eingeloggter User: Balance, Listings, Gebote, offene Aufträge |
-| `[psyerns_auctionhouse_history limit="50"]` | Letzte verkaufte Items |
-| `[psyerns_auctionhouse_stats]` | Top-Seller, beliebteste Items, Ø-Preise, **Tab „Preis-Trends" mit Item-Dropdown + Chart** |
-| `[psyerns_auctionhouse_price_chart item_class="..." period="30d" height="300"]` | Standalone Preis-Chart für ein `item_class`. Parameter: `item_class` (Pflicht), `period=24h\|7d\|30d\|all` (Default `30d`), `height` in px |
+| `[psyerns_auctionhouse_marketplace theme="stalker" per_page="20"]` | Marketplace with filter, sort, pagination |
+| `[psyerns_auctionhouse_listing id="..."]` | Single detail, Buy/Bid buttons, bid history |
+| `[psyerns_auctionhouse_my]` | Logged-in user: balance, listings, bids, open jobs |
+| `[psyerns_auctionhouse_history limit="50"]` | Recently sold items |
+| `[psyerns_auctionhouse_stats]` | Top sellers, popular items, avg prices, **"Price Trends" tab with item dropdown + chart** |
+| `[psyerns_auctionhouse_price_chart item_class="..." period="30d" height="300"]` | Standalone price chart for an `item_class`. Parameters: `item_class` (required), `period=24h\|7d\|30d\|all` (default `30d`), `height` in px |
 
-**Marketplace-Filter** (via AJAX ohne Page-Reload):
-- Kategorie (Dropdown aus `/public/categories`)
-- Listing-Typ (Radio: Alle / BuyNow / Auktion)
-- Preis-Range (Min/Max Inputs)
-- Suche (Item-Name, Debounce 300 ms)
-- Sortierung (Dropdown: Preis ↑↓, Restzeit ↑↓, Neueste, Meiste Gebote)
-- Pagination (20 pro Seite)
+**Marketplace filter** (via AJAX without page reload):
+- Category (dropdown from `/public/categories`)
+- Listing type (radio: All / BuyNow / Auction)
+- Price range (min/max inputs)
+- Search (item name, 300 ms debounce)
+- Sort (dropdown: price ↑↓, time left ↑↓, newest, most bids)
+- Pagination (20 per page)
 
 ---
 
-## 9. Admin-Panel
+## 9. Admin Panel
 
-Menü: **Einstellungen → Psyerns AuctionHouse** (Tab-Interface analog bestehendes Framework-Plugin).
+Menu: **Settings → Psyerns AuctionHouse** (tab interface mirroring the existing framework plugin).
 
-| Tab | Inhalt |
+| Tab | Content |
 |---|---|
-| Settings | API-Key generieren/rotieren, Polling-Intervalle, Currency-Format (z.B. `{amount} €`), Public-Visibility Toggles |
-| Listings | Tabelle aller aktiven Listings (Sort, Search), Admin-Cancel-Button → erzeugt `admin_cancel` Pending-Action |
-| History | Transaktionen mit Filter (Datum, Spieler, Item) |
-| Balances | Read-only Balance-Mirror aller Spieler |
-| Pending | Log offener/fertiger Web-Aufträge mit Statuscode + Fehlermeldung |
-| Tools | „Force Re-Sync anfordern" (setzt Flag, nächster Push ist Full-Sync), Tabellen-Reset (gefährlich, mit Bestätigung) |
+| Settings | Generate/rotate API key, polling intervals, currency format (e.g. `{amount} €`), public-visibility toggles |
+| Listings | Table of all active listings (sort, search), admin-cancel button → creates `admin_cancel` pending action |
+| History | Transactions with filters (date, player, item) |
+| Balances | Read-only balance mirror of all players |
+| Pending | Log of open/completed web jobs with status code + error message |
+| Tools | "Force Re-Sync Request" (sets flag, next push is full sync), tables reset (dangerous, confirmed) |
 
 ---
 
-## 10. Sicherheits-Prinzipien
+## 10. Security Principles
 
-- **API-Key** (Bearer) für alle `/internal/*` Routen — zufällig generiert, im Admin neu setzbar
-- **WP-Nonces** auf allen `/user/*` POST-Routen (CSRF)
-- **Rate-Limit** pro Session auf `/user/purchase` und `/user/bid` (z.B. max. 10 pro Minute)
-- **Idempotenz** via `action_uuid` — Mod kann denselben Auftrag sicher mehrfach abfragen ohne doppelte Ausführung
-- **Expected-Price-Check**: Web sendet erwarteten Preis mit, Mod validiert; wenn Listing in der Zwischenzeit geändert wurde → `failed_price_mismatch`
-- **Balance-Validation** server-seitig (in Mod) — Client sieht nur Mirror, kann nicht manipulieren
-- **Double-Spend-Protection** durch mod-seitige Reservierung beim Bid/Purchase
-- **Steam OpenID Signatur-Verifikation** auf Callback (kein Fake-UID-Inject)
+- **API key** (Bearer) for all `/internal/*` routes — randomly generated, rotatable in admin
+- **WP nonces** on all `/user/*` POST routes (CSRF)
+- **Rate limit** per session on `/user/purchase` and `/user/bid` (e.g. max 10 per minute)
+- **Idempotency** via `action_uuid` — mod can safely re-fetch the same job without double execution
+- **Expected-price check**: web sends expected price, mod validates; if the listing changed in the meantime → `failed_price_mismatch`
+- **Balance validation** server-side (in mod) — client sees only a mirror, cannot manipulate
+- **Double-spend protection** via mod-side reservation on bid/purchase
+- **Steam OpenID signature verification** on callback (no fake-UID injection)
 
 ---
 
-## 11. Geplante Verzeichnis-Struktur
+## 11. Planned Directory Structure
 
 ```
 WP-Plugin_Psyerns_AuctionHouse/
-├── psyerns-auctionhouse.php              # Bootstrap, Plugin-Header, Hooks
-├── uninstall.php                          # Tabellen + Options droppen
-├── README.md                              # ← dieses Dokument
-├── readme.txt                             # WordPress.org-Format
+├── psyerns-auctionhouse.php              # Bootstrap, plugin header, hooks
+├── uninstall.php                          # Drop tables + options
+├── README.md                              # ← this document
+├── readme.txt                             # WordPress.org format
 ├── includes/
-│   ├── class-psyern-ah-database.php       # Tabellen-Setup via dbDelta
-│   ├── class-psyern-ah-auth.php           # API-Key Validation
-│   ├── class-psyern-ah-steam-auth.php     # OpenID Login
-│   ├── class-psyern-ah-api.php            # REST-Route-Registry
-│   ├── class-psyern-ah-listings.php       # CRUD + Filter Listings
-│   ├── class-psyern-ah-transactions.php   # CRUD + History
-│   ├── class-psyern-ah-balances.php       # Balance-Mirror
-│   ├── class-psyern-ah-pending-actions.php# Auftrags-State-Machine
-│   ├── class-psyern-ah-stats.php          # Aggregations-Queries (inkl. Preis-Zeitreihen)
-│   └── class-psyern-ah-theme.php          # Framework-Theme Detection/Fallback
+│   ├── class-psyern-ah-database.php       # Table setup via dbDelta
+│   ├── class-psyern-ah-auth.php           # API key validation
+│   ├── class-psyern-ah-steam-auth.php     # OpenID login
+│   ├── class-psyern-ah-api.php            # REST route registry
+│   ├── class-psyern-ah-listings.php       # CRUD + filter listings
+│   ├── class-psyern-ah-transactions.php   # CRUD + history
+│   ├── class-psyern-ah-balances.php       # Balance mirror
+│   ├── class-psyern-ah-pending-actions.php# Job state machine
+│   ├── class-psyern-ah-stats.php          # Aggregation queries (incl. price time series)
+│   └── class-psyern-ah-theme.php          # Framework theme detection/fallback
 ├── admin/
-│   ├── class-psyern-ah-admin.php          # Menü + Settings API
+│   ├── class-psyern-ah-admin.php          # Menu + Settings API
 │   ├── css/psyern-ah-admin.css
 │   ├── js/psyern-ah-admin-tabs.js
 │   └── views/
@@ -386,11 +386,11 @@ WP-Plugin_Psyerns_AuctionHouse/
 │       └── pending-page.php
 ├── public/
 │   ├── class-psyern-ah-shortcodes.php
-│   ├── css/psyern-ah-public.css           # Fallback wenn Framework nicht aktiv
-│   ├── js/psyern-ah-marketplace.js        # AJAX-Filter, Sort, Pagination
-│   ├── js/psyern-ah-listing.js            # Buy/Bid-Buttons, Live-Countdown
-│   ├── js/psyern-ah-price-chart.js        # Chart.js-Wrapper für Preis-Historie
-│   ├── vendor/chart.min.js                # Chart.js (lokal, keine CDN-Dependency)
+│   ├── css/psyern-ah-public.css           # Fallback when framework is not active
+│   ├── js/psyern-ah-marketplace.js        # AJAX filter, sort, pagination
+│   ├── js/psyern-ah-listing.js            # Buy/Bid buttons, live countdown
+│   ├── js/psyern-ah-price-chart.js        # Chart.js wrapper for price history
+│   ├── vendor/chart.min.js                # Chart.js (local, no CDN dependency)
 │   └── templates/
 │       ├── marketplace.php
 │       ├── listing-detail.php
@@ -405,43 +405,43 @@ WP-Plugin_Psyerns_AuctionHouse/
 
 ---
 
-## 12. Polling-Intervalle (Default, admin-konfigurierbar)
+## 12. Polling Intervals (defaults, admin-configurable)
 
-| Direction | Intervall | Inhalt |
+| Direction | Interval | Content |
 |---|---|---|
-| Mod → WP (Push) | 30 s | Full-Upload (Listings, Transaktionen delta, Balances) |
-| Mod → WP (Poll) | 10 s | Offene Pending-Actions abholen |
-| Web → WP (Browser-Refresh) | 15 s | Auto-Refresh Marketplace / offene eigene Aufträge via fetch |
+| Mod → WP (push) | 30 s | Full upload (listings, transactions delta, balances) |
+| Mod → WP (poll) | 10 s | Fetch open pending actions |
+| Web → WP (browser refresh) | 15 s | Auto-refresh marketplace / own open jobs via fetch |
 
 ---
 
-## 13. Zusatz-Entscheidungen (aus Klärungsrunde)
+## 13. Additional Decisions (from clarification round)
 
-| # | Frage | Entscheidung |
+| # | Question | Decision |
 |---|---|---|
-| 11 | Outbid-Benachrichtigung | **Nein** — keine E-Mails. Nur in-site Badge/Liste unter `[psyerns_auctionhouse_my]` (Spalte „Status" zeigt „Überboten" / „Führend" / „Gewonnen"). |
-| 12 | Item-Icons | **Remote-URLs** — aus einer Item-Map-JSON auf dem WordPress (admin-pflegbar). Keine Asset-Kopien im Plugin. |
-| 13 | Statistik-Zeiträume | **Alle: 24h + 7d + 30d + all-time** — Tab-Umschaltung auf `[psyerns_auctionhouse_stats]`. |
-| 14 | Admin-Cancel | **Items zurück an Seller** — `admin_cancel` Pending-Action führt mod-seitig zu Pending-Pickup für den Seller. |
-| 15 | Sync-Modus | **Full-Sync** — Mod sendet bei jedem Push alle aktiven Listings. WP upsert-ersetzt. Transaktionen nur delta (seit `last_transaction_ts`). |
-| 16 | Preis-Graph | **C** — auf Listing-Detail automatisch + Stats-Tab „Preis-Trends" mit Item-Dropdown + freier Shortcode `[psyerns_auctionhouse_price_chart]`. Rendering via Chart.js. Zeiträume: 24h/7d/30d/all. Metriken: Ø-Preis (Linie) + Min/Max (Band) + Verkaufsanzahl (Bars). |
+| 11 | Outbid notification | **No** — no emails. Only in-site badge/list under `[psyerns_auctionhouse_my]` (status column shows "Outbid" / "Leading" / "Won"). |
+| 12 | Item icons | **Remote URLs** — from an item-map JSON on WordPress (admin-editable). No asset copies in the plugin. |
+| 13 | Statistics periods | **All: 24h + 7d + 30d + all-time** — tab switching on `[psyerns_auctionhouse_stats]`. |
+| 14 | Admin cancel | **Items back to seller** — `admin_cancel` pending action creates a pending pickup for the seller mod-side. |
+| 15 | Sync mode | **Full sync** — mod sends all active listings on every push. WP upsert-replaces. Transactions are delta only (since `last_transaction_ts`). |
+| 16 | Price chart | **C** — on listing detail automatically + stats tab "Price Trends" with item dropdown + free-form shortcode `[psyerns_auctionhouse_price_chart]`. Rendered via Chart.js. Periods: 24h/7d/30d/all. Metrics: avg price (line) + min/max (band) + sale count (bars). |
 
-## 14. Offene Technik-Details
+## 14. Open Technical Details
 
-**In v1 gelöst:**
-- [x] Paket-Größe des Pushes — kein Pagination/gzip in v1; Soft-Warn-Log wenn Payload > 1 MB (realistisch 20-60 KB bei 50-200 Listings). Bei echten Problemen nachrüsten.
-- [x] Item-Map-JSON — finalisiertes Schema: `{ version:1, default_icon_url, items: { "<item_class>": { display_name?, icon_url, rarity?, category_hint? } } }`. `rarity` steuert Card-Border-Farbe (common/uncommon/rare/epic/legendary).
+**Resolved in v1:**
+- [x] Push payload size — no pagination/gzip in v1; soft-warn log if payload > 1 MB (realistic 20-60 KB at 50-200 listings). Add later if actual problems arise.
+- [x] Item-map JSON — finalized schema: `{ version:1, default_icon_url, items: { "<item_class>": { display_name?, icon_url, rarity?, category_hint? } } }`. `rarity` controls card border color (common/uncommon/rare/epic/legendary).
 
-**Für v2 zurückgestellt:**
-- [ ] **Bid-History-Tabelle.** `handle_get_user_bids` zeigt aktuell nur Listings wo User noch `current_bidder_uid` ist — wenn User überboten wird und ein Dritter erneut überbietet, fällt das Listing aus der Liste. Echte Bid-Participation-Feeds brauchen entweder eine neue `psyern_ah_bid_history`-Tabelle oder Mod-seitigen Delta-Upload von Bids.
-- [ ] **Steam-UID-Helper konsolidieren.** Phase-2-Agenten (Listings, Pending-Actions) haben beide privat `get_current_steam_uid()` implementiert. In `Psyern_AH_Auth::get_current_steam_uid()` hochziehen.
+**Deferred to v2:**
+- [ ] **Bid history table.** `handle_get_user_bids` currently shows only listings where the user is still `current_bidder_uid` — when a user is outbid and a third party outbids again, the listing drops from the list. Real bid-participation feeds need either a new `psyern_ah_bid_history` table or a mod-side delta upload of bids.
+- [ ] **Consolidate Steam-UID helper.** Phase 2 agents (listings, pending-actions) each implemented a private `get_current_steam_uid()`. Lift into `Psyern_AH_Auth::get_current_steam_uid()`.
 
 ---
 
-## 15. Nächste Schritte
+## 15. Next Steps
 
-1. ✅ Brainstorming abgeschlossen
-2. ⏳ Spec-Review mit User
-3. ⏳ Design-Doc in `docs/superpowers/specs/2026-04-20-psyerns-auctionhouse-design.md` schreiben + committen
-4. ⏳ Übergabe an `writing-plans`-Skill für Implementierungs-Plan
-5. ⏳ Umsetzung: WP-Plugin + `PF_AH_Sync` im Framework
+1. ✅ Brainstorming complete
+2. ⏳ Spec review with user
+3. ⏳ Write design doc in `docs/superpowers/specs/2026-04-20-psyerns-auctionhouse-design.md` + commit
+4. ⏳ Hand over to `writing-plans` skill for implementation plan
+5. ⏳ Build: WP plugin + `PF_AH_Sync` in the framework
