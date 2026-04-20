@@ -9,8 +9,10 @@
  *   - PF_KillFeedManager (if enabled)
  *   - PF_DiscordIntegration (if enabled)
  *   - PF_AlertSystem (if enabled)
+ *   - PF_AH_Sync (AuctionHouse integration, separate config file)
  *
- * All settings come from the unified PsyernsFrameworkConfig.json via PF_RestConfig proxy.
+ * All settings come from the unified PsyernsFrameworkConfig.json via PF_RestConfig proxy,
+ * except PF_AH_Sync which uses its own PsyernsAuctionHouseConfig.json sibling file.
  */
 modded class MissionServer
 {
@@ -74,6 +76,8 @@ modded class MissionServer
 			PF_Logger.Log("LeaderboardExport initialized (interval: " + restCfg.GetLeaderboardExportInterval().ToString() + "s)");
 		}
 
+		PF_AH_Sync.GetInstance().Init();
+
 		PF_Logger.Log("REST initialization complete. " + enabledCount.ToString() + " feature(s) enabled.");
 	}
 
@@ -86,6 +90,8 @@ modded class MissionServer
 
 		if (g_PF_LeaderboardExport)
 			g_PF_LeaderboardExport.OnUpdate(timeslice);
+
+		PF_AH_Sync.GetInstance().OnUpdate(timeslice);
 	}
 
 	override void OnMissionFinish()
@@ -99,6 +105,8 @@ modded class MissionServer
 		g_PF_DiscordIntegration = null;
 		g_PF_AlertSystem = null;
 		g_PF_LeaderboardExport = null;
+
+		PF_AH_Sync.GetInstance().Shutdown();
 
 		PF_Logger.Log("REST subsystems shut down.");
 	}
