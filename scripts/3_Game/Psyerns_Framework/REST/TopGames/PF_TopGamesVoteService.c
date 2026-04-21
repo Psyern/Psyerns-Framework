@@ -7,10 +7,10 @@ PF_TopGamesVoteService GetPF_TopGamesVoteService()
 
 class PF_TopGamesVoteService : PF_RestBase
 {
-	void PF_TopGamesVoteService(string baseUrl, string serverToken)
+	void PF_TopGamesVoteService(string baseUrl, string apiKey)
 	{
 		g_PF_TopGamesVoteService = this;
-		RefreshConfig(baseUrl, serverToken);
+		RefreshConfig(baseUrl, apiKey);
 		Print("[PF-REST] TopGamesVoteService initialized");
 	}
 
