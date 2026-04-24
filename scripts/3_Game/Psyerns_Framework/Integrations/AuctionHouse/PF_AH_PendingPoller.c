@@ -13,7 +13,7 @@ class PF_AH_PendingPoller : PF_RestBase
 {
 	protected ref PF_AH_ActionExecutor m_Executor;
 
-	void PF_AH_PendingPoller(string wpUrl, string apiKey, PF_AH_ActionExecutor executor)
+	void PF_AH_PendingPoller(string baseUrl, string apiKey, PF_AH_ActionExecutor executor)
 	{
 		m_Executor = executor;
 	}

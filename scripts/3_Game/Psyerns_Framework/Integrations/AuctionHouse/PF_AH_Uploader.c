@@ -22,9 +22,9 @@ class PF_AH_Uploader : PF_RestBase
 	protected ref PF_AH_SyncState m_SyncState;
 	protected string m_CurrencyMode;
 
-	void PF_AH_Uploader(string wpUrl, string apiKey, string currencyMode)
+	void PF_AH_Uploader(string baseUrl, string apiKey, string currencyMode)
 	{
-		// PF_RestBase constructor already stored wpUrl + apiKey
+		// PF_RestBase constructor already stored baseUrl + apiKey
 		m_CurrencyMode = currencyMode;
 		m_SyncState = PF_AH_SyncState.Load();
 	}
