@@ -26,6 +26,7 @@ class PF_Admin {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_init', array( $this, 'handle_whitelist_actions' ) );
+		add_action( 'admin_init', array( $this, 'handle_leaderboard_reset' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
 
@@ -275,6 +276,32 @@ class PF_Admin {
 			wp_safe_redirect( admin_url( 'admin.php?page=pf-whitelist&msg=removed' ) );
 			exit;
 		}
+	}
+
+	/**
+	 * Handle the "Reset Leaderboard" form submission from the Leaderboard tab.
+	 *
+	 * Truncates the leaderboard table and redirects with a status message.
+	 * Player rows will repopulate from the next DayZ-server upload (within 60s).
+	 *
+	 * @return void
+	 */
+	public function handle_leaderboard_reset() {
+		if ( ! isset( $_POST['pf_reset_leaderboard'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'pf_reset_leaderboard_nonce' );
+
+		$result = PF_Database::reset_leaderboard();
+		$msg    = ( false !== $result ) ? 'reset_ok' : 'reset_fail';
+
+		wp_safe_redirect( admin_url( 'admin.php?page=pf-settings&tab=leaderboard&msg=' . $msg ) );
+		exit;
 	}
 
 	/**

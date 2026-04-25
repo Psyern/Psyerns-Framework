@@ -30,6 +30,12 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 		<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'psyerns-framework' ); ?></p></div>
 	<?php endif; ?>
 
+	<?php if ( isset( $_GET['msg'] ) && 'reset_ok' === $_GET['msg'] ) : ?>
+		<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Leaderboard data wiped. Fresh data will appear on the next server upload (within ~60s).', 'psyerns-framework' ); ?></p></div>
+	<?php elseif ( isset( $_GET['msg'] ) && 'reset_fail' === $_GET['msg'] ) : ?>
+		<div class="notice notice-error is-dismissible"><p><?php esc_html_e( 'Failed to reset the leaderboard table. Check the WordPress error log.', 'psyerns-framework' ); ?></p></div>
+	<?php endif; ?>
+
 	<!-- ── Tab Navigation (WordPress native) ── -->
 	<nav class="nav-tab-wrapper" role="tablist">
 		<?php foreach ( $tabs as $slug => $tab ) : ?>
@@ -178,6 +184,37 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 
 			<?php submit_button( __( 'Save Leaderboard Settings', 'psyerns-framework' ) ); ?>
 		</form>
+
+		<?php
+		global $wpdb;
+		$lb_table  = PF_Database::get_table_name( 'leaderboard' );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$row_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$lb_table}" );
+		?>
+		<div class="pf-card pf-card--danger">
+			<h3 style="color:#b32d2e;">
+				<span class="dashicons dashicons-warning" style="color:#b32d2e;"></span>
+				<?php esc_html_e( 'Danger Zone', 'psyerns-framework' ); ?>
+			</h3>
+			<p><strong><?php esc_html_e( 'Reset Leaderboard', 'psyerns-framework' ); ?></strong></p>
+			<p class="description">
+				<?php
+				printf(
+					/* translators: %d = current row count */
+					esc_html__( 'Wipes all %d player rows from the leaderboard table (PvE + PvP). Settings, themes, whitelist and killfeed are NOT affected. The DayZ server will repopulate the table on its next upload (within ~60 seconds).', 'psyerns-framework' ),
+					(int) $row_count
+				);
+				?>
+			</p>
+			<form method="post" action="" onsubmit="return confirm('<?php echo esc_js( __( 'Really wipe all leaderboard data? This cannot be undone.', 'psyerns-framework' ) ); ?>');">
+				<?php wp_nonce_field( 'pf_reset_leaderboard_nonce' ); ?>
+				<input type="hidden" name="pf_reset_leaderboard" value="1" />
+				<button type="submit" class="button button-secondary" style="color:#b32d2e;border-color:#b32d2e;">
+					<span class="dashicons dashicons-trash" style="vertical-align:middle;"></span>
+					<?php esc_html_e( 'Reset Leaderboard Data', 'psyerns-framework' ); ?>
+				</button>
+			</form>
+		</div>
 
 	<?php /* ════════════════════════════════════ TAB: THEMES ══ */ ?>
 	<?php elseif ( 'themes' === $active_tab ) : ?>

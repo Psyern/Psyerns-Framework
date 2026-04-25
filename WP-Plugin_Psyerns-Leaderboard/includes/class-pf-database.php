@@ -106,4 +106,24 @@ class PF_Database {
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::get_table_name( 'killfeed' ) );
 		// phpcs:enable
 	}
+
+	/**
+	 * Empty the leaderboard table. Player rows will repopulate on next server upload.
+	 *
+	 * Also clears the cached leaderboard meta transient so the public endpoint
+	 * does not return stale faction-points until the next upload arrives.
+	 *
+	 * @return int|false Number of affected rows, or false on failure.
+	 */
+	public static function reset_leaderboard() {
+		global $wpdb;
+		$table = self::get_table_name( 'leaderboard' );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$result = $wpdb->query( "TRUNCATE TABLE {$table}" );
+
+		delete_transient( 'pf_leaderboard_meta' );
+
+		return $result;
+	}
 }
