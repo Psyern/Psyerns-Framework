@@ -72,7 +72,18 @@
       "Bash(git -C /c/Users/Administrator/Desktop/Psyerns_Wordpress_Plugins push -u origin main)",
       "Bash(git -C /c/Users/Administrator/Desktop/Psyerns_Framework/Psyerns_Framework push origin master)",
       "Bash(git -C \"C:/Users/Administrator/Desktop/Psyerns_Framework\" log --oneline --all -- \"WP-Plugin_Psyerns-Leaderboard\")",
-      "Bash(git -C \"C:/Users/Administrator/Desktop/Psyerns_Framework\" status WP-Plugin_Psyerns-Leaderboard)"
+      "Bash(git -C \"C:/Users/Administrator/Desktop/Psyerns_Framework\" status WP-Plugin_Psyerns-Leaderboard)",
+      "Bash(mv \"C:/Users/Administrator/Desktop/psyerns-leaderboard/psyerns-framework.php\" \"C:/Users/Administrator/Desktop/psyerns-leaderboard/psyerns-leaderboard.php\")",
+      "Bash(mv \"C:/Users/Administrator/Desktop/psyerns-leaderboard/languages/psyerns-framework.pot\" \"C:/Users/Administrator/Desktop/psyerns-leaderboard/languages/psyerns-leaderboard.pot\")",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" init -b main)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" add .)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" status --short)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" ls-files)",
+      "Bash(git -C C:/Users/Administrator/Desktop/psyerns-leaderboard commit -m ' *)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" log --oneline)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" rev-parse HEAD)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" remote add origin https://github.com/Psyern/Psyerns_Leaderboard_Plugin.git)",
+      "Bash(git -C \"C:/Users/Administrator/Desktop/psyerns-leaderboard\" push -u origin main)"
     ]
   }
 }
