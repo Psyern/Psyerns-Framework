@@ -1,52 +1,7 @@
-// --- Ninjin Tracking Mod deserialization classes ---
-
-class PF_NinjinCategoryKills
-{
-	int PlayersBased;
-	int ZombiesBased;
-	int AIBased;
-	int AnimalsBased;
-
-	void PF_NinjinCategoryKills()
-	{
-		PlayersBased = 0;
-		ZombiesBased = 0;
-		AIBased = 0;
-		AnimalsBased = 0;
-	}
-}
-
-class PF_NinjinCategoryDeaths
-{
-	int SelfInflicted;
-	int PlayersBased;
-	int ZombiesBased;
-	int AnimalsBased;
-
-	void PF_NinjinCategoryDeaths()
-	{
-		SelfInflicted = 0;
-		PlayersBased = 0;
-		ZombiesBased = 0;
-		AnimalsBased = 0;
-	}
-}
-
-class PF_NinjinCategoryRanges
-{
-	int PlayersBased;
-	int ZombiesBased;
-	int AIBased;
-	int AnimalsBased;
-
-	void PF_NinjinCategoryRanges()
-	{
-		PlayersBased = 0;
-		ZombiesBased = 0;
-		AIBased = 0;
-		AnimalsBased = 0;
-	}
-}
+// --- Ninjin Tracking Mod deserialization ---
+// The Ninjin mod writes CategoryKills / CategoryDeaths / CategoryLongestRanges
+// as dynamic string-keyed maps, not fixed-field objects. We must mirror that,
+// otherwise all category data deserializes to 0.
 
 class PF_NinjinPlayerData
 {
@@ -61,9 +16,17 @@ class PF_NinjinPlayerData
 	int HardlineReputation;
 	string LastLoginDate;
 	int WarBossKills;
-	ref PF_NinjinCategoryKills CategoryKills;
-	ref PF_NinjinCategoryDeaths CategoryDeaths;
-	ref PF_NinjinCategoryRanges CategoryLongestRanges;
+	ref map<string, int> CategoryKills;
+	ref map<string, int> CategoryDeaths;
+	ref map<string, int> CategoryLongestRanges;
+
+	// Extended stats (Ninjin_LeaderBoard mirror)
+	int ShotsFired;
+	int ShotsHit;
+	int Headshots;
+	float DistanceTravelled;
+	float DistanceOnFoot;
+	float DistanceInVehicle;
 
 	void PF_NinjinPlayerData()
 	{
@@ -78,9 +41,15 @@ class PF_NinjinPlayerData
 		HardlineReputation = 0;
 		LastLoginDate = "";
 		WarBossKills = 0;
-		CategoryKills = new PF_NinjinCategoryKills();
-		CategoryDeaths = new PF_NinjinCategoryDeaths();
-		CategoryLongestRanges = new PF_NinjinCategoryRanges();
+		CategoryKills = new map<string, int>();
+		CategoryDeaths = new map<string, int>();
+		CategoryLongestRanges = new map<string, int>();
+		ShotsFired = 0;
+		ShotsHit = 0;
+		Headshots = 0;
+		DistanceTravelled = 0.0;
+		DistanceOnFoot = 0.0;
+		DistanceInVehicle = 0.0;
 	}
 }
 
@@ -174,84 +143,91 @@ class PF_LeaderboardReader
 		p.warBossKills = raw.WarBossKills;
 		p.hardlineReputation = raw.HardlineReputation;
 
-		// Total kills = sum of all CategoryKills
-		int totalKills = 0;
-		int totalDeaths = 0;
+		// Total kills = sum of all CategoryKills entries
+		int totalKills = SumMap(raw.CategoryKills);
+		int aiKills = 0;
+		if (raw.CategoryKills && raw.CategoryKills.Contains("AI"))
+			aiKills = raw.CategoryKills.Get("AI");
 
-		if (raw.CategoryKills)
-		{
-			totalKills = raw.CategoryKills.PlayersBased + raw.CategoryKills.ZombiesBased + raw.CategoryKills.AIBased + raw.CategoryKills.AnimalsBased;
-			p.aiKills = raw.CategoryKills.AIBased;
-		}
-
-		if (raw.CategoryDeaths)
-		{
-			totalDeaths = raw.CategoryDeaths.SelfInflicted + raw.CategoryDeaths.PlayersBased + raw.CategoryDeaths.ZombiesBased + raw.CategoryDeaths.AnimalsBased;
-		}
+		int totalDeaths = SumMap(raw.CategoryDeaths);
+		int suicides = 0;
+		if (raw.CategoryDeaths && raw.CategoryDeaths.Contains("SelfInflicted"))
+			suicides = raw.CategoryDeaths.Get("SelfInflicted");
 
 		p.kills = totalKills;
 		p.deaths = totalDeaths;
+		p.aiKills = aiKills;
+		p.totalDeaths = totalDeaths;
+		p.suicides = suicides;
 
-		// Longest shot = max of all CategoryLongestRanges
-		float maxRange = 0;
-		if (raw.CategoryLongestRanges)
-		{
-			if (raw.CategoryLongestRanges.PlayersBased > maxRange)
-				maxRange = raw.CategoryLongestRanges.PlayersBased;
-			if (raw.CategoryLongestRanges.ZombiesBased > maxRange)
-				maxRange = raw.CategoryLongestRanges.ZombiesBased;
-			if (raw.CategoryLongestRanges.AIBased > maxRange)
-				maxRange = raw.CategoryLongestRanges.AIBased;
-			if (raw.CategoryLongestRanges.AnimalsBased > maxRange)
-				maxRange = raw.CategoryLongestRanges.AnimalsBased;
-		}
-		p.longestShot = maxRange;
+		// Longest shot = max of all CategoryLongestRanges entries
+		p.longestShot = MaxMap(raw.CategoryLongestRanges);
 		p.playtime = 0;
 
-		// Serialize category objects to JSON strings for WordPress payload
-		p.categoryKillsJson = SerializeCategoryKills(raw.CategoryKills);
-		p.categoryDeathsJson = SerializeCategoryDeaths(raw.CategoryDeaths);
-		p.categoryLongestRangesJson = SerializeCategoryRanges(raw.CategoryLongestRanges);
+		// Extended stats
+		p.shotsFired = raw.ShotsFired;
+		p.shotsHit = raw.ShotsHit;
+		p.headshots = raw.Headshots;
+		p.distanceTravelled = raw.DistanceTravelled;
+		p.distanceOnFoot = raw.DistanceOnFoot;
+		p.distanceInVehicle = raw.DistanceInVehicle;
+
+		// Serialize maps to JSON strings for WordPress payload (preserves all keys)
+		p.categoryKillsJson = SerializeIntMap(raw.CategoryKills);
+		p.categoryDeathsJson = SerializeIntMap(raw.CategoryDeaths);
+		p.categoryLongestRangesJson = SerializeIntMap(raw.CategoryLongestRanges);
 
 		return p;
 	}
 
-	protected static string SerializeCategoryKills(PF_NinjinCategoryKills cat)
+	protected static int SumMap(map<string, int> m)
 	{
-		if (!cat)
-			return "{}";
+		int total;
+		int idx;
 
-		PF_JsonBuilder b = PF_JsonBuilder.Begin();
-		b.AddInt("PlayersBased", cat.PlayersBased);
-		b.AddInt("ZombiesBased", cat.ZombiesBased);
-		b.AddInt("AIBased", cat.AIBased);
-		b.AddInt("AnimalsBased", cat.AnimalsBased);
-		return b.Build();
+		if (!m)
+			return 0;
+
+		total = 0;
+		for (idx = 0; idx < m.Count(); idx++)
+		{
+			total = total + m.GetElement(idx);
+		}
+		return total;
 	}
 
-	protected static string SerializeCategoryDeaths(PF_NinjinCategoryDeaths cat)
+	protected static int MaxMap(map<string, int> m)
 	{
-		if (!cat)
-			return "{}";
+		int max;
+		int value;
+		int idx;
 
-		PF_JsonBuilder b = PF_JsonBuilder.Begin();
-		b.AddInt("SelfInflicted", cat.SelfInflicted);
-		b.AddInt("PlayersBased", cat.PlayersBased);
-		b.AddInt("ZombiesBased", cat.ZombiesBased);
-		b.AddInt("AnimalsBased", cat.AnimalsBased);
-		return b.Build();
+		if (!m)
+			return 0;
+
+		max = 0;
+		for (idx = 0; idx < m.Count(); idx++)
+		{
+			value = m.GetElement(idx);
+			if (value > max)
+				max = value;
+		}
+		return max;
 	}
 
-	protected static string SerializeCategoryRanges(PF_NinjinCategoryRanges cat)
+	protected static string SerializeIntMap(map<string, int> m)
 	{
-		if (!cat)
+		int idx;
+		PF_JsonBuilder b;
+
+		if (!m || m.Count() == 0)
 			return "{}";
 
-		PF_JsonBuilder b = PF_JsonBuilder.Begin();
-		b.AddInt("PlayersBased", cat.PlayersBased);
-		b.AddInt("ZombiesBased", cat.ZombiesBased);
-		b.AddInt("AIBased", cat.AIBased);
-		b.AddInt("AnimalsBased", cat.AnimalsBased);
+		b = PF_JsonBuilder.Begin();
+		for (idx = 0; idx < m.Count(); idx++)
+		{
+			b.AddInt(m.GetKey(idx), m.GetElement(idx));
+		}
 		return b.Build();
 	}
 }

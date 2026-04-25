@@ -21,6 +21,16 @@ class PF_WP_PlayerData
 	string categoryDeathsJson;
 	string categoryLongestRangesJson;
 
+	// Ninjin extended stats
+	int shotsFired;
+	int shotsHit;
+	int headshots;
+	float distanceTravelled;
+	float distanceOnFoot;
+	float distanceInVehicle;
+	int totalDeaths;
+	int suicides;
+
 	void PF_WP_PlayerData()
 	{
 		playerID = "";
@@ -43,6 +53,14 @@ class PF_WP_PlayerData
 		categoryKillsJson = "{}";
 		categoryDeathsJson = "{}";
 		categoryLongestRangesJson = "{}";
+		shotsFired = 0;
+		shotsHit = 0;
+		headshots = 0;
+		distanceTravelled = 0.0;
+		distanceOnFoot = 0.0;
+		distanceInVehicle = 0.0;
+		totalDeaths = 0;
+		suicides = 0;
 	}
 }
 
@@ -113,6 +131,14 @@ class PF_WordPressPayload : PF_JsonPayload
 			pb.AddInt("warLevel", p.warLevel);
 			pb.AddInt("warBossKills", p.warBossKills);
 			pb.AddInt("hardlineReputation", p.hardlineReputation);
+			pb.AddInt("shotsFired", p.shotsFired);
+			pb.AddInt("shotsHit", p.shotsHit);
+			pb.AddInt("headshots", p.headshots);
+			pb.AddFloat("distanceTravelled", p.distanceTravelled);
+			pb.AddFloat("distanceOnFoot", p.distanceOnFoot);
+			pb.AddFloat("distanceInVehicle", p.distanceInVehicle);
+			pb.AddInt("totalDeaths", p.totalDeaths);
+			pb.AddInt("suicides", p.suicides);
 			pb.AddRaw("categoryKills", p.categoryKillsJson);
 			pb.AddRaw("categoryDeaths", p.categoryDeathsJson);
 			pb.AddRaw("categoryLongestRanges", p.categoryLongestRangesJson);
