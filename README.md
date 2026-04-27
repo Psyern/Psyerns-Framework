@@ -1,7 +1,7 @@
 # Psyerns Framework
 
 <p align="center">
-  <img src="data/Psyerns_Framework.mp4" alt="Psyerns Framework" width="800">
+  <img src="data/psyernsframework_banner.png" alt="Psyerns Framework" width="800">
 </p>
 
 <p align="center">
