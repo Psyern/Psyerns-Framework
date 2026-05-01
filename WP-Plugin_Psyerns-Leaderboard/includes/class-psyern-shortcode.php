@@ -94,18 +94,32 @@ class Psyern_Shortcode {
 			PF_VERSION,
 			true
 		);
+		$enabled_pvp = get_option( 'pf_columns_pvp', '' );
+		$enabled_pve = get_option( 'pf_columns_pve', '' );
+		$cols_pvp    = $enabled_pvp ? json_decode( $enabled_pvp, true ) : array_keys( PF_Admin::get_column_definitions() );
+		$cols_pve    = $enabled_pve ? json_decode( $enabled_pve, true ) : array_keys( PF_Admin::get_column_definitions() );
+		if ( ! is_array( $cols_pvp ) ) { $cols_pvp = array_keys( PF_Admin::get_column_definitions() ); }
+		if ( ! is_array( $cols_pve ) ) { $cols_pve = array_keys( PF_Admin::get_column_definitions() ); }
+
 		wp_localize_script( 'psyern-leaderboard', 'psyernConfig', array(
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'restUrl' => esc_url_raw( rest_url( 'psyern/v1' ) ),
 			'nonce'   => wp_create_nonce( 'psyern_leaderboard_nonce' ),
+			'columns' => array(
+				'pvp' => $cols_pvp,
+				'pve' => $cols_pve,
+			),
 			'i18n'    => array(
-				'kills'    => __( 'Kills', 'psyerns-framework' ),
-				'deaths'   => __( 'Deaths', 'psyerns-framework' ),
-				'kd'       => __( 'K/D', 'psyerns-framework' ),
-				'playtime' => __( 'Playtime', 'psyerns-framework' ),
-				'score'    => __( 'Score', 'psyerns-framework' ),
-				'loading'  => __( 'Loading...', 'psyerns-framework' ),
-				'error'    => __( 'Failed to load leaderboard data.', 'psyerns-framework' ),
+				'kills'     => __( 'Kills', 'psyerns-framework' ),
+				'deaths'    => __( 'Deaths', 'psyerns-framework' ),
+				'kd'        => __( 'K/D', 'psyerns-framework' ),
+				'playtime'  => __( 'Playtime', 'psyerns-framework' ),
+				'headshots' => __( 'HS', 'psyerns-framework' ),
+				'accuracy'  => __( 'Acc %', 'psyerns-framework' ),
+				'distance'  => __( 'Dist', 'psyerns-framework' ),
+				'score'     => __( 'Score', 'psyerns-framework' ),
+				'loading'   => __( 'Loading...', 'psyerns-framework' ),
+				'error'     => __( 'Failed to load leaderboard data.', 'psyerns-framework' ),
 			),
 		) );
 	}

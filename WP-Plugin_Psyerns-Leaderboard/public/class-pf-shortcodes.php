@@ -94,13 +94,16 @@ class PF_Shortcodes {
 				'pve' => self::get_enabled_columns( 'pve' ),
 			),
 			'i18n'    => array(
-				'kills'    => __( 'Kills', 'psyerns-framework' ),
-				'deaths'   => __( 'Deaths', 'psyerns-framework' ),
-				'kd'       => __( 'K/D', 'psyerns-framework' ),
-				'playtime' => __( 'Playtime', 'psyerns-framework' ),
-				'score'    => __( 'Score', 'psyerns-framework' ),
-				'loading'  => __( 'Loading...', 'psyerns-framework' ),
-				'error'    => __( 'Failed to load leaderboard data.', 'psyerns-framework' ),
+				'kills'     => __( 'Kills', 'psyerns-framework' ),
+				'deaths'    => __( 'Deaths', 'psyerns-framework' ),
+				'kd'        => __( 'K/D', 'psyerns-framework' ),
+				'playtime'  => __( 'Playtime', 'psyerns-framework' ),
+				'headshots' => __( 'HS', 'psyerns-framework' ),
+				'accuracy'  => __( 'Acc %', 'psyerns-framework' ),
+				'distance'  => __( 'Dist', 'psyerns-framework' ),
+				'score'     => __( 'Score', 'psyerns-framework' ),
+				'loading'   => __( 'Loading...', 'psyerns-framework' ),
+				'error'     => __( 'Failed to load leaderboard data.', 'psyerns-framework' ),
 			),
 		) );
 	}

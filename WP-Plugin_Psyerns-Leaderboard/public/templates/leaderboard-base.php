@@ -156,6 +156,15 @@ $col = function( $key ) use ( &$_enabled_cols ) {
 				<?php if ( $col( 'reputation' ) ) : ?>
 					<th scope="col" data-col="reputation"><?php esc_html_e( 'Rep', 'psyerns-framework' ); ?></th>
 				<?php endif; ?>
+				<?php if ( $col( 'headshots' ) ) : ?>
+					<th scope="col" data-col="headshots"><?php esc_html_e( 'HS', 'psyerns-framework' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $col( 'accuracy' ) ) : ?>
+					<th scope="col" data-col="accuracy"><?php esc_html_e( 'Acc %', 'psyerns-framework' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $col( 'distance' ) ) : ?>
+					<th scope="col" data-col="distance"><?php esc_html_e( 'Dist', 'psyerns-framework' ); ?></th>
+				<?php endif; ?>
 				<?php if ( $col( 'playtime' ) && $show_playtime ) : ?>
 					<th scope="col" data-col="playtime"><?php esc_html_e( 'Playtime', 'psyerns-framework' ); ?></th>
 				<?php endif; ?>

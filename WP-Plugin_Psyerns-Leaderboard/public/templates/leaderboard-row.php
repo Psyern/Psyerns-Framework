@@ -23,6 +23,9 @@ if ( 'EAST' === $faction ) {
 }
 $boss_kills = absint( $p['war_boss_kills'] ?? 0 );
 $reputation = absint( $p['hardline_reputation'] ?? 0 );
+$headshots  = absint( $p['headshots'] ?? 0 );
+$accuracy   = (float) ( $p['accuracy'] ?? 0 );
+$dist_km    = (float) ( $p['distance_travelled'] ?? 0 ) / 1000.0;
 ?>
 <tr>
 	<td class="psyern-lb__rank" aria-label="<?php printf( esc_attr__( 'Rank %d', 'psyerns-framework' ), $rank ); ?>"><?php echo esc_html( $rank ); ?></td>
@@ -47,6 +50,15 @@ $reputation = absint( $p['hardline_reputation'] ?? 0 );
 	</td>
 	<td class="psyern-lb__boss-kills"><?php echo ( $boss_kills > 0 ) ? esc_html( $boss_kills ) : ''; ?></td>
 	<td class="psyern-lb__reputation"><?php echo ( $reputation > 0 ) ? esc_html( number_format_i18n( $reputation ) ) : ''; ?></td>
+	<?php if ( isset( $col ) && is_callable( $col ) && $col( 'headshots' ) ) : ?>
+		<td class="psyern-lb__headshots"><?php echo ( $headshots > 0 ) ? esc_html( number_format_i18n( $headshots ) ) : ''; ?></td>
+	<?php endif; ?>
+	<?php if ( isset( $col ) && is_callable( $col ) && $col( 'accuracy' ) ) : ?>
+		<td class="psyern-lb__accuracy"><?php echo ( $accuracy > 0 ) ? esc_html( number_format_i18n( $accuracy, 1 ) . '%' ) : ''; ?></td>
+	<?php endif; ?>
+	<?php if ( isset( $col ) && is_callable( $col ) && $col( 'distance' ) ) : ?>
+		<td class="psyern-lb__distance"><?php echo ( $dist_km > 0 ) ? esc_html( number_format_i18n( $dist_km, 1 ) . ' km' ) : ''; ?></td>
+	<?php endif; ?>
 	<?php if ( $show_playtime ) : ?>
 		<td class="psyern-lb__playtime"><?php echo esc_html( $pt_h . 'h ' . $pt_m . 'm' ); ?></td>
 	<?php endif; ?>

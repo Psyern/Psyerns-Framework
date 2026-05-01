@@ -71,6 +71,14 @@ class PF_Database {
 			war_level INT DEFAULT 0,
 			war_boss_kills INT DEFAULT 0,
 			hardline_reputation INT DEFAULT 0,
+			shots_fired INT DEFAULT 0,
+			shots_hit INT DEFAULT 0,
+			headshots INT DEFAULT 0,
+			distance_travelled FLOAT DEFAULT 0,
+			distance_on_foot FLOAT DEFAULT 0,
+			distance_in_vehicle FLOAT DEFAULT 0,
+			total_deaths INT DEFAULT 0,
+			suicides INT DEFAULT 0,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			UNIQUE KEY steam_board (steam_id, board_type)
 		) {$charset};

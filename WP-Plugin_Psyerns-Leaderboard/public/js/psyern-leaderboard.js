@@ -113,7 +113,7 @@
 	 * @returns {string[]}
 	 */
 	function getCols(mode) {
-		var allCols = ['rank','avatar','name','kills','deaths','kd','faction','boss','reputation','playtime'];
+		var allCols = ['rank','avatar','name','kills','deaths','kd','faction','boss','reputation','headshots','accuracy','distance','playtime'];
 		if (config.columns && config.columns[mode] && config.columns[mode].length) {
 			return config.columns[mode];
 		}
@@ -142,6 +142,9 @@
 			faction:    'Faction',
 			boss:       'Boss',
 			reputation: 'Rep',
+			headshots:  i18n.headshots  || 'HS',
+			accuracy:   i18n.accuracy   || 'Acc %',
+			distance:   i18n.distance   || 'Dist',
 			playtime:   i18n.playtime   || 'Playtime',
 		};
 
@@ -199,6 +202,18 @@
 
 			if (has('boss'))       { html += '<td class="psyern-lb__boss-kills">' + (bk > 0 ? bk : '') + '</td>'; }
 			if (has('reputation')) { html += '<td class="psyern-lb__reputation">' + (rep > 0 ? fmtN(rep) : '') + '</td>'; }
+			if (has('headshots'))  {
+				var hs = parseInt(p.headshots, 10) || 0;
+				html += '<td class="psyern-lb__headshots">' + (hs > 0 ? fmtN(hs) : '') + '</td>';
+			}
+			if (has('accuracy')) {
+				var acc = parseFloat(p.accuracy) || 0;
+				html += '<td class="psyern-lb__accuracy">' + (acc > 0 ? acc.toFixed(1) + '%' : '') + '</td>';
+			}
+			if (has('distance')) {
+				var distKm = (parseFloat(p.distance_travelled) || 0) / 1000;
+				html += '<td class="psyern-lb__distance">' + (distKm > 0 ? distKm.toFixed(1) + ' km' : '') + '</td>';
+			}
 			if (has('playtime'))   { html += '<td class="psyern-lb__playtime">' + pt + '</td>'; }
 
 			html += '</tr>';

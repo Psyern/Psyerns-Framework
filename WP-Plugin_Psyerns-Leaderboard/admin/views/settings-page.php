@@ -23,7 +23,7 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 
 	<h1 class="pf-admin-title">
 		<span class="dashicons dashicons-shield"></span>
-		<?php esc_html_e( 'Psyerns Framework', 'psyerns-framework' ); ?>
+		<?php esc_html_e( 'Psyerns Leaderboard', 'psyerns-framework' ); ?>
 	</h1>
 
 	<?php if ( isset( $_GET['settings-updated'] ) ) : ?>

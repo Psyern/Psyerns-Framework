@@ -37,8 +37,8 @@ class PF_Admin {
 	 */
 	public function register_menu() {
 		add_menu_page(
-			__( 'Psyerns Framework', 'psyerns-framework' ),
-			__( 'Psyerns Framework', 'psyerns-framework' ),
+			__( 'Psyerns Leaderboard', 'psyerns-framework' ),
+			__( 'Psyerns Leaderboard', 'psyerns-framework' ),
 			'manage_options',
 			'pf-settings',
 			array( $this, 'render_settings_page' ),
@@ -78,6 +78,9 @@ class PF_Admin {
 			'faction'    => __( 'Faction / War Level', 'psyerns-framework' ),
 			'boss'       => __( 'Boss Kills', 'psyerns-framework' ),
 			'reputation' => __( 'Reputation', 'psyerns-framework' ),
+			'headshots'  => __( 'Headshots', 'psyerns-framework' ),
+			'accuracy'   => __( 'Accuracy %', 'psyerns-framework' ),
+			'distance'   => __( 'Distance (km)', 'psyerns-framework' ),
 			'playtime'   => __( 'Playtime', 'psyerns-framework' ),
 		);
 	}

@@ -103,6 +103,10 @@ class Psyern_Main {
 		// Format rows to match the shape the frontend expects.
 		$formatted = array();
 		foreach ( $players as $row ) {
+			$shots_fired = (int) ( $row['shots_fired'] ?? 0 );
+			$shots_hit   = (int) ( $row['shots_hit'] ?? 0 );
+			$accuracy    = ( $shots_fired > 0 ) ? round( ( $shots_hit / $shots_fired ) * 100, 1 ) : 0.0;
+
 			$formatted[] = array(
 				'steam_id'            => $row['steam_id'],
 				'player_name'         => $row['player_name'],
@@ -116,6 +120,15 @@ class Psyern_Main {
 				'war_level'           => (int) ( $row['war_level'] ?? 0 ),
 				'war_boss_kills'      => (int) ( $row['war_boss_kills'] ?? 0 ),
 				'hardline_reputation' => (int) ( $row['hardline_reputation'] ?? 0 ),
+				'shots_fired'         => $shots_fired,
+				'shots_hit'           => $shots_hit,
+				'headshots'           => (int) ( $row['headshots'] ?? 0 ),
+				'accuracy'            => $accuracy,
+				'distance_travelled'  => (float) ( $row['distance_travelled'] ?? 0 ),
+				'distance_on_foot'    => (float) ( $row['distance_on_foot'] ?? 0 ),
+				'distance_in_vehicle' => (float) ( $row['distance_in_vehicle'] ?? 0 ),
+				'total_deaths'        => (int) ( $row['total_deaths'] ?? 0 ),
+				'suicides'            => (int) ( $row['suicides'] ?? 0 ),
 			);
 		}
 
