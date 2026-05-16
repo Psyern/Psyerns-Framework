@@ -87,7 +87,7 @@ class Psyern_Main {
 		// than prepared (wpdb::prepare can't bind identifiers).
 		$sort_map = array(
 			'name'             => 'player_name',
-			'faction'          => 'war_faction',
+			'faction'          => 'war_level',
 			'kills'            => 'kills',
 			'deaths'           => 'deaths',
 			'kd'               => 'CASE WHEN deaths > 0 THEN (kills / deaths) ELSE kills END',
@@ -110,10 +110,18 @@ class Psyern_Main {
 			$order_clause = $order_col . ' DESC';
 		}
 
+		// Each row also carries its original points-based rank, computed via a
+		// correlated subquery: count how many other players in the same
+		// board_type have a STRICTLY higher score on the default order column,
+		// then +1. Ties share the same rank. This stays correct even when the
+		// caller sorts by some other column — the displayed # column always
+		// reflects the player's true leaderboard placement.
+		$rank_expr = "(SELECT 1 + COUNT(*) FROM {$table} t2 WHERE t2.board_type = t.board_type AND t2.{$order_col} > t.{$order_col})";
+
 		if ( ! empty( $search ) ) {
 			$like    = '%' . $wpdb->esc_like( $search ) . '%';
 			$players = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM {$table} WHERE board_type = %s AND player_name LIKE %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
+				"SELECT t.*, {$rank_expr} AS original_rank FROM {$table} t WHERE t.board_type = %s AND t.player_name LIKE %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
 				$board_type, $like, $per_page, $offset
 			), ARRAY_A );
 			$total   = (int) $wpdb->get_var( $wpdb->prepare(
@@ -122,7 +130,7 @@ class Psyern_Main {
 			) );
 		} else {
 			$players = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM {$table} WHERE board_type = %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
+				"SELECT t.*, {$rank_expr} AS original_rank FROM {$table} t WHERE t.board_type = %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
 				$board_type, $per_page, $offset
 			), ARRAY_A );
 			$total   = (int) $wpdb->get_var( $wpdb->prepare(
@@ -132,21 +140,21 @@ class Psyern_Main {
 		}
 
 		// Format rows to match the shape the frontend expects.
-		// Rank is computed from the position WITHIN the current sorted result
-		// set + pagination offset. That way clicking a sortable column changes
-		// the rank numbers as the server expects them — independent of any
-		// client-side recomputation, so a stale JS bundle in the browser cache
-		// can't show the old placement after a sort change.
+		// Rank: prefer the original points-based rank from the subquery so the
+		// player's true leaderboard placement stays visible even when the user
+		// re-sorts by a different column. Only fall back to positional numbering
+		// if the subquery couldn't run for some reason.
 		$formatted   = array();
 		$rank_cursor = $offset;
 		foreach ( $players as $row ) {
 			$rank_cursor++;
+			$original_rank = isset( $row['original_rank'] ) ? (int) $row['original_rank'] : $rank_cursor;
 			$shots_fired = (int) ( $row['shots_fired'] ?? 0 );
 			$shots_hit   = (int) ( $row['shots_hit'] ?? 0 );
 			$accuracy    = ( $shots_fired > 0 ) ? round( ( $shots_hit / $shots_fired ) * 100, 1 ) : 0.0;
 
 			$formatted[] = array(
-				'rank'                => $rank_cursor,
+				'rank'                => $original_rank,
 				'steam_id'            => $row['steam_id'],
 				'player_name'         => $row['player_name'],
 				'kills'               => (int) $row['kills'],
