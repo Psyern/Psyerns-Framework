@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'PF_VERSION', '1.1.1' );
-define( 'PF_DB_VERSION', '1.2.0' );
+define( 'PF_DB_VERSION', '1.3.0' );
 define( 'PF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -34,6 +34,8 @@ require_once PF_PLUGIN_DIR . 'includes/class-pf-server-status.php';
 require_once PF_PLUGIN_DIR . 'includes/class-pf-leaderboard.php';
 require_once PF_PLUGIN_DIR . 'includes/class-pf-whitelist.php';
 require_once PF_PLUGIN_DIR . 'includes/class-pf-players.php';
+require_once PF_PLUGIN_DIR . 'includes/class-pf-category-map.php';
+require_once PF_PLUGIN_DIR . 'includes/class-pf-player-details.php';
 require_once PF_PLUGIN_DIR . 'admin/class-pf-admin.php';
 require_once PF_PLUGIN_DIR . 'public/class-pf-shortcodes.php';
 

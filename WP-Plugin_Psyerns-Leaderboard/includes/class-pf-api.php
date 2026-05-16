@@ -108,6 +108,21 @@ class PF_Api {
 			'permission_callback' => '__return_true',
 		) );
 
+		// Public: Player Details.
+		register_rest_route( self::NS, '/public/player/(?P<uid>[A-Za-z0-9_]{1,64})', array(
+			'methods'             => 'GET',
+			'callback'            => array( new PF_Player_Details(), 'handle_get' ),
+			'permission_callback' => '__return_true',
+			'args'                => array(
+				'uid' => array(
+					'sanitize_callback' => 'sanitize_text_field',
+					'validate_callback' => function( $v ) {
+						return (bool) preg_match( '/^[A-Za-z0-9_]{1,64}$/', $v );
+					},
+				),
+			),
+		) );
+
 		// Public: Avatar.
 		register_rest_route( self::NS, '/public/avatar', array(
 			'methods'             => 'GET',

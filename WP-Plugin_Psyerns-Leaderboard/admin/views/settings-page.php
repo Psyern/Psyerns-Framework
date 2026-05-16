@@ -56,9 +56,9 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 			<h3><?php esc_html_e( 'Quick Setup Guide', 'psyerns-framework' ); ?></h3>
 			<ol>
 				<li><?php echo wp_kses_post( __( 'Set an API Key below — or leave it empty and let the DayZ server auto-generate one on first start (check the server log for the generated key).', 'psyerns-framework' ) ); ?></li>
-				<li><?php echo wp_kses_post( __( 'Enter the same key in your DayZ config: <code>PsyernsFrameworkConfig.json</code> → WordPress Endpoint → ApiKey.', 'psyerns-framework' ) ); ?></li>
-				<li><?php echo wp_kses_post( sprintf( __( 'Set <code>BaseUrl</code> → <code>%s</code>', 'psyerns-framework' ), esc_url( rest_url( 'psyern/v1' ) ) ) ); ?></li>
-				<li><?php esc_html_e( 'Enable the WordPress endpoint in the DayZ config and restart the server.', 'psyerns-framework' ); ?></li>
+				<li><?php echo wp_kses_post( __( 'Enter the same key in your DayZ config <code>PsyernsFrameworkConfig.json</code> in <strong>both</strong> endpoints: <code>WordPress</code> → ApiKey <strong>and</strong> <code>Leaderboard</code> → ApiKey. (Both validate against this single key.)', 'psyerns-framework' ) ); ?></li>
+				<li><?php echo wp_kses_post( sprintf( __( 'Set <code>BaseUrl</code> for both endpoints → <code>%s</code>', 'psyerns-framework' ), esc_url( rest_url( 'psyern/v1' ) ) ) ); ?></li>
+				<li><?php esc_html_e( 'Enable both endpoints in the DayZ config and restart the server.', 'psyerns-framework' ); ?></li>
 			</ol>
 		</div>
 
@@ -147,10 +147,11 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 				$col_defs = PF_Admin::get_column_definitions();
 				$fixed    = array( 'rank', 'name' );
 				foreach ( array( 'pvp' => 'PvP', 'pve' => 'PvE' ) as $mode_key => $mode_label ) :
-					$option_name = 'pf_columns_' . $mode_key;
-					$stored      = get_option( $option_name, '' );
-					$enabled     = $stored ? json_decode( $stored, true ) : array_keys( $col_defs );
-					if ( ! is_array( $enabled ) ) { $enabled = array_keys( $col_defs ); }
+					$option_name  = 'pf_columns_' . $mode_key;
+					$mode_allowed = PF_Admin::get_mode_allowed_columns( $mode_key );
+					$stored       = get_option( $option_name, '' );
+					$enabled      = $stored ? json_decode( $stored, true ) : $mode_allowed;
+					if ( ! is_array( $enabled ) ) { $enabled = $mode_allowed; }
 				?>
 				<div class="pf-col-group">
 					<h4 class="pf-col-group__title">
@@ -159,6 +160,7 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					</h4>
 					<div class="pf-col-checks">
 						<?php foreach ( $col_defs as $col_key => $col_label ) :
+							if ( ! in_array( $col_key, $mode_allowed, true ) ) { continue; }
 							$is_fixed = in_array( $col_key, $fixed, true );
 							$checked  = $is_fixed || in_array( $col_key, $enabled, true );
 						?>
@@ -180,6 +182,44 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 				</div>
 				<?php endforeach; ?>
 				</div>
+			</div>
+
+			<div class="pf-card">
+				<h3><?php esc_html_e( 'Player Details Modal', 'psyerns-framework' ); ?></h3>
+				<p class="description"><?php esc_html_e( 'When enabled, clicking a player row on the leaderboard opens a modal with full kill / death / war / gunplay breakdown.', 'psyerns-framework' ); ?></p>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Enable Modal', 'psyerns-framework' ); ?></th>
+						<td>
+							<input type="hidden" name="pf_player_details_enabled" value="0" />
+							<label class="pf-toggle">
+								<input type="checkbox" name="pf_player_details_enabled" value="1" <?php checked( '1', get_option( 'pf_player_details_enabled', '1' ) ); ?> />
+								<span class="pf-toggle__slider"></span>
+							</label>
+							<span class="pf-toggle__label"><?php esc_html_e( 'Enable Player Detail Modal', 'psyerns-framework' ); ?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Show Avatar', 'psyerns-framework' ); ?></th>
+						<td>
+							<input type="hidden" name="pf_player_details_show_avatar" value="0" />
+							<label class="pf-toggle">
+								<input type="checkbox" name="pf_player_details_show_avatar" value="1" <?php checked( '1', get_option( 'pf_player_details_show_avatar', '1' ) ); ?> />
+								<span class="pf-toggle__slider"></span>
+							</label>
+							<span class="pf-toggle__label"><?php esc_html_e( 'Show Avatar in Modal', 'psyerns-framework' ); ?></span>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="pf_player_details_max_per_group"><?php esc_html_e( 'Max Categories per Group', 'psyerns-framework' ); ?></label></th>
+						<td>
+							<input type="number" id="pf_player_details_max_per_group" name="pf_player_details_max_per_group"
+								value="<?php echo esc_attr( get_option( 'pf_player_details_max_per_group', 20 ) ); ?>"
+								min="1" max="100" step="1" class="small-text" />
+							<p class="description"><?php esc_html_e( 'How many top entries to show per group (Zombies / Players / Bosses / AI / Animals / Other) before "Show all" collapses. 1–100.', 'psyerns-framework' ); ?></p>
+						</td>
+					</tr>
+				</table>
 			</div>
 
 			<?php submit_button( __( 'Save Leaderboard Settings', 'psyerns-framework' ) ); ?>

@@ -73,16 +73,47 @@ class Psyern_Main {
 		$per_page = min( max( absint( $_GET['per_page'] ?? 20 ), 1 ), 100 );
 		$page     = max( absint( $_GET['page'] ?? 1 ), 1 );
 		$search   = sanitize_text_field( wp_unslash( $_GET['search'] ?? '' ) );
+		$sort_by  = sanitize_key( wp_unslash( $_GET['sort_by'] ?? '' ) );
+		$sort_dir = strtolower( sanitize_key( wp_unslash( $_GET['sort_dir'] ?? 'desc' ) ) );
 		$offset   = ( $page - 1 ) * $per_page;
 
 		$table      = PF_Database::get_table_name( 'leaderboard' );
 		$order_col  = ( 'pvp' === $mode ) ? 'pvp_points' : 'pve_points';
 		$board_type = $mode; // 'pvp' or 'pve'
 
+		// Whitelist-based sort: frontend key -> SQL ORDER BY expression.
+		// Hard-coded values only, no user input ever reaches the SQL string,
+		// so this stays safe even though the clause is concatenated rather
+		// than prepared (wpdb::prepare can't bind identifiers).
+		$sort_map = array(
+			'name'             => 'player_name',
+			'faction'          => 'war_faction',
+			'kills'            => 'kills',
+			'deaths'           => 'deaths',
+			'kd'               => 'CASE WHEN deaths > 0 THEN (kills / deaths) ELSE kills END',
+			'boss'             => 'war_boss_kills',
+			'reputation'       => 'hardline_reputation',
+			'headshots'        => 'headshots',
+			'accuracy'         => 'CASE WHEN shots_fired > 0 THEN (shots_hit / shots_fired) ELSE 0 END',
+			'longest_shot'     => 'longest_shot',
+			'distance'         => 'distance_travelled',
+			'distance_foot'    => 'distance_on_foot',
+			'distance_vehicle' => 'distance_in_vehicle',
+			'playtime'         => 'playtime',
+		);
+		if ( ! in_array( $sort_dir, array( 'asc', 'desc' ), true ) ) {
+			$sort_dir = 'desc';
+		}
+		if ( isset( $sort_map[ $sort_by ] ) ) {
+			$order_clause = $sort_map[ $sort_by ] . ' ' . strtoupper( $sort_dir ) . ', ' . $order_col . ' DESC';
+		} else {
+			$order_clause = $order_col . ' DESC';
+		}
+
 		if ( ! empty( $search ) ) {
 			$like    = '%' . $wpdb->esc_like( $search ) . '%';
 			$players = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM {$table} WHERE board_type = %s AND player_name LIKE %s ORDER BY {$order_col} DESC LIMIT %d OFFSET %d",
+				"SELECT * FROM {$table} WHERE board_type = %s AND player_name LIKE %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
 				$board_type, $like, $per_page, $offset
 			), ARRAY_A );
 			$total   = (int) $wpdb->get_var( $wpdb->prepare(
@@ -91,7 +122,7 @@ class Psyern_Main {
 			) );
 		} else {
 			$players = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM {$table} WHERE board_type = %s ORDER BY {$order_col} DESC LIMIT %d OFFSET %d",
+				"SELECT * FROM {$table} WHERE board_type = %s ORDER BY {$order_clause} LIMIT %d OFFSET %d",
 				$board_type, $per_page, $offset
 			), ARRAY_A );
 			$total   = (int) $wpdb->get_var( $wpdb->prepare(
@@ -101,13 +132,21 @@ class Psyern_Main {
 		}
 
 		// Format rows to match the shape the frontend expects.
-		$formatted = array();
+		// Rank is computed from the position WITHIN the current sorted result
+		// set + pagination offset. That way clicking a sortable column changes
+		// the rank numbers as the server expects them — independent of any
+		// client-side recomputation, so a stale JS bundle in the browser cache
+		// can't show the old placement after a sort change.
+		$formatted   = array();
+		$rank_cursor = $offset;
 		foreach ( $players as $row ) {
+			$rank_cursor++;
 			$shots_fired = (int) ( $row['shots_fired'] ?? 0 );
 			$shots_hit   = (int) ( $row['shots_hit'] ?? 0 );
 			$accuracy    = ( $shots_fired > 0 ) ? round( ( $shots_hit / $shots_fired ) * 100, 1 ) : 0.0;
 
 			$formatted[] = array(
+				'rank'                => $rank_cursor,
 				'steam_id'            => $row['steam_id'],
 				'player_name'         => $row['player_name'],
 				'kills'               => (int) $row['kills'],
@@ -124,6 +163,9 @@ class Psyern_Main {
 				'shots_hit'           => $shots_hit,
 				'headshots'           => (int) ( $row['headshots'] ?? 0 ),
 				'accuracy'            => $accuracy,
+				// Per-mode longest_shot is already baked into row['longest_shot']
+				// during upsert (board_type-aware), so no further branching here.
+				'longest_shot'        => (int) round( (float) ( $row['longest_shot'] ?? 0 ) ),
 				'distance_travelled'  => (float) ( $row['distance_travelled'] ?? 0 ),
 				'distance_on_foot'    => (float) ( $row['distance_on_foot'] ?? 0 ),
 				'distance_in_vehicle' => (float) ( $row['distance_in_vehicle'] ?? 0 ),

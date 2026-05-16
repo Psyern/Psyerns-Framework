@@ -170,7 +170,7 @@ const PF = {
 			h += '<tr class="' + rc.trim() + '" style="animation-delay:' + delay + 's">';
 			h += '<td><span class="psyern-lb__rank">' + rank + '</span></td>';
 			h += '<td>' + (p.avatar_url ? '<img class="psyern-lb__avatar" src="' + PF.escHtml(p.avatar_url) + '" alt="" loading="lazy" />' : '') + '</td>';
-			h += '<td class="psyern-lb__name">' + PF.escHtml(p.player_name) + PF.factionBadge(p.war_faction) + '</td>';
+			h += '<td class="psyern-lb__name" title="' + PF.escHtml(p.player_name).replace(/"/g, '&quot;') + '"><span class="psyern-lb__name-text">' + PF.escHtml(p.player_name) + '</span>' + PF.factionBadge(p.war_faction) + '</td>';
 			h += '<td class="psyern-lb__kd">' + PF.formatNumber(pts) + '</td>';
 			for (j = 0; j < catNames.length; j++) h += '<td>' + PF.formatNumber(ck2[catNames[j]] || 0) + '</td>';
 			h += '<td>' + PF.formatNumber(deaths) + '</td>';
@@ -279,42 +279,101 @@ const PF = {
 		if (window.PsyernEffects) PsyernEffects.init(container);
 	},
 
-	renderPlayerCard: function(player, container) {
-		var p = player;
-		if (!p) { container.innerHTML = '<div class="psyern-lb__loading">Player not found.</div>'; return; }
-		var online = p.is_online == 1;
+	renderPlayerCard: function(pvp, pve, container) {
+		// Backwards compat: old callsites used renderPlayerCard(player, container).
+		// If the 2nd arg looks like a DOM node, treat the call as legacy and
+		// re-route the player into pve so we still render *something*.
+		if (pve && typeof pve.appendChild === 'function') {
+			container = pve;
+			pve = pvp;
+			pvp = null;
+		}
+		// Profile header is sourced from whichever row we got first — name,
+		// avatar, faction, online status are identical across boards.
+		var header = pvp || pve;
+		if (!header) {
+			container.innerHTML = '<div class="psyern-lb__loading">Player not found.</div>';
+			return;
+		}
+
+		var online = header.is_online == 1;
 		var h = '<div class="psyern-lb__player-card">';
-		h += '<img class="psyern-lb__player-avatar" src="' + PF.escHtml(p.avatar_url || '') + '" alt="" loading="lazy" />';
-		h += '<div class="psyern-lb__player-name">' + PF.escHtml(p.player_name) + PF.factionBadge(p.war_faction) + '</div>';
+		h += '<img class="psyern-lb__player-avatar" src="' + PF.escHtml(header.avatar_url || '') + '" alt="" loading="lazy" />';
+		h += '<div class="psyern-lb__player-name">' + PF.escHtml(header.player_name) + PF.factionBadge(header.war_faction) + '</div>';
 		h += '<div class="psyern-lb__player-status">';
 		h += '<span class="' + (online ? 'psyern-lb__badge-online' : 'psyern-lb__badge-offline') + '"></span>';
 		h += '<span class="psyern-lb__player-status-label">' + (online ? 'Online' : 'Offline') + '</span>';
 		h += '</div>';
-		h += '<div class="psyern-lb__player-stats-grid">';
+
+		h += PF.renderPlayerCardSection('PvP', 'pvp', pvp);
+		h += '<hr class="psyern-lb__player-divider" />';
+		h += PF.renderPlayerCardSection('PvE', 'pve', pve);
+
+		var lastLogin = (header.last_login || (pve && pve.last_login) || (pvp && pvp.last_login));
+		h += '<div class="psyern-lb__player-last-login">Last Login: ' + PF.formatDate(lastLogin) + '</div>';
+		h += '</div>';
+		container.innerHTML = h;
+		if (window.PsyernEffects) PsyernEffects.init(container);
+	},
+
+	renderPlayerCardSection: function(title, mode, p) {
+		var h = '<div class="psyern-lb__player-section psyern-lb__player-section--' + mode + '">';
+		h += '<h3 class="psyern-lb__player-section-title">' + PF.escHtml(title) + '</h3>';
+		if (!p) {
+			h += '<div class="psyern-lb__player-section-empty">No ' + PF.escHtml(title) + ' stats yet.</div>';
+			h += '</div>';
+			return h;
+		}
+
+		var points  = (mode === 'pvp') ? p.pvp_points : p.pve_points;
 		var stats = [
-			['PvE Points', PF.formatNumber(p.pve_points)], ['PvP Points', PF.formatNumber(p.pvp_points)],
-			['Kills', PF.formatNumber(p.kills)], ['Deaths', PF.formatNumber(p.deaths)],
-			['K/D Ratio', PF.getKDRatio(p.kills, p.deaths)], ['Longest Shot', (p.longest_shot || 0).toFixed(0) + 'm'],
-			['AI Kills', PF.formatNumber(p.ai_kills)], ['Playtime', (p.playtime || 0).toFixed(1) + 'h'],
+			['Points',       PF.formatNumber(points || 0)],
+			['Kills',        PF.formatNumber(p.kills || 0)],
+			['Deaths',       PF.formatNumber(p.deaths || 0)],
+			['K/D Ratio',    PF.getKDRatio(p.kills, p.deaths)],
+			['Longest Shot', ((p.longest_shot || 0) | 0) + ' m'],
 		];
-		if (p.war_boss_kills > 0) stats.push(['Boss Kills', p.war_boss_kills]);
-		if (p.hardline_reputation > 0) stats.push(['Reputation', PF.formatNumber(p.hardline_reputation)]);
+
+		// PvE-only progression stats — boss/rep/distance/playtime never apply
+		// to PvP per the mode-allowlist defined in PF_Admin.
+		if (mode === 'pve') {
+			if (p.war_boss_kills > 0)        stats.push(['Boss Kills',     PF.formatNumber(p.war_boss_kills)]);
+			if (p.hardline_reputation > 0)   stats.push(['Reputation',     PF.formatNumber(p.hardline_reputation)]);
+			if (p.distance_on_foot > 0)      stats.push(['Distance Foot',  ((p.distance_on_foot || 0) / 1000).toFixed(1) + ' km']);
+			if (p.distance_in_vehicle > 0)   stats.push(['Distance Veh.',  ((p.distance_in_vehicle || 0) / 1000).toFixed(1) + ' km']);
+			if (p.playtime_seconds > 0) {
+				var hh = Math.floor(p.playtime_seconds / 3600);
+				var mm = Math.floor((p.playtime_seconds % 3600) / 60);
+				stats.push(['Playtime', hh + 'h ' + mm + 'm']);
+			} else if (p.playtime > 0) {
+				stats.push(['Playtime', (p.playtime / 3600).toFixed(1) + 'h']);
+			}
+		}
+
+		h += '<div class="psyern-lb__player-stats-grid">';
 		for (var i = 0; i < stats.length; i++) {
 			h += '<div class="psyern-lb__stat-item"><div class="psyern-lb__stat-label">' + stats[i][0] + '</div><div class="psyern-lb__stat-value">' + stats[i][1] + '</div></div>';
 		}
 		h += '</div>';
-		h += '<div class="psyern-lb__player-last-login">Last Login: ' + PF.formatDate(p.last_login) + '</div>';
-		if (p.category_kills) {
+
+		// Category-kill chips on the PvE section only — the PvP row already
+		// folds player kills into the headline number.
+		if (mode === 'pve' && p.category_kills) {
 			var ck = p.category_kills; var cks = Object.keys(ck);
 			if (cks.length > 0) {
+				var legacyPvpKeys = { Players: 1, Player: 1, Survivor: 1, Spieler: 1 };
 				h += '<div class="psyern-lb__player-kills">';
-				for (var ci = 0; ci < cks.length; ci++) h += '<span class="psyern-lb__faction psyern-lb__faction--neutral psyern-lb__faction--sm">' + PF.escHtml(cks[ci]) + ': ' + ck[cks[ci]] + '</span>';
+				for (var ci = 0; ci < cks.length; ci++) {
+					if (legacyPvpKeys[cks[ci]]) continue;
+					if (!ck[cks[ci]]) continue;
+					h += '<span class="psyern-lb__faction psyern-lb__faction--neutral psyern-lb__faction--sm">' + PF.escHtml(cks[ci]) + ': ' + ck[cks[ci]] + '</span>';
+				}
 				h += '</div>';
 			}
 		}
+
 		h += '</div>';
-		container.innerHTML = h;
-		if (window.PsyernEffects) PsyernEffects.init(container);
+		return h;
 	},
 
 	renderServerStatus: function(status, container) {

@@ -56,6 +56,12 @@ class PF_Shortcodes {
 		// Leaderboard base CSS.
 		wp_enqueue_style( 'psyern-leaderboard', PF_PLUGIN_URL . 'public/css/psyern-leaderboard.css', array(), PF_VERSION );
 
+		// Player Detail Modal CSS (themed via shared --psyern-* variables).
+		$pdm_enabled = ! empty( $GLOBALS['pf_player_details_enabled'] );
+		if ( $pdm_enabled ) {
+			wp_enqueue_style( 'psyern-pdm', PF_PLUGIN_URL . 'public/css/player-detail.css', array( 'psyern-leaderboard' ), PF_VERSION );
+		}
+
 		// Load ALL theme CSS files — they are scoped by .psyern-lb--{theme} so only the active one applies.
 		$all_themes = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno', 'frostbite', 'bubblegum' );
 		foreach ( $all_themes as $t ) {
@@ -89,6 +95,9 @@ class PF_Shortcodes {
 			'restUrl' => esc_url_raw( rest_url( 'psyern/v1' ) ),
 			'nonce'   => wp_create_nonce( 'psyern_leaderboard_nonce' ),
 			'theme'   => $theme,
+			'playerDetailsEnabled'     => (bool) $pdm_enabled,
+			'playerDetailsShowAvatar'  => (bool) get_option( 'pf_player_details_show_avatar', '1' ),
+			'playerDetailsMaxPerGroup' => (int)  get_option( 'pf_player_details_max_per_group', 20 ),
 			'columns' => array(
 				'pvp' => self::get_enabled_columns( 'pvp' ),
 				'pve' => self::get_enabled_columns( 'pve' ),
@@ -129,14 +138,14 @@ class PF_Shortcodes {
 	 * @return string[] Array of enabled column key strings.
 	 */
 	private static function get_enabled_columns( $mode ) {
-		$all_keys = array( 'rank', 'avatar', 'name', 'kills', 'deaths', 'kd', 'faction', 'boss', 'reputation', 'playtime' );
-		$stored   = get_option( 'pf_columns_' . $mode, '' );
+		$allowed = class_exists( 'PF_Admin' ) ? PF_Admin::get_mode_allowed_columns( $mode ) : array( 'rank', 'avatar', 'name', 'kills', 'deaths', 'kd', 'faction', 'boss', 'reputation', 'playtime' );
+		$stored  = get_option( 'pf_columns_' . $mode, '' );
 		if ( empty( $stored ) ) {
-			return $all_keys;
+			return $allowed;
 		}
 		$decoded = json_decode( $stored, true );
 		if ( ! is_array( $decoded ) || empty( $decoded ) ) {
-			return $all_keys;
+			return $allowed;
 		}
 		// Always keep rank + name regardless of setting.
 		foreach ( array( 'rank', 'name' ) as $fixed ) {
@@ -144,7 +153,8 @@ class PF_Shortcodes {
 				array_unshift( $decoded, $fixed );
 			}
 		}
-		return $decoded;
+		// Hard-filter: PvE-only columns must never reach the PvP board.
+		return array_values( array_intersect( $decoded, $allowed ) );
 	}
 
 	/**
@@ -158,12 +168,21 @@ class PF_Shortcodes {
 	 */
 	public function leaderboard( $atts ) {
 		$atts = shortcode_atts( array(
-			'type'          => 'pvp',
-			'limit'         => 10,
-			'theme'         => '',
-			'show_avatar'   => '1',
-			'show_playtime' => '1',
+			'type'           => 'pvp',
+			'limit'          => 10,
+			'theme'          => '',
+			'show_avatar'    => '1',
+			'show_playtime'  => '1',
+			'enable_details' => '',
 		), $atts, 'pf_leaderboard' );
+
+		// Resolve player-details toggle (per-shortcode override or global option).
+		if ( '' === $atts['enable_details'] ) {
+			$details_enabled = (bool) get_option( 'pf_player_details_enabled', '1' );
+		} else {
+			$details_enabled = filter_var( $atts['enable_details'], FILTER_VALIDATE_BOOLEAN );
+		}
+		$GLOBALS['pf_player_details_enabled'] = $details_enabled;
 
 		$theme = $this->get_theme( $atts );
 		$this->enqueue_assets();
@@ -333,13 +352,21 @@ class PF_Shortcodes {
 			if (typeof pf_config !== 'undefined') PF.config.apiUrl = pf_config.apiUrl;
 			var c = document.getElementById('<?php echo esc_js( $id ); ?>');
 			var sid = '<?php echo esc_js( $atts['steam_id'] ); ?>';
-			PF.fetchLeaderboard('pve', 1000).then(function(d) {
-				var ps = d.players || d;
-				var p = null;
+			var pickPlayer = function(resp) {
+				var ps = resp.players || resp;
+				if (!ps || !ps.length) return null;
 				for (var i = 0; i < ps.length; i++) {
-					if (ps[i].steam_id === sid) { p = ps[i]; break; }
+					if (ps[i].steam_id === sid) return ps[i];
 				}
-				PF.renderPlayerCard(p, c);
+				return null;
+			};
+			Promise.all([
+				PF.fetchLeaderboard('pvp', 1000),
+				PF.fetchLeaderboard('pve', 1000)
+			]).then(function(results) {
+				var pvp = pickPlayer(results[0]);
+				var pve = pickPlayer(results[1]);
+				PF.renderPlayerCard(pvp, pve, c);
 			}).catch(function() {
 				c.innerHTML = '<div class="pf-loading"><?php echo esc_js( __( 'Failed to load.', 'psyerns-framework' ) ); ?></div>';
 			});

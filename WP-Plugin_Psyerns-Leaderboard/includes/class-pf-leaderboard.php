@@ -38,6 +38,12 @@ class PF_Leaderboard {
 		$this->upsert_players( $data['topPVEPlayers'] ?? array(), 'pve' );
 		$this->upsert_players( $data['topPVPPlayers'] ?? array(), 'pvp' );
 
+		if ( ! empty( $data['playerDetails'] ) && is_array( $data['playerDetails'] ) ) {
+			if ( class_exists( 'PF_Player_Details' ) ) {
+				( new PF_Player_Details() )->handle_upload_details( $data['playerDetails'] );
+			}
+		}
+
 		return new WP_REST_Response( array( 'success' => true ), 200 );
 	}
 
@@ -71,31 +77,81 @@ class PF_Leaderboard {
 			$category_deaths = $p['categoryDeaths'] ?? array();
 			$category_ranges = $p['categoryLongestRanges'] ?? array();
 
-			$total_kills = absint( $p['kills'] ?? 0 );
-			if ( 0 === $total_kills && ! empty( $category_kills ) ) {
-				foreach ( $category_kills as $count ) {
-					$total_kills += absint( $count );
+			// Per-mode kills:
+			//  pvp -> only kills against players
+			//  pve -> only kills against AI/zombies/animals
+			// Newer server builds send pvpKills/pveKills directly; fall back to the
+			// summed category map for backwards compatibility with older PBOs that
+			// only ship categoryKills.
+			$pvp_kills_total = absint( $p['pvpKills'] ?? 0 );
+			$pve_kills_total = absint( $p['pveKills'] ?? 0 );
+			if ( 0 === $pvp_kills_total && 0 === $pve_kills_total && ! empty( $category_kills ) ) {
+				$legacy_pvp_keys = array( 'Players', 'Player', 'Survivor', 'Spieler' );
+				foreach ( $category_kills as $cat_id => $count ) {
+					$count = absint( $count );
+					if ( in_array( $cat_id, $legacy_pvp_keys, true ) ) {
+						$pvp_kills_total += $count;
+					} else {
+						$pve_kills_total += $count;
+					}
 				}
 			}
+			$total_kills = ( 'pvp' === $board_type ) ? $pvp_kills_total : $pve_kills_total;
 
-			$total_deaths = absint( $p['deaths'] ?? $p['deathCount'] ?? 0 );
-			if ( 0 === $total_deaths && ! empty( $category_deaths ) ) {
-				foreach ( $category_deaths as $count ) {
-					$total_deaths += absint( $count );
+			// Per-mode deaths, mirroring the kills logic above:
+			//  - Modern PBOs send pvpDeaths/pveDeaths directly (GetTotalPVPDeaths /
+			//    GetTotalPVEDeaths, split via PVPCategoryConfig / PVECategoryConfig).
+			//    A legitimate zero on one side (e.g. 0 PvP deaths, 5 PvE deaths)
+			//    MUST stay zero on the PvP row — never overwrite with a combined
+			//    total, or PvE deaths leak into the PvP board.
+			//  - Legacy fallback: only kicks in when BOTH per-mode fields are
+			//    absent from the payload (not just zero), and distributes
+			//    categoryDeaths via the same player-category heuristic as kills.
+			$pvp_deaths_total = absint( $p['pvpDeaths'] ?? 0 );
+			$pve_deaths_total = absint( $p['pveDeaths'] ?? 0 );
+			if ( ! isset( $p['pvpDeaths'] ) && ! isset( $p['pveDeaths'] ) && ! empty( $category_deaths ) ) {
+				$legacy_pvp_keys = array( 'Players', 'Player', 'Survivor', 'Spieler' );
+				foreach ( $category_deaths as $cat_id => $count ) {
+					$count = absint( $count );
+					if ( in_array( $cat_id, $legacy_pvp_keys, true ) ) {
+						$pvp_deaths_total += $count;
+					} else {
+						$pve_deaths_total += $count;
+					}
 				}
 			}
+			$total_deaths = ( 'pvp' === $board_type ) ? $pvp_deaths_total : $pve_deaths_total;
 
 			$ai_kills = absint( $p['aiKills'] ?? 0 );
 			if ( 0 === $ai_kills && isset( $category_kills['AIBased'] ) ) {
 				$ai_kills = absint( $category_kills['AIBased'] );
 			}
 
-			$longest_shot = floatval( $p['longestShot'] ?? 0 );
-			if ( 0.0 === $longest_shot && ! empty( $category_ranges ) ) {
-				foreach ( $category_ranges as $range ) {
-					$longest_shot = max( $longest_shot, floatval( $range ) );
+			// Per-mode longest shot, same logic as the kills/deaths split:
+			//  - Modern PBOs send pvpLongestShot/pveLongestShot directly
+			//    (GetLongestPVPRange / GetLongestPVERange, split via the
+			//    PVPCategoryConfig / PVECategoryConfig category sets).
+			//  - A legitimate zero on one side (e.g. 0 m PvP range because the
+			//    player has never shot another player) MUST stay zero on the
+			//    PvP row — never fall back to a combined max, or PvE shots
+			//    leak into the PvP board.
+			//  - Legacy fallback: only when BOTH per-mode fields are ABSENT
+			//    (isset() check, not "=== 0") we distribute categoryRanges
+			//    via the player-category heuristic.
+			$pvp_longest = floatval( $p['pvpLongestShot'] ?? 0 );
+			$pve_longest = floatval( $p['pveLongestShot'] ?? 0 );
+			if ( ! isset( $p['pvpLongestShot'] ) && ! isset( $p['pveLongestShot'] ) && ! empty( $category_ranges ) ) {
+				$legacy_pvp_keys = array( 'Players', 'Player', 'Survivor', 'Spieler' );
+				foreach ( $category_ranges as $cat_id => $range ) {
+					$range = floatval( $range );
+					if ( in_array( $cat_id, $legacy_pvp_keys, true ) ) {
+						$pvp_longest = max( $pvp_longest, $range );
+					} else {
+						$pve_longest = max( $pve_longest, $range );
+					}
 				}
 			}
+			$longest_shot = ( 'pvp' === $board_type ) ? $pvp_longest : $pve_longest;
 
 			$row = array(
 				'steam_id'                => $steam_id,
@@ -104,11 +160,11 @@ class PF_Leaderboard {
 				'deaths'                  => $total_deaths,
 				'ai_kills'                => $ai_kills,
 				'longest_shot'            => $longest_shot,
-				'playtime'                => floatval( $p['playtime'] ?? 0 ),
+				'playtime'                => floatval( $p['playTimeSeconds'] ?? $p['playtime'] ?? 0 ),
 				'pve_points'              => absint( $p['pvePoints'] ?? 0 ),
 				'pvp_points'              => absint( $p['pvpPoints'] ?? 0 ),
-				'pve_deaths'              => absint( $p['pveDeaths'] ?? 0 ),
-				'pvp_deaths'              => absint( $p['pvpDeaths'] ?? 0 ),
+				'pve_deaths'              => $pve_deaths_total,
+				'pvp_deaths'              => $pvp_deaths_total,
 				'board_type'              => $board_type,
 				'category_kills'          => wp_json_encode( $p['categoryKills'] ?? new stdClass() ),
 				'category_deaths'         => wp_json_encode( $p['categoryDeaths'] ?? new stdClass() ),

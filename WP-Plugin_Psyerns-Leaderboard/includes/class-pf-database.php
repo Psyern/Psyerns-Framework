@@ -36,9 +36,10 @@ class PF_Database {
 		global $wpdb;
 		$charset = $wpdb->get_charset_collate();
 
-		$whitelist   = self::get_table_name( 'whitelist' );
-		$leaderboard = self::get_table_name( 'leaderboard' );
-		$killfeed    = self::get_table_name( 'killfeed' );
+		$whitelist      = self::get_table_name( 'whitelist' );
+		$leaderboard    = self::get_table_name( 'leaderboard' );
+		$killfeed       = self::get_table_name( 'killfeed' );
+		$player_details = self::get_table_name( 'player_details' );
 
 		$sql = "CREATE TABLE {$whitelist} (
 			id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -95,6 +96,15 @@ class PF_Database {
 			pos_z FLOAT DEFAULT 0,
 			distance FLOAT DEFAULT 0,
 			killed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		) {$charset};
+
+		CREATE TABLE {$player_details} (
+			player_uid VARCHAR(64) NOT NULL,
+			player_name VARCHAR(255) NOT NULL DEFAULT '',
+			data_json LONGTEXT,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY (player_uid),
+			KEY player_name (player_name)
 		) {$charset};";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -112,6 +122,7 @@ class PF_Database {
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::get_table_name( 'whitelist' ) );
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::get_table_name( 'leaderboard' ) );
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::get_table_name( 'killfeed' ) );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . self::get_table_name( 'player_details' ) );
 		// phpcs:enable
 	}
 

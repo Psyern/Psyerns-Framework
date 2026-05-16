@@ -17,15 +17,40 @@ $show_avatar   = ( '1' === ( $atts['show_avatar'] ?? '1' ) );
 $show_playtime = ( '1' === ( $atts['show_playtime'] ?? '1' ) );
 
 // Resolve enabled columns for the initial mode from the stored option.
-$_stored_cols = get_option( 'pf_columns_' . $mode, '' );
+// Hard filter by mode-allowed columns so PvE-only stats never render on PvP.
+$_allowed_cols = class_exists( 'PF_Admin' ) ? PF_Admin::get_mode_allowed_columns( $mode ) : array( 'rank', 'avatar', 'name', 'kills', 'deaths', 'kd', 'faction', 'boss', 'reputation', 'playtime' );
+$_stored_cols  = get_option( 'pf_columns_' . $mode, '' );
 $_enabled_cols = $_stored_cols ? json_decode( $_stored_cols, true ) : null;
 if ( ! is_array( $_enabled_cols ) || empty( $_enabled_cols ) ) {
-	$_enabled_cols = array( 'rank', 'avatar', 'name', 'kills', 'deaths', 'kd', 'faction', 'boss', 'reputation', 'playtime' );
+	$_enabled_cols = $_allowed_cols;
 }
+$_enabled_cols = array_values( array_intersect( $_enabled_cols, $_allowed_cols ) );
 // Helper: check if column is enabled.
 $col = function( $key ) use ( &$_enabled_cols ) {
 	return in_array( $key, $_enabled_cols, true );
 };
+
+// Build legend & header-tooltip data.
+$_col_desc       = class_exists( 'PF_Admin' ) ? PF_Admin::get_column_descriptions() : array();
+$_abbreviated    = class_exists( 'PF_Admin' ) ? PF_Admin::get_abbreviated_columns() : array( 'kd', 'boss', 'reputation', 'headshots', 'accuracy', 'distance', 'playtime' );
+$_th_labels      = array(
+	'rank'             => '#',
+	'avatar'           => '',
+	'name'             => __( 'Name', 'psyerns-framework' ),
+	'kills'            => __( 'Kills', 'psyerns-framework' ),
+	'deaths'           => __( 'Deaths', 'psyerns-framework' ),
+	'kd'               => __( 'K/D', 'psyerns-framework' ),
+	'faction'          => __( 'Faction', 'psyerns-framework' ),
+	'boss'             => __( 'Boss', 'psyerns-framework' ),
+	'reputation'       => __( 'Rep', 'psyerns-framework' ),
+	'headshots'        => __( 'HS', 'psyerns-framework' ),
+	'accuracy'         => __( 'Acc %', 'psyerns-framework' ),
+	'longest_shot'     => __( 'Range', 'psyerns-framework' ),
+	'distance'         => __( 'Dist', 'psyerns-framework' ),
+	'distance_foot'    => __( 'Foot', 'psyerns-framework' ),
+	'distance_vehicle' => __( 'Vehicle', 'psyerns-framework' ),
+	'playtime'         => __( 'Playtime', 'psyerns-framework' ),
+);
 ?>
 <div class="psyern-lb psyern-lb--<?php echo esc_attr( $theme ); ?>"
 	 data-mode="<?php echo esc_attr( $mode ); ?>"
@@ -129,45 +154,51 @@ $col = function( $key ) use ( &$_enabled_cols ) {
 	<hr class="psyern-lb__separator" />
 	<?php endif; ?>
 
+	<?php
+	// Build legend entries: only abbreviated columns that are actually rendered.
+	$_legend_items = array();
+	foreach ( $_abbreviated as $_lk ) {
+		if ( 'playtime' === $_lk && ! $show_playtime ) {
+			continue;
+		}
+		if ( ! $col( $_lk ) ) {
+			continue;
+		}
+		$_legend_items[] = array(
+			'label' => $_th_labels[ $_lk ] ?? $_lk,
+			'desc'  => $_col_desc[ $_lk ] ?? $_lk,
+		);
+	}
+	if ( ! empty( $_legend_items ) ) :
+	?>
+	<details class="psyern-lb__legend" data-mode="<?php echo esc_attr( $mode ); ?>">
+		<summary class="psyern-lb__legend-toggle"><?php esc_html_e( 'Legend', 'psyerns-framework' ); ?></summary>
+		<dl class="psyern-lb__legend-list">
+			<?php foreach ( $_legend_items as $_item ) : ?>
+				<div class="psyern-lb__legend-item">
+					<dt class="psyern-lb__legend-key"><?php echo esc_html( $_item['label'] ); ?></dt>
+					<dd class="psyern-lb__legend-val"><?php echo esc_html( $_item['desc'] ); ?></dd>
+				</div>
+			<?php endforeach; ?>
+		</dl>
+	</details>
+	<?php endif; ?>
+
 	<div class="psyern-lb__table-wrap">
 	<table class="psyern-lb__table" role="table" id="psyern-lb-table" aria-label="<?php esc_attr_e( 'Player rankings', 'psyerns-framework' ); ?>">
 		<thead>
 			<tr>
-				<th scope="col" data-col="rank">#</th>
-				<?php if ( $col( 'avatar' ) ) : ?>
-					<th scope="col" data-col="avatar"></th>
-				<?php endif; ?>
-				<th scope="col" data-col="name"><?php esc_html_e( 'Name', 'psyerns-framework' ); ?></th>
-				<?php if ( $col( 'kills' ) ) : ?>
-					<th scope="col" data-col="kills"><?php esc_html_e( 'Kills', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'deaths' ) ) : ?>
-					<th scope="col" data-col="deaths"><?php esc_html_e( 'Deaths', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'kd' ) ) : ?>
-					<th scope="col" data-col="kd"><?php esc_html_e( 'K/D', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'faction' ) ) : ?>
-					<th scope="col" data-col="faction"><?php esc_html_e( 'Faction', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'boss' ) ) : ?>
-					<th scope="col" data-col="boss"><?php esc_html_e( 'Boss', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'reputation' ) ) : ?>
-					<th scope="col" data-col="reputation"><?php esc_html_e( 'Rep', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'headshots' ) ) : ?>
-					<th scope="col" data-col="headshots"><?php esc_html_e( 'HS', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'accuracy' ) ) : ?>
-					<th scope="col" data-col="accuracy"><?php esc_html_e( 'Acc %', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'distance' ) ) : ?>
-					<th scope="col" data-col="distance"><?php esc_html_e( 'Dist', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
-				<?php if ( $col( 'playtime' ) && $show_playtime ) : ?>
-					<th scope="col" data-col="playtime"><?php esc_html_e( 'Playtime', 'psyerns-framework' ); ?></th>
-				<?php endif; ?>
+			<?php
+			foreach ( $_enabled_cols as $_ck ) {
+				if ( 'playtime' === $_ck && ! $show_playtime ) {
+					continue;
+				}
+				$_lab  = $_th_labels[ $_ck ] ?? $_ck;
+				$_desc = $_col_desc[ $_ck ] ?? '';
+				$_title_attr = ( '' !== $_desc && $_desc !== $_lab ) ? ' title="' . esc_attr( $_desc ) . '"' : '';
+				echo '<th scope="col" data-col="' . esc_attr( $_ck ) . '"' . $_title_attr . '>' . esc_html( $_lab ) . '</th>';
+			}
+			?>
 			</tr>
 		</thead>
 		<tbody>
@@ -192,3 +223,6 @@ $col = function( $key ) use ( &$_enabled_cols ) {
 
 	<nav class="psyern-lb__pagination" aria-label="<?php esc_attr_e( 'Leaderboard pages', 'psyerns-framework' ); ?>"></nav>
 </div>
+<?php if ( ! empty( $GLOBALS['pf_player_details_enabled'] ) ) {
+	include PF_PLUGIN_DIR . 'public/templates/player-detail-modal.php';
+} ?>
