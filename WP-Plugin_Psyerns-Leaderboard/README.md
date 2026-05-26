@@ -131,6 +131,31 @@ Set the global theme in **Settings → Themes**, or override per shortcode with 
 [pf_player_card steam_id="76561198000000000" theme="outbreak"]
 ```
 
+### Faction War Banner
+
+Compact EAST vs WEST banner with live points, percentages, split bar and an optional link button.
+
+```
+[pf_faction_war theme="military" url="https://your-site.com/leaderboard"]
+```
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `theme` | (global) | Override global theme for this instance |
+| `url` | (empty) | Link target for the "Full Leaderboard" button; button is hidden when empty |
+
+### Stat Cards
+
+Three headline counters — Online Now, Tracked Players and Total Kills (sum of all PvP + PvE/AI kills) — loaded live from `/wp-json/psyern/v1/public/stats`.
+
+```
+[pf_stats theme="military"]
+```
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `theme` | (global) | Override global theme for this instance |
+
 ---
 
 ## Installation

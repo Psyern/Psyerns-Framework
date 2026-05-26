@@ -1,0 +1,477 @@
+/**
+ * Psyerns Mods Showreel — Public Stylesheet
+ *
+ * Dark military/survival theme for deadmans-echo.de (DayZ community).
+ * All selectors prefixed with .psyerns-mods or .psm- to avoid theme conflicts.
+ *
+ * @package Psyerns_Mods
+ * @since   1.0.0
+ */
+
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+
+:root {
+	--pf-bg-base: #0a0a0a;
+	--pf-bg-card: #111827;
+	--pf-bg-card-hover: #1f2937;
+	--pf-border: #374151;
+	--pf-border-glow: rgba(255, 165, 0, 0.3);
+	--pf-accent: #f97316;
+	--pf-accent-hover: #fb923c;
+	--pf-accent-discord: #5865f2;
+	--pf-accent-discord-hover: #7289da;
+	--pf-free-badge: #22c55e;
+	--pf-price-badge: #eab308;
+	--pf-repack-badge: #3b82f6;
+	--pf-source-badge: #eab308;
+	--pf-text-primary: #f9fafb;
+	--pf-text-secondary: #9ca3af;
+	--pf-text-muted: #6b7280;
+	--pf-radius-card: 8px;
+	--pf-radius-badge: 4px;
+	--pf-radius-btn: 6px;
+}
+
+/* ==========================================================================
+   Container & Grid
+   ========================================================================== */
+
+.psyerns-mods-grid {
+	width: 100%;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+.psyerns-mods-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 24px;
+}
+
+.psyerns-mods-item {
+	display: flex;
+}
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
+.psm-card {
+	background: var(--pf-bg-card);
+	border: 1px solid var(--pf-border);
+	border-radius: var(--pf-radius-card);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	transition: transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out;
+	opacity: 0;
+	-webkit-transform: translateY(20px);
+	transform: translateY(20px);
+}
+
+.psm-card:hover {
+	-webkit-transform: translateY(-4px);
+	transform: translateY(-4px);
+	box-shadow: 0 0 20px var(--pf-border-glow);
+	border-color: #4b5563;
+}
+
+.psm-card:focus-within {
+	box-shadow: 0 0 20px var(--pf-border-glow);
+	border-color: #4b5563;
+}
+
+/* ==========================================================================
+   Scroll Reveal
+   ========================================================================== */
+
+.psm-card--visible {
+	opacity: 1;
+	-webkit-transform: translateY(0);
+	transform: translateY(0);
+	transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+.psyerns-mods-item:nth-child(1) .psm-card--visible {
+	transition-delay: 0ms;
+}
+
+.psyerns-mods-item:nth-child(2) .psm-card--visible {
+	transition-delay: 80ms;
+}
+
+.psyerns-mods-item:nth-child(3) .psm-card--visible {
+	transition-delay: 160ms;
+}
+
+.psyerns-mods-item:nth-child(4) .psm-card--visible {
+	transition-delay: 240ms;
+}
+
+.psyerns-mods-item:nth-child(5) .psm-card--visible {
+	transition-delay: 320ms;
+}
+
+.psyerns-mods-item:nth-child(6) .psm-card--visible {
+	transition-delay: 400ms;
+}
+
+.psyerns-mods-item:nth-child(7) .psm-card--visible {
+	transition-delay: 480ms;
+}
+
+.psyerns-mods-item:nth-child(8) .psm-card--visible {
+	transition-delay: 560ms;
+}
+
+.psyerns-mods-item:nth-child(9) .psm-card--visible {
+	transition-delay: 640ms;
+}
+
+/* ==========================================================================
+   Card Image
+   ========================================================================== */
+
+.psm-card__image-wrap {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	padding-bottom: 100%; /* 1:1 Fallback fuer alte Browser */
+}
+
+@supports (aspect-ratio: 1 / 1) {
+	.psm-card__image-wrap {
+		padding-bottom: 0;
+		aspect-ratio: 1 / 1;
+	}
+}
+
+.psm-card__image {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	-o-object-fit: cover;
+	object-fit: cover;
+	transition: -webkit-transform 300ms ease-out;
+	transition: transform 300ms ease-out;
+	transition: transform 300ms ease-out, -webkit-transform 300ms ease-out;
+}
+
+.psm-card:hover .psm-card__image {
+	-webkit-transform: scale(1.05);
+	transform: scale(1.05);
+}
+
+/* ==========================================================================
+   Card Body
+   ========================================================================== */
+
+.psm-card__body {
+	padding: 16px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ==========================================================================
+   Title
+   ========================================================================== */
+
+.psm-card__title {
+	font-size: 18px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--pf-text-primary);
+	margin: 0 0 8px;
+	line-height: 1.3;
+}
+
+/* ==========================================================================
+   Description
+   ========================================================================== */
+
+.psm-card__description {
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--pf-text-secondary);
+	margin: 0 0 12px;
+	flex: 1;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ==========================================================================
+   Badges
+   ========================================================================== */
+
+.psm-card__badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 16px;
+}
+
+.psm-badge {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	padding: 3px 10px;
+	border-radius: var(--pf-radius-badge);
+	color: #ffffff;
+	display: inline-block;
+	line-height: 1.4;
+}
+
+.psm-badge--free {
+	background: var(--pf-free-badge);
+}
+
+.psm-badge--price {
+	background: var(--pf-price-badge);
+	color: #1a1a1a;
+}
+
+.psm-badge--repack {
+	background: var(--pf-repack-badge);
+}
+
+.psm-badge--source {
+	background: var(--pf-source-badge);
+}
+
+/* Discount badge */
+.psm-badge--discount {
+	background: #ef4444;
+	color: #ffffff;
+	animation: psm-pulse 2s ease-in-out infinite;
+}
+
+@keyframes psm-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.8; }
+}
+
+/* Strikethrough original price */
+.psm-badge--has-discount {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.psm-badge__original {
+	text-decoration: line-through;
+	opacity: 0.6;
+	font-weight: 400;
+}
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+
+.psm-card__actions {
+	display: flex;
+	gap: 8px;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.psm-btn {
+	display: -webkit-inline-flex;
+	display: inline-flex;
+	-webkit-align-items: center;
+	align-items: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 20px;
+	border-radius: var(--pf-radius-btn);
+	font-size: 13px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	text-decoration: none;
+	cursor: pointer;
+	border: none;
+	transition: background-color 200ms ease-out, box-shadow 200ms ease-out;
+	line-height: 1.2;
+	box-sizing: border-box;
+}
+
+.psm-btn--steam {
+	background: var(--pf-accent);
+	color: #ffffff;
+	flex: 1;
+}
+
+.psm-btn--steam:hover,
+.psm-btn--steam:active {
+	background: var(--pf-accent-hover);
+	box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.psm-btn--discord {
+	background: var(--pf-accent-discord);
+	color: #ffffff;
+	flex: 0 0 auto;
+}
+
+.psm-btn--discord:hover,
+.psm-btn--discord:active {
+	background: var(--pf-accent-discord-hover);
+	box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+	color: #ffffff;
+	text-decoration: none;
+}
+
+/* ==========================================================================
+   Button Icon
+   ========================================================================== */
+
+.psm-btn__icon {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.psm-btn__icon svg {
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+	display: block;
+}
+
+/* ==========================================================================
+   Focus States
+   ========================================================================== */
+
+.psm-btn:focus-visible {
+	outline: 2px solid var(--pf-accent);
+	outline-offset: 2px;
+}
+
+.psm-card:focus-visible {
+	outline: 2px solid var(--pf-accent);
+	outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.psm-empty-state {
+	text-align: center;
+	padding: 60px 20px;
+	color: var(--pf-text-muted);
+	grid-column: 1 / -1;
+}
+
+.psm-empty-state__icon {
+	font-size: 48px;
+	margin-bottom: 16px;
+	line-height: 1;
+	display: block;
+}
+
+.psm-empty-state__text {
+	font-size: 16px;
+	margin: 0;
+	line-height: 1.5;
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+	.psm-card,
+	.psm-card__image,
+	.psm-btn {
+		-webkit-transition: none !important;
+		transition: none !important;
+		-webkit-transform: none !important;
+		transform: none !important;
+	}
+
+	.psm-card {
+		opacity: 1;
+	}
+}
+
+/* ==========================================================================
+   Responsive — Tablet (768px+)
+   ========================================================================== */
+
+@media screen and (min-width: 768px) {
+
+	.psyerns-mods-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* ==========================================================================
+   Responsive — Desktop (1024px+)
+   ========================================================================== */
+
+@media screen and (min-width: 1024px) {
+
+	.psyerns-mods-container {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+/* ==========================================================================
+   Responsive — Mobile (<768px)
+   ========================================================================== */
+
+@media screen and (max-width: 767px) {
+
+	.psyerns-mods-grid {
+		padding: 16px;
+	}
+
+	.psyerns-mods-container {
+		gap: 16px;
+	}
+
+	.psm-card__body {
+		padding: 12px;
+	}
+
+	.psm-card__title {
+		font-size: 16px;
+	}
+
+	.psm-card__actions {
+		flex-direction: column;
+	}
+
+	.psm-btn {
+		width: 100%;
+		-webkit-justify-content: center;
+		justify-content: center;
+	}
+
+	.psm-btn--steam,
+	.psm-btn--discord {
+		flex: 1 1 auto;
+	}
+}

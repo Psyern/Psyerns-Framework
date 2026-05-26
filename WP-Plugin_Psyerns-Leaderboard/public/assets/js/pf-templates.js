@@ -17,6 +17,12 @@ const PF = {
 		return res.json();
 	},
 
+	async fetchStats() {
+		var res = await fetch(PF.config.apiUrl + '/public/stats');
+		if (!res.ok) throw new Error('HTTP ' + res.status);
+		return res.json();
+	},
+
 	async fetchTop3(type) {
 		type = type || 'monthly';
 		var res = await fetch(PF.config.apiUrl + '/public/top3?type=' + type);

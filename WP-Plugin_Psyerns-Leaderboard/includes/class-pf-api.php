@@ -101,6 +101,13 @@ class PF_Api {
 			'permission_callback' => '__return_true',
 		) );
 
+		// Public: Aggregate stats (online / tracked / total kills).
+		register_rest_route( self::NS, '/public/stats', array(
+			'methods'             => 'GET',
+			'callback'            => array( new PF_Leaderboard(), 'handle_stats' ),
+			'permission_callback' => '__return_true',
+		) );
+
 		// Public: Top 3.
 		register_rest_route( self::NS, '/public/top3', array(
 			'methods'             => 'GET',

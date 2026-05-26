@@ -566,6 +566,8 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					<tr><td><code>[pf_top3_deadliest]</code></td><td><?php esc_html_e( 'Top 3 deadliest players.', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>[pf_top3_bosskills]</code></td><td><?php esc_html_e( 'Top 3 boss slayers.', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>[pf_player_card steam_id="..."]</code></td><td><?php esc_html_e( 'Single player stats card.', 'psyerns-framework' ); ?></td></tr>
+					<tr><td><code>[pf_faction_war url="..."]</code></td><td><?php esc_html_e( 'Faction War banner: EAST vs WEST with live points, percentages and split bar.', 'psyerns-framework' ); ?></td></tr>
+					<tr><td><code>[pf_stats]</code></td><td><?php esc_html_e( 'Stat cards: Online Now, Tracked Players and Total Kills.', 'psyerns-framework' ); ?></td></tr>
 				</tbody>
 			</table>
 		</div>
@@ -585,6 +587,7 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					<tr><td><code>limit</code></td><td><code>10</code> <code>20</code> <code>50</code></td><td><code>10</code></td><td><?php esc_html_e( 'Default number of rows', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>show_avatar</code></td><td><code>1</code> <code>0</code></td><td><code>1</code></td><td><?php esc_html_e( 'Show Steam avatars', 'psyerns-framework' ); ?></td></tr>
 					<tr><td><code>show_playtime</code></td><td><code>1</code> <code>0</code></td><td><code>1</code></td><td><?php esc_html_e( 'Show playtime column', 'psyerns-framework' ); ?></td></tr>
+					<tr><td><code>url</code></td><td><?php esc_html_e( 'any URL', 'psyerns-framework' ); ?></td><td>&mdash;</td><td><?php esc_html_e( 'Button link in [pf_faction_war]; button hidden when empty', 'psyerns-framework' ); ?></td></tr>
 				</tbody>
 			</table>
 
@@ -602,6 +605,8 @@ $page_url = admin_url( 'admin.php?page=pf-settings' );
 					'[pf_leaderboard theme="frostbite" type="pvp" limit="20"]',
 					'[pf_leaderboard theme="bubblegum" type="pve"]',
 					'[pf_player_card steam_id="76561198000000000"]',
+					'[pf_faction_war theme="military" url="https://your-site.com/leaderboard"]',
+					'[pf_stats theme="military"]',
 				);
 				foreach ( $sc_examples as $sc ) :
 				?>

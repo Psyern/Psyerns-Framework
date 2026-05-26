@@ -37,6 +37,8 @@ class PF_Shortcodes {
 		add_shortcode( 'pf_top3_deadliest', array( $this, 'top3_deadliest' ) );
 		add_shortcode( 'pf_top3_bosskills', array( $this, 'top3_bosskills' ) );
 		add_shortcode( 'pf_player_card', array( $this, 'player_card' ) );
+		add_shortcode( 'pf_faction_war', array( $this, 'faction_war' ) );
+		add_shortcode( 'pf_stats', array( $this, 'stats' ) );
 	}
 
 	/**
@@ -370,6 +372,146 @@ class PF_Shortcodes {
 			}).catch(function() {
 				c.innerHTML = '<div class="pf-loading"><?php echo esc_js( __( 'Failed to load.', 'psyerns-framework' ) ); ?></div>';
 			});
+		});
+		</script>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Shortcode: [pf_faction_war theme="dark" url="https://site.com/leaderboard"]
+	 *
+	 * Renders a compact "Faction War" banner: title with ISO week, EAST vs WEST
+	 * labels, live points / percentages, a split progress bar and an optional
+	 * link button. Numbers are filled in live via the public leaderboard REST
+	 * meta (globalEastPoints / globalWestPoints) and auto-refresh.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output.
+	 */
+	public function faction_war( $atts ) {
+		$atts  = shortcode_atts( array(
+			'theme' => '',
+			'url'   => '',
+		), $atts, 'pf_faction_war' );
+		$theme = $this->get_theme( $atts );
+		$this->enqueue_assets();
+
+		$id   = 'pf-fw-' . wp_rand();
+		$week = absint( gmdate( 'W' ) );
+		$url  = esc_url( $atts['url'] );
+
+		ob_start();
+		?>
+		<div id="<?php echo esc_attr( $id ); ?>" class="psyern-lb psyern-lb--<?php echo esc_attr( $theme ); ?> psyern-fw" role="region" aria-label="<?php esc_attr_e( 'Faction War', 'psyerns-framework' ); ?>">
+			<div class="psyern-fw__title">
+				<?php esc_html_e( 'Faction', 'psyerns-framework' ); ?>
+				<span class="psyern-fw__title-accent"><?php esc_html_e( 'War', 'psyerns-framework' ); ?></span>
+				&middot; <?php
+					/* translators: %d: ISO week number */
+					printf( esc_html__( 'Week %d', 'psyerns-framework' ), $week );
+				?>
+			</div>
+			<div class="psyern-fw__teams">
+				<span class="psyern-fw__team psyern-fw__team--east"><?php esc_html_e( 'East', 'psyerns-framework' ); ?></span>
+				<span class="psyern-fw__vs"><?php esc_html_e( 'vs', 'psyerns-framework' ); ?></span>
+				<span class="psyern-fw__team psyern-fw__team--west"><?php esc_html_e( 'West', 'psyerns-framework' ); ?></span>
+			</div>
+			<div class="psyern-fw__stats">
+				<span class="psyern-fw__stat psyern-fw__stat--east"><b data-fw="east-pts">&ndash;</b> <?php esc_html_e( 'PTS', 'psyerns-framework' ); ?> &middot; <span data-fw="east-pct">&ndash;</span></span>
+				<span class="psyern-fw__stat psyern-fw__stat--west"><b data-fw="west-pts">&ndash;</b> <?php esc_html_e( 'PTS', 'psyerns-framework' ); ?> &middot; <span data-fw="west-pct">&ndash;</span></span>
+			</div>
+			<div class="psyern-fw__bar" aria-hidden="true">
+				<div class="psyern-fw__bar-east" data-fw="east-bar" style="width:50%"></div>
+				<div class="psyern-fw__bar-west" data-fw="west-bar" style="width:50%"></div>
+			</div>
+			<?php if ( '' !== $url ) : ?>
+				<a class="psyern-fw__btn" href="<?php echo esc_url( $url ); ?>">
+					<span class="psyern-fw__btn-arrow" aria-hidden="true">&#9656;</span><?php esc_html_e( 'Full Leaderboard', 'psyerns-framework' ); ?>
+				</a>
+			<?php endif; ?>
+		</div>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			if (typeof pf_config !== 'undefined') PF.config.apiUrl = pf_config.apiUrl;
+			var c = document.getElementById('<?php echo esc_js( $id ); ?>');
+			if (!c) return;
+			function pct(v) { return v.toFixed(1).replace('.', ',') + '%'; }
+			function set(key, val) { var n = c.querySelector('[data-fw="' + key + '"]'); if (n) n.textContent = val; }
+			function render(d) {
+				var east = parseInt(d.globalEastPoints, 10) || 0;
+				var west = parseInt(d.globalWestPoints, 10) || 0;
+				var total = east + west;
+				var ePct = total > 0 ? (east / total) * 100 : 50;
+				var wPct = total > 0 ? 100 - ePct : 50;
+				set('east-pts', PF.formatNumber(east));
+				set('west-pts', PF.formatNumber(west));
+				set('east-pct', pct(ePct));
+				set('west-pct', pct(wPct));
+				var eb = c.querySelector('[data-fw="east-bar"]');
+				var wb = c.querySelector('[data-fw="west-bar"]');
+				if (eb) eb.style.width = ePct + '%';
+				if (wb) wb.style.width = wPct + '%';
+			}
+			function load() { PF.fetchLeaderboard('pvp', 1).then(render).catch(function() {}); }
+			load();
+			PF.startAutoRefresh(load);
+		});
+		</script>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Shortcode: [pf_stats theme="dark"]
+	 *
+	 * Renders three headline stat cards — Online Now, Tracked Players and
+	 * Total Kills — filled live via the public /stats REST endpoint with
+	 * auto-refresh.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string HTML output.
+	 */
+	public function stats( $atts ) {
+		$atts  = shortcode_atts( array( 'theme' => '' ), $atts, 'pf_stats' );
+		$theme = $this->get_theme( $atts );
+		$this->enqueue_assets();
+
+		$id = 'pf-st-' . wp_rand();
+
+		$cards = array(
+			'online'  => array( 'mod' => 'online',  'label' => __( 'Online Now', 'psyerns-framework' ) ),
+			'tracked' => array( 'mod' => 'tracked', 'label' => __( 'Tracked Players', 'psyerns-framework' ) ),
+			'kills'   => array( 'mod' => 'kills',   'label' => __( 'Total Kills', 'psyerns-framework' ) ),
+		);
+
+		ob_start();
+		?>
+		<div id="<?php echo esc_attr( $id ); ?>" class="psyern-lb psyern-lb--<?php echo esc_attr( $theme ); ?> psyern-stats" role="region" aria-label="<?php esc_attr_e( 'Server Statistics', 'psyerns-framework' ); ?>">
+			<?php foreach ( $cards as $key => $card ) : ?>
+				<div class="psyern-stats__card psyern-stats__card--<?php echo esc_attr( $card['mod'] ); ?>">
+					<div class="psyern-stats__num" data-fw="<?php echo esc_attr( $key ); ?>">&ndash;</div>
+					<div class="psyern-stats__label">
+						<span class="psyern-stats__icon" aria-hidden="true">&#9656;</span><?php echo esc_html( $card['label'] ); ?>
+					</div>
+					<div class="psyern-stats__bar" aria-hidden="true"></div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			if (typeof pf_config !== 'undefined') PF.config.apiUrl = pf_config.apiUrl;
+			var c = document.getElementById('<?php echo esc_js( $id ); ?>');
+			if (!c) return;
+			function set(key, val) { var n = c.querySelector('[data-fw="' + key + '"]'); if (n) n.textContent = val; }
+			function render(d) {
+				set('online', PF.formatNumber(d.playerOnlineCounter || 0));
+				set('tracked', PF.formatNumber(d.totalPlayers || 0));
+				set('kills', PF.formatNumber(d.totalKills || 0));
+			}
+			function load() { PF.fetchStats().then(render).catch(function() {}); }
+			load();
+			PF.startAutoRefresh(load);
 		});
 		</script>
 		<?php

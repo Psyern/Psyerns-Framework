@@ -22,6 +22,7 @@ delete_option( 'psyern_enable_avatars' );
 
 delete_transient( 'pf_server_status' );
 delete_transient( 'pf_leaderboard_meta' );
+delete_transient( 'pf_total_kills' );
 
 global $wpdb;
 $wpdb->query(

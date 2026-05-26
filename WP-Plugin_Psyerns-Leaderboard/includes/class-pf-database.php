@@ -142,6 +142,7 @@ class PF_Database {
 		$result = $wpdb->query( "TRUNCATE TABLE {$table}" );
 
 		delete_transient( 'pf_leaderboard_meta' );
+		delete_transient( 'pf_total_kills' );
 
 		return $result;
 	}

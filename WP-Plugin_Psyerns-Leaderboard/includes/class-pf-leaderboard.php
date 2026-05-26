@@ -38,6 +38,9 @@ class PF_Leaderboard {
 		$this->upsert_players( $data['topPVEPlayers'] ?? array(), 'pve' );
 		$this->upsert_players( $data['topPVPPlayers'] ?? array(), 'pvp' );
 
+		// Player rows changed — invalidate the cached global kill total.
+		delete_transient( 'pf_total_kills' );
+
 		if ( ! empty( $data['playerDetails'] ) && is_array( $data['playerDetails'] ) ) {
 			if ( class_exists( 'PF_Player_Details' ) ) {
 				( new PF_Player_Details() )->handle_upload_details( $data['playerDetails'] );
@@ -242,6 +245,35 @@ class PF_Leaderboard {
 			'globalEastPoints'    => absint( $meta['globalEastPoints'] ?? 0 ),
 			'globalWestPoints'    => absint( $meta['globalWestPoints'] ?? 0 ),
 			'players'             => $players,
+		), 200 );
+	}
+
+	/**
+	 * Handle public aggregate stats GET.
+	 *
+	 * Returns the headline counters used by the [pf_stats] banner:
+	 * online players and tracked players (from meta) plus the global
+	 * total kills (SUM over both board types), cached for 5 minutes.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response
+	 */
+	public function handle_stats( WP_REST_Request $request ) {
+		$meta = get_transient( 'pf_leaderboard_meta' ) ?: array();
+
+		$total_kills = get_transient( 'pf_total_kills' );
+		if ( false === $total_kills ) {
+			global $wpdb;
+			$table       = PF_Database::get_table_name( 'leaderboard' );
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$total_kills = absint( $wpdb->get_var( "SELECT SUM(kills) FROM {$table}" ) );
+			set_transient( 'pf_total_kills', $total_kills, 300 );
+		}
+
+		return new WP_REST_Response( array(
+			'playerOnlineCounter' => absint( $meta['playerOnlineCounter'] ?? 0 ),
+			'totalPlayers'        => absint( $meta['totalPlayers'] ?? 0 ),
+			'totalKills'          => absint( $total_kills ),
 		), 200 );
 	}
 

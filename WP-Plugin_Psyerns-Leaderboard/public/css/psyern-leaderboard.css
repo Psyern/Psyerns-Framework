@@ -929,6 +929,183 @@
 	background: rgba(255, 255, 255, 0.15);
 }
 
+/* ─── Faction War Banner ([pf_faction_war]) ─── */
+.psyern-fw {
+	text-align: center;
+}
+
+.psyern-fw__title {
+	font-size: clamp(1.6rem, 4vw, 2.4rem);
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin: 0 0 18px;
+}
+
+.psyern-lb .psyern-fw__title-accent {
+	color: #e74c3c;
+}
+
+.psyern-fw__teams {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	font-size: clamp(1.4rem, 3.5vw, 2rem);
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.psyern-lb .psyern-fw__team--east {
+	color: #e74c3c;
+}
+
+.psyern-lb .psyern-fw__team--west {
+	color: #3498db;
+}
+
+.psyern-fw__vs {
+	font-size: 0.55em;
+	font-weight: 600;
+	opacity: 0.55;
+}
+
+.psyern-fw__stats {
+	display: flex;
+	justify-content: center;
+	gap: clamp(24px, 12vw, 120px);
+	font-size: 0.8rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	opacity: 0.7;
+	margin-bottom: 14px;
+}
+
+.psyern-fw__stat b {
+	font-weight: 700;
+	opacity: 1;
+}
+
+.psyern-fw__bar {
+	display: flex;
+	height: 14px;
+	max-width: 920px;
+	margin: 0 auto 22px;
+	border-radius: 7px;
+	overflow: hidden;
+	background: rgba(128, 128, 128, 0.2);
+}
+
+.psyern-fw__bar-east {
+	background-color: #e74c3c;
+	background-image: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.18) 0, rgba(0, 0, 0, 0.18) 6px, transparent 6px, transparent 12px);
+	transition: width 0.6s ease;
+}
+
+.psyern-fw__bar-west {
+	background-color: #3498db;
+	transition: width 0.6s ease;
+}
+
+.psyern-fw__btn {
+	display: inline-block;
+	padding: 12px 26px;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	cursor: pointer;
+	opacity: 0.9;
+	transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.psyern-fw__btn:hover {
+	opacity: 1;
+	background: rgba(128, 128, 128, 0.12);
+}
+
+.psyern-fw__btn-arrow {
+	margin-right: 8px;
+}
+
+@media (max-width: 560px) {
+	.psyern-fw__stats {
+		gap: 24px;
+	}
+}
+
+/* ─── Stat Cards ([pf_stats]) ─── */
+.psyern-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 20px;
+}
+
+.psyern-stats__card {
+	--acc: #2ecc71;
+	position: relative;
+	padding: 22px 24px 20px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 4px;
+	background: rgba(0, 0, 0, 0.25);
+	overflow: hidden;
+}
+
+.psyern-stats__card--online  { --acc: #2ecc71; }
+.psyern-stats__card--tracked { --acc: #f1c40f; }
+.psyern-stats__card--kills   { --acc: #e74c3c; }
+
+/* Top-left corner bracket in the card's accent colour */
+.psyern-stats__card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 22px;
+	height: 22px;
+	border-top: 2px solid var(--acc);
+	border-left: 2px solid var(--acc);
+	border-top-left-radius: 4px;
+}
+
+.psyern-lb .psyern-stats__num {
+	font-size: clamp(2rem, 5vw, 2.8rem);
+	font-weight: 800;
+	line-height: 1.05;
+	color: #fff;
+	margin-bottom: 12px;
+}
+
+.psyern-stats__label {
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	opacity: 0.75;
+	margin-bottom: 14px;
+}
+
+.psyern-lb .psyern-stats__icon {
+	color: var(--acc);
+	margin-right: 8px;
+}
+
+.psyern-stats__bar {
+	height: 3px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, var(--acc) 0, var(--acc) 45%, rgba(128, 128, 128, 0.18) 45%, rgba(128, 128, 128, 0.18) 100%);
+}
+
+@media (max-width: 640px) {
+	.psyern-stats {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* ─── Pagination ─── */
 .psyern-lb__pagination {
 	display: flex;
