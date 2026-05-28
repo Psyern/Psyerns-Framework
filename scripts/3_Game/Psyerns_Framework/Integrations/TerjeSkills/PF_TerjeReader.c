@@ -164,11 +164,11 @@ class PF_TerjeReader
 		if (typeId == "arrstr")
 		{
 			int n;
+			string itemStr;
 			if (!ctx.Read(n)) return false;
 			for (int i = 0; i < n; i++)
 			{
-				string item;
-				if (!ctx.Read(item)) return false;
+				if (!ctx.Read(itemStr)) return false;
 			}
 			return true;
 		}
@@ -176,11 +176,11 @@ class PF_TerjeReader
 		if (typeId == "arrint")
 		{
 			int nI;
+			int itemInt;
 			if (!ctx.Read(nI)) return false;
 			for (int iI = 0; iI < nI; iI++)
 			{
-				int item;
-				if (!ctx.Read(item)) return false;
+				if (!ctx.Read(itemInt)) return false;
 			}
 			return true;
 		}
@@ -188,11 +188,11 @@ class PF_TerjeReader
 		if (typeId == "arrnum")
 		{
 			int nF;
+			float itemNum;
 			if (!ctx.Read(nF)) return false;
 			for (int iF = 0; iF < nF; iF++)
 			{
-				float item;
-				if (!ctx.Read(item)) return false;
+				if (!ctx.Read(itemNum)) return false;
 			}
 			return true;
 		}
@@ -200,13 +200,13 @@ class PF_TerjeReader
 		if (typeId == "mapstr")
 		{
 			int nMs;
+			string keyMs;
+			string valMs;
 			if (!ctx.Read(nMs)) return false;
 			for (int iMs = 0; iMs < nMs; iMs++)
 			{
-				string k;
-				string v;
-				if (!ctx.Read(k)) return false;
-				if (!ctx.Read(v)) return false;
+				if (!ctx.Read(keyMs)) return false;
+				if (!ctx.Read(valMs)) return false;
 			}
 			return true;
 		}
@@ -214,13 +214,13 @@ class PF_TerjeReader
 		if (typeId == "mapint")
 		{
 			int nMi;
+			string keyMi;
+			int valMi;
 			if (!ctx.Read(nMi)) return false;
 			for (int iMi = 0; iMi < nMi; iMi++)
 			{
-				string k;
-				int v;
-				if (!ctx.Read(k)) return false;
-				if (!ctx.Read(v)) return false;
+				if (!ctx.Read(keyMi)) return false;
+				if (!ctx.Read(valMi)) return false;
 			}
 			return true;
 		}
@@ -228,13 +228,13 @@ class PF_TerjeReader
 		if (typeId == "mapnum")
 		{
 			int nMn;
+			string keyMn;
+			float valMn;
 			if (!ctx.Read(nMn)) return false;
 			for (int iMn = 0; iMn < nMn; iMn++)
 			{
-				string k;
-				float v;
-				if (!ctx.Read(k)) return false;
-				if (!ctx.Read(v)) return false;
+				if (!ctx.Read(keyMn)) return false;
+				if (!ctx.Read(valMn)) return false;
 			}
 			return true;
 		}
@@ -252,23 +252,25 @@ class PF_TerjeReader
 	 */
 	protected static void StoreIntSkill(PF_TerjePlayerSkills target, string recordId, int value)
 	{
+		string skillId;
+
 		if (recordId.IndexOf("ts.exp_") == 0)
 		{
-			string skillId = recordId.Substring(7, recordId.Length() - 7);
+			skillId = recordId.Substring(7, recordId.Length() - 7);
 			target.GetOrCreate(skillId).experience = value;
 			return;
 		}
 
 		if (recordId.IndexOf("ts.pps_") == 0)
 		{
-			string skillId = recordId.Substring(7, recordId.Length() - 7);
+			skillId = recordId.Substring(7, recordId.Length() - 7);
 			target.GetOrCreate(skillId).perkPoints = value;
 			return;
 		}
 
 		if (recordId.IndexOf("ts.max_") == 0)
 		{
-			string skillId = recordId.Substring(7, recordId.Length() - 7);
+			skillId = recordId.Substring(7, recordId.Length() - 7);
 			target.GetOrCreate(skillId).highLevel = value;
 			return;
 		}
@@ -279,7 +281,7 @@ class PF_TerjeReader
 			int plusIdx = suffix.IndexOf("+");
 			if (plusIdx > 0)
 			{
-				string skillId = suffix.Substring(0, plusIdx);
+				skillId = suffix.Substring(0, plusIdx);
 				string perkId = suffix.Substring(plusIdx + 1, suffix.Length() - plusIdx - 1);
 				target.GetOrCreate(skillId).perks.Set(perkId, value);
 			}

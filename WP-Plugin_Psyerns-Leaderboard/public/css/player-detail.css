@@ -93,6 +93,161 @@ body.psyern-pdm-open {
 	--psyern-accent: #c8a0b8;
 }
 
+/* ─── Per-theme aesthetics ───────────────────────────────────────────────
+   Mirror the leaderboard themes (font, glow, scanlines, accent treatment)
+   so the modal doesn't feel like a stylistic break from the table that
+   spawned it. Each theme overrides the same handful of hooks:
+     - panel font-family
+     - title / name font-family + glow
+     - kpi-value glow on accent
+     - tab active glow
+     - scanline overlay via ::before
+     - subtle scrollbar tint
+─────────────────────────────────────────────────────────────────────── */
+
+/* ── military ── phosphor green CRT */
+.psyern-pdm--military .psyern-pdm__panel {
+	font-family: 'Share Tech Mono', 'Courier New', monospace;
+	background: #0d150d radial-gradient(ellipse at center, rgba(74, 222, 128, 0.04) 0%, transparent 60%);
+}
+.psyern-pdm--military .psyern-pdm__panel::before {
+	content: ''; position: absolute; inset: 0; pointer-events: none;
+	background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0, 0, 0, 0.18) 2px, rgba(0, 0, 0, 0.18) 4px);
+	z-index: 1;
+}
+.psyern-pdm--military .psyern-pdm__header,
+.psyern-pdm--military .psyern-pdm__tabs,
+.psyern-pdm--military .psyern-pdm__body,
+.psyern-pdm--military .psyern-pdm__footer { position: relative; z-index: 2; }
+.psyern-pdm--military .psyern-pdm__name { font-family: 'Oswald', sans-serif; text-shadow: 0 0 8px rgba(74, 222, 128, 0.6), 0 0 20px rgba(74, 222, 128, 0.25); }
+.psyern-pdm--military .psyern-pdm__kpi-value,
+.psyern-pdm--military .psyern-pdm__skill-level,
+.psyern-pdm--military .psyern-pdm__tab--active { text-shadow: 0 0 6px rgba(74, 222, 128, 0.55); }
+.psyern-pdm--military .psyern-pdm__kpi { background: rgba(74, 222, 128, 0.04); border-color: rgba(74, 222, 128, 0.18); }
+
+/* ── ops ── neon green CRT (stronger glow than military) */
+.psyern-pdm--ops .psyern-pdm__panel {
+	font-family: 'Share Tech Mono', 'Courier New', monospace;
+	background: #000a00 radial-gradient(ellipse at center, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
+}
+.psyern-pdm--ops .psyern-pdm__panel::before {
+	content: ''; position: absolute; inset: 0; pointer-events: none;
+	background: repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0, 0, 0, 0.22) 2px, rgba(0, 0, 0, 0.22) 4px);
+	z-index: 1;
+}
+.psyern-pdm--ops .psyern-pdm__header,
+.psyern-pdm--ops .psyern-pdm__tabs,
+.psyern-pdm--ops .psyern-pdm__body,
+.psyern-pdm--ops .psyern-pdm__footer { position: relative; z-index: 2; }
+.psyern-pdm--ops .psyern-pdm__name { font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 10px rgba(0, 255, 65, 0.7), 0 0 22px rgba(0, 255, 65, 0.3); }
+.psyern-pdm--ops .psyern-pdm__kpi-value,
+.psyern-pdm--ops .psyern-pdm__skill-level,
+.psyern-pdm--ops .psyern-pdm__tab--active { text-shadow: 0 0 8px rgba(0, 255, 65, 0.7); }
+.psyern-pdm--ops .psyern-pdm__kpi { background: rgba(0, 255, 65, 0.04); border-color: rgba(0, 255, 65, 0.2); }
+
+/* ── stalker ── radiation amber */
+.psyern-pdm--stalker .psyern-pdm__panel {
+	font-family: 'Share Tech Mono', 'Courier New', monospace;
+	background: #0e0a04 radial-gradient(circle at 50% 0%, rgba(255, 204, 0, 0.06) 0%, transparent 50%);
+}
+.psyern-pdm--stalker .psyern-pdm__name { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 0 0 8px rgba(255, 204, 0, 0.55); }
+.psyern-pdm--stalker .psyern-pdm__kpi-value,
+.psyern-pdm--stalker .psyern-pdm__skill-level,
+.psyern-pdm--stalker .psyern-pdm__tab--active { text-shadow: 0 0 6px rgba(255, 204, 0, 0.5); }
+.psyern-pdm--stalker .psyern-pdm__kpi { background: rgba(255, 204, 0, 0.04); border-color: rgba(255, 204, 0, 0.18); }
+
+/* ── outbreak ── hazard amber stripes */
+.psyern-pdm--outbreak .psyern-pdm__panel {
+	font-family: 'Share Tech Mono', 'Courier New', monospace;
+	background: #0d0d00;
+}
+.psyern-pdm--outbreak .psyern-pdm__panel::before {
+	content: ''; position: absolute; inset: 0; pointer-events: none;
+	background: repeating-linear-gradient(45deg, transparent 0, transparent 14px, rgba(212, 160, 32, 0.04) 14px, rgba(212, 160, 32, 0.04) 28px);
+	z-index: 1;
+}
+.psyern-pdm--outbreak .psyern-pdm__header,
+.psyern-pdm--outbreak .psyern-pdm__tabs,
+.psyern-pdm--outbreak .psyern-pdm__body,
+.psyern-pdm--outbreak .psyern-pdm__footer { position: relative; z-index: 2; }
+.psyern-pdm--outbreak .psyern-pdm__name { font-family: 'Oswald', sans-serif; text-shadow: 0 0 8px rgba(212, 160, 32, 0.5); }
+.psyern-pdm--outbreak .psyern-pdm__kpi-value,
+.psyern-pdm--outbreak .psyern-pdm__skill-level,
+.psyern-pdm--outbreak .psyern-pdm__tab--active { text-shadow: 0 0 5px rgba(212, 160, 32, 0.5); }
+.psyern-pdm--outbreak .psyern-pdm__kpi { background: rgba(212, 160, 32, 0.04); border-color: rgba(212, 160, 32, 0.2); border-style: dashed; }
+
+/* ── cyberpunk ── matrix + magenta neon */
+.psyern-pdm--cyberpunk .psyern-pdm__panel {
+	font-family: 'Share Tech Mono', 'Courier New', monospace;
+	background: #0a0a0f radial-gradient(ellipse at top, rgba(255, 79, 216, 0.08) 0%, transparent 50%);
+}
+.psyern-pdm--cyberpunk .psyern-pdm__panel::before {
+	content: ''; position: absolute; inset: 0; pointer-events: none;
+	background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(255, 79, 216, 0.03) 3px, rgba(255, 79, 216, 0.03) 4px);
+	z-index: 1;
+}
+.psyern-pdm--cyberpunk .psyern-pdm__header,
+.psyern-pdm--cyberpunk .psyern-pdm__tabs,
+.psyern-pdm--cyberpunk .psyern-pdm__body,
+.psyern-pdm--cyberpunk .psyern-pdm__footer { position: relative; z-index: 2; }
+.psyern-pdm--cyberpunk .psyern-pdm__name { font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 10px rgba(255, 79, 216, 0.7), 0 0 24px rgba(0, 255, 255, 0.3); }
+.psyern-pdm--cyberpunk .psyern-pdm__kpi-value,
+.psyern-pdm--cyberpunk .psyern-pdm__skill-level,
+.psyern-pdm--cyberpunk .psyern-pdm__tab--active { text-shadow: 0 0 8px rgba(255, 79, 216, 0.7); }
+.psyern-pdm--cyberpunk .psyern-pdm__kpi { background: rgba(255, 79, 216, 0.04); border-color: rgba(255, 79, 216, 0.2); }
+
+/* ── inferno ── blazing ember */
+.psyern-pdm--inferno .psyern-pdm__panel {
+	font-family: 'Oswald', 'Share Tech Mono', sans-serif;
+	background: #0a0200 radial-gradient(ellipse at top, rgba(255, 200, 0, 0.07) 0%, transparent 55%);
+}
+.psyern-pdm--inferno .psyern-pdm__name { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 0 0 10px rgba(255, 100, 0, 0.7), 0 0 20px rgba(255, 50, 0, 0.4); }
+.psyern-pdm--inferno .psyern-pdm__kpi-value,
+.psyern-pdm--inferno .psyern-pdm__skill-level,
+.psyern-pdm--inferno .psyern-pdm__tab--active { text-shadow: 0 0 8px rgba(255, 200, 0, 0.6); }
+.psyern-pdm--inferno .psyern-pdm__kpi { background: rgba(255, 100, 0, 0.04); border-color: rgba(255, 100, 0, 0.2); }
+
+/* ── ash ── weathered paper / post-apocalyptic */
+.psyern-pdm--ash .psyern-pdm__panel {
+	font-family: 'Special Elite', 'Courier New', monospace;
+	background: #1a1714;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+.psyern-pdm--ash .psyern-pdm__name { font-family: 'Special Elite', serif; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6); }
+.psyern-pdm--ash .psyern-pdm__kpi-value,
+.psyern-pdm--ash .psyern-pdm__skill-level,
+.psyern-pdm--ash .psyern-pdm__tab--active { text-shadow: 0 0 4px rgba(212, 168, 83, 0.4); }
+.psyern-pdm--ash .psyern-pdm__kpi { background: rgba(212, 168, 83, 0.04); border-color: rgba(212, 168, 83, 0.18); }
+
+/* ── frostbite ── icy / chilled */
+.psyern-pdm--frostbite .psyern-pdm__panel {
+	font-family: 'Inter', 'Share Tech Mono', sans-serif;
+	background: #060a12 radial-gradient(ellipse at top, rgba(142, 200, 240, 0.08) 0%, transparent 55%);
+	border-radius: 14px;
+}
+.psyern-pdm--frostbite .psyern-pdm__name { letter-spacing: 0.03em; text-shadow: 0 0 10px rgba(142, 200, 240, 0.6); }
+.psyern-pdm--frostbite .psyern-pdm__kpi-value,
+.psyern-pdm--frostbite .psyern-pdm__skill-level,
+.psyern-pdm--frostbite .psyern-pdm__tab--active { text-shadow: 0 0 8px rgba(142, 200, 240, 0.55); }
+.psyern-pdm--frostbite .psyern-pdm__kpi { background: rgba(142, 200, 240, 0.05); border-color: rgba(142, 200, 240, 0.2); border-radius: 10px; }
+
+/* ── bubblegum ── pastel synthwave */
+.psyern-pdm--bubblegum .psyern-pdm__panel {
+	font-family: 'Quicksand', 'Inter', sans-serif;
+	background: #120818 radial-gradient(ellipse at top, rgba(255, 105, 180, 0.08) 0%, transparent 55%);
+	border-radius: 16px;
+}
+.psyern-pdm--bubblegum .psyern-pdm__name { letter-spacing: 0.02em; text-shadow: 0 0 12px rgba(255, 105, 180, 0.55); }
+.psyern-pdm--bubblegum .psyern-pdm__kpi-value,
+.psyern-pdm--bubblegum .psyern-pdm__skill-level,
+.psyern-pdm--bubblegum .psyern-pdm__tab--active { text-shadow: 0 0 10px rgba(255, 105, 180, 0.6); }
+.psyern-pdm--bubblegum .psyern-pdm__kpi { background: rgba(255, 105, 180, 0.05); border-color: rgba(255, 105, 180, 0.2); border-radius: 10px; }
+
+/* Reduce motion respects the user's OS setting across all themes. */
+@media (prefers-reduced-motion: reduce) {
+	.psyern-pdm__panel::before { animation: none !important; }
+}
+
 /* ─── Backdrop ─── */
 .psyern-pdm__backdrop {
 	position: fixed;
