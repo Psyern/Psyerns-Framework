@@ -78,7 +78,12 @@ class Psyern_Main {
 		$offset   = ( $page - 1 ) * $per_page;
 
 		$table      = PF_Database::get_table_name( 'leaderboard' );
-		$order_col  = ( 'pvp' === $mode ) ? 'pvp_points' : 'pve_points';
+		// Default ranking is by kills (per-mode count already stored in this
+		// column by upsert_players). The kills DESC default also drives the
+		// `original_rank` subquery below, so the leftmost "#" column reflects
+		// the kills-based placement even when the user re-sorts by another
+		// column.
+		$order_col  = 'kills';
 		$board_type = $mode; // 'pvp' or 'pve'
 
 		// Whitelist-based sort: frontend key -> SQL ORDER BY expression.
@@ -105,9 +110,11 @@ class Psyern_Main {
 			$sort_dir = 'desc';
 		}
 		if ( isset( $sort_map[ $sort_by ] ) ) {
-			$order_clause = $sort_map[ $sort_by ] . ' ' . strtoupper( $sort_dir ) . ', ' . $order_col . ' DESC';
+			$order_clause = $sort_map[ $sort_by ] . ' ' . strtoupper( $sort_dir ) . ', kills DESC, deaths ASC, player_name ASC';
 		} else {
-			$order_clause = $order_col . ' DESC';
+			// Default order: most kills first, fewer deaths breaks ties (cleaner
+			// K/D wins), player_name is the final stable key.
+			$order_clause = 'kills DESC, deaths ASC, player_name ASC';
 		}
 
 		// Each row also carries its original points-based rank, computed via a
