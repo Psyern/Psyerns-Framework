@@ -64,6 +64,10 @@ class PF_AH_Config
 
 	void Save()
 	{
+		string parent = "$profile:DeadmansEcho";
+		if (!FileExist(parent))
+			MakeDirectory(parent);
+
 		string dir = GetConfigDirectory();
 		if (!FileExist(dir))
 			MakeDirectory(dir);

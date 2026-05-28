@@ -31,6 +31,7 @@ class PF_WebConfig
 	int LeaderboardExportIntervalSeconds;
 	string NinjinPlayersPath;
 	int LeaderboardMaxPlayers;
+	bool EnablePlayerDetailsExport;
 
 	// Webhook Notifications
 	bool EnableServerStopNotification;
@@ -76,6 +77,7 @@ class PF_WebConfig
 		LeaderboardExportIntervalSeconds = 600;
 		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
 		LeaderboardMaxPlayers = 100;
+		EnablePlayerDetailsExport = true;
 
 		// Webhook Notifications
 		EnableServerStopNotification = false;
@@ -144,11 +146,33 @@ class PF_WebConfig
 	{
 		bool changed = false;
 
+		// "WordPress" and "Leaderboard" both validate against the SAME
+		// pf_api_key on the WordPress plugin side, so they MUST share one key.
+		// Generate / reuse a single shared key for both.
+		string sharedKey = GetSharedWordPressKey();
+		if (sharedKey == "")
+			sharedKey = GenerateRandomKey();
+
 		for (int i = 0; i < Endpoints.Count(); i++)
 		{
 			PF_WebEndpoint ep = Endpoints[i];
 			if (!ShouldAutoGenerateApiKey(ep))
 				continue;
+
+			string name = ep.Name;
+			name.ToLower();
+			bool isShared = (name == "wordpress" || name == "leaderboard");
+
+			if (isShared)
+			{
+				if (ep.ApiKey != sharedKey)
+				{
+					ep.ApiKey = sharedKey;
+					PF_Logger.Log("Synced shared WordPress API key for endpoint: " + ep.Name + " → " + ep.ApiKey);
+					changed = true;
+				}
+				continue;
+			}
 
 			if (ep.ApiKey == "" || ep.ApiKey == "YOUR_API_KEY_HERE")
 			{
@@ -160,6 +184,28 @@ class PF_WebConfig
 
 		if (changed)
 			Save();
+	}
+
+	// Returns the first non-empty, non-placeholder key from WordPress or
+	// Leaderboard endpoints, so admins can paste the WP key into either and
+	// have it propagate.
+	protected string GetSharedWordPressKey()
+	{
+		for (int i = 0; i < Endpoints.Count(); i++)
+		{
+			PF_WebEndpoint ep = Endpoints[i];
+			if (!ep)
+				continue;
+
+			string name = ep.Name;
+			name.ToLower();
+			if (name != "wordpress" && name != "leaderboard")
+				continue;
+
+			if (ep.ApiKey != "" && ep.ApiKey != "YOUR_API_KEY_HERE")
+				return ep.ApiKey;
+		}
+		return "";
 	}
 
 	protected bool ShouldAutoGenerateApiKey(PF_WebEndpoint endpoint)
@@ -190,6 +236,13 @@ class PF_WebConfig
 
 	void Save()
 	{
+		string parent = "$profile:DeadmansEcho";
+		if (!FileExist(parent))
+		{
+			Print("[Psyerns Framework] Creating parent directory: " + parent);
+			MakeDirectory(parent);
+		}
+
 		string dir = GetConfigDirectory();
 		if (!FileExist(dir))
 		{
@@ -232,6 +285,7 @@ class PF_WebConfig
 		LeaderboardExportIntervalSeconds = 600;
 		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
 		LeaderboardMaxPlayers = 100;
+		EnablePlayerDetailsExport = true;
 
 		// Endpoints
 		PF_WebEndpoint wp = new PF_WebEndpoint();

@@ -115,12 +115,23 @@ class PF_LeaderboardExport : PF_RestBase
 			payload.topPVPPlayers.Insert(pvpSorted[pj]);
 		}
 
+		// 5b. Populate playerDetails (ALL players, no cap) — gated by config flag.
+		int detailsCount = 0;
+		if (PF_WebConfig.GetInstance().EnablePlayerDetailsExport)
+		{
+			for (int di = 0; di < allPlayers.Count(); di++)
+			{
+				payload.playerDetails.Insert(allPlayers[di]);
+			}
+			detailsCount = payload.playerDetails.Count();
+		}
+
 		// 6. Upload
 		payload.apiKey = GetApiKey();
 		string json = payload.Serialize();
 		PostJson("/upload", json);
 
-		PF_Logger.Log("LeaderboardExport: Uploaded " + totalPlayers.ToString() + " players (" + onlineCount.ToString() + " online), PvE top: " + pveLimit.ToString() + ", PvP top: " + pvpLimit.ToString());
+		PF_Logger.Log("LeaderboardExport: Uploaded " + totalPlayers.ToString() + " players (" + onlineCount.ToString() + " online), PvE top: " + pveLimit.ToString() + ", PvP top: " + pvpLimit.ToString() + ", playerDetails: " + detailsCount.ToString());
 
 		if (pveSorted.Count() > 0)
 		{

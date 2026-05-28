@@ -27,6 +27,7 @@ class PF_NinjinPlayerData
 	float DistanceTravelled;
 	float DistanceOnFoot;
 	float DistanceInVehicle;
+	int PlayTimeSeconds;
 
 	void PF_NinjinPlayerData()
 	{
@@ -50,6 +51,7 @@ class PF_NinjinPlayerData
 		DistanceTravelled = 0.0;
 		DistanceOnFoot = 0.0;
 		DistanceInVehicle = 0.0;
+		PlayTimeSeconds = 0;
 	}
 }
 
@@ -162,7 +164,7 @@ class PF_LeaderboardReader
 
 		// Longest shot = max of all CategoryLongestRanges entries
 		p.longestShot = MaxMap(raw.CategoryLongestRanges);
-		p.playtime = 0;
+		p.playtime = raw.PlayTimeSeconds;
 
 		// Extended stats
 		p.shotsFired = raw.ShotsFired;

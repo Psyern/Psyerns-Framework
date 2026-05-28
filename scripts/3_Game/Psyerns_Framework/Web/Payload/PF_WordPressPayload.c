@@ -74,6 +74,8 @@ class PF_WordPressPayload : PF_JsonPayload
 	int globalWestPoints;
 	ref array<ref PF_WP_PlayerData> topPVEPlayers;
 	ref array<ref PF_WP_PlayerData> topPVPPlayers;
+	// playerDetails reuses PF_WP_PlayerData — it already carries every per-player field the WP modal needs (categoryKills/Deaths/LongestRanges as raw JSON + war/gunplay/movement stats).
+	ref array<ref PF_WP_PlayerData> playerDetails;
 
 	void PF_WordPressPayload()
 	{
@@ -83,6 +85,7 @@ class PF_WordPressPayload : PF_JsonPayload
 		globalWestPoints = 0;
 		topPVEPlayers = new array<ref PF_WP_PlayerData>();
 		topPVPPlayers = new array<ref PF_WP_PlayerData>();
+		playerDetails = new array<ref PF_WP_PlayerData>();
 	}
 
 	override string Serialize()
@@ -100,6 +103,9 @@ class PF_WordPressPayload : PF_JsonPayload
 
 		string pvpPlayers = SerializePlayerArray(topPVPPlayers);
 		builder.AddRaw("topPVPPlayers", pvpPlayers);
+
+		string detailsJson = SerializePlayerArray(playerDetails);
+		builder.AddRaw("playerDetails", detailsJson);
 
 		return builder.Build();
 	}
