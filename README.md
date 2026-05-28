@@ -31,6 +31,33 @@
 
 ---
 
+## Repository Layout
+
+This repository is a small ecosystem: the DayZ mod itself plus the WordPress companions that consume its REST API and Discord webhooks.
+
+```text
+Psyerns_Framework/                  ← DayZ mod (this README)
+├── config.cpp / mod.cpp / scripts/
+├── data/                           ← banner, screenshots, default configs
+│
+├── WP-Plugin_Psyerns-Leaderboard/  ← WordPress: leaderboards, server status,
+│                                     whitelist, kill feed, player details
+├── WP-Plugin_Psyerns_AuctionHouse/ ← WordPress: bridge for DME_Auction_House
+│                                     (browser-side buy/bid via Steam login)
+├── psyerns-mods/                   ← WordPress: Mods Showreel + optional
+│                                     Discord leaderboard sync
+├── MISC/
+│   ├── standalone/                 ← PHP fallback backend (no WordPress)
+│   ├── tools/                      ← PowerShell helpers (sync, scheduling)
+│   ├── Themes/                     ← static HTML theme references
+│   └── templates/                  ← shortcode/UI templates
+└── PsyernsFrameworkConfig.example.json
+```
+
+The DayZ mod is **standalone and zero-dependency** — the companion plugins are optional consumers, each documented in its own subfolder.
+
+---
+
 ## Features
 
 <table>
@@ -97,7 +124,6 @@ Admins can reload the config live without restarting the server:
 - Press **F9** in-game (customizable in DayZ Settings → Controls → **PF** tab)
 - Server reloads `PsyernsFrameworkConfig.json` and confirms via chat message
 - Requires Steam64 ID in `AdminIDs` config field
-</table>
 
 ---
 
@@ -116,75 +142,55 @@ Admins can reload the config live without restarting the server:
 
 ---
 
-## Project Structure
+## DayZ Mod Structure
 
 ```text
-Psyerns_Framework/
+config.cpp
+mod.cpp
+data/
+├── PsyernsFrameworkConfig.json     ← default config seed
+├── PF_RestConfig.json              ← REST module defaults
+├── modded_inputs.xml               ← F9 config-reload keybind
+└── *.png / *.mp4                   ← banner + screenshots
+scripts/
 ├── config.cpp
-├── mod.cpp
-├── data/
-│   ├── PsyernsFrameworkConfig.json
-│   └── PF_RestConfig.json
-└── scripts/
-    ├── config.cpp
-    ├── 3_Game/Psyerns_Framework/
-    │   ├── Logging/
-    │   │   └── PF_Logger.c
-    │   ├── RPC/
-    │   │   └── PF_RPCConstants.c
-    │   ├── Utils/
-    │   │   ├── PF_HttpArguments.c
-    │   │   └── PF_JsonBuilder.c
-    │   ├── REST/
-    │   │   ├── Base/
-    │   │   │   └── PF_RestBase.c
-    │   │   ├── Config/
-    │   │   │   └── PF_RestConfig.c
-    │   │   ├── Discord/
-    │   │   │   └── PF_DiscordIntegration.c
-    │   │   ├── PlayerLookup/
-    │   │   │   └── PF_PlayerLookup.c
-    │   │   ├── ServerStatus/
-    │   │   │   └── PF_ServerStatus.c
-    │   │   └── Whitelist/
-    │   │       └── PF_WhitelistManager.c
-    │   └── Web/
-    │       ├── PF_WebClient.c
-    │       ├── PF_WebRequest.c
-    │       ├── PF_WebResponse.c
-    │       ├── Config/
-    │       │   ├── PF_WebConfig.c
-    │       │   └── PF_WebEndpoint.c
-    │       ├── Notifications/
-    │       │   └── PF_ServerNotifications.c
-    │       ├── Payload/
-    │       │   ├── PF_JsonPayload.c
-    │       │   ├── PF_DiscordPayload.c
-    │       │   └── PF_WordPressPayload.c
-    │       ├── Queue/
-    │       │   ├── PF_WebQueue.c
-    │       │   └── PF_WebQueueItem.c
-    │       ├── RestCallback/
-    │       │   └── PF_RestCallback.c
-    │       └── WebApi/
-    │           ├── PF_WebApiBase.c
-    │           ├── PF_DiscordWebhook.c
-    │           └── PF_WordPressApi.c
-    ├── 4_World/Psyerns_Framework/
-    │   ├── PF_WebQueueProcessor.c
-    │   └── REST/
-    │       ├── PF_KillFeedHook.c
-    │       ├── Alerts/
-    │       │   └── PF_AlertSystem.c
-    │       ├── KillFeed/
-    │       │   └── PF_KillFeedManager.c
-    │       └── Quests/
-    │           └── PF_QuestWebhook.c
-    └── 5_Mission/Psyerns_Framework/
-        ├── PF_MissionClient.c
-        ├── PF_MissionInit.c
-        └── PF_RestInit.c
+├── 3_Game/Psyerns_Framework/
+│   ├── Logging/      PF_Logger.c
+│   ├── RPC/          PF_RPCConstants.c
+│   ├── Utils/        PF_HttpArguments.c, PF_JsonBuilder.c
+│   ├── Integrations/
+│   │   └── AuctionHouse/           ← bridge for DME_Auction_House mod
+│   ├── REST/
+│   │   ├── Base/          PF_RestBase.c
+│   │   ├── Config/        PF_RestConfig.c
+│   │   ├── Discord/       PF_DiscordIntegration.c
+│   │   ├── Leaderboard/   PF_LeaderboardReader.c, PF_LeaderboardExport.c
+│   │   ├── PlayerLookup/  PF_PlayerLookup.c
+│   │   ├── ServerStatus/  PF_ServerStatus.c
+│   │   ├── TopGames/      community/top-games endpoint
+│   │   └── Whitelist/     PF_WhitelistManager.c
+│   └── Web/
+│       ├── PF_WebClient.c, PF_WebRequest.c, PF_WebResponse.c
+│       ├── Config/         PF_WebConfig.c, PF_WebEndpoint.c
+│       ├── Notifications/  PF_ServerNotifications.c
+│       ├── Payload/        PF_JsonPayload.c, PF_DiscordPayload.c, PF_WordPressPayload.c
+│       ├── Queue/          PF_WebQueue.c, PF_WebQueueItem.c
+│       ├── RestCallback/   PF_RestCallback.c
+│       └── WebApi/         PF_WebApiBase.c, PF_DiscordWebhook.c, PF_WordPressApi.c
+├── 4_World/Psyerns_Framework/
+│   ├── PF_WebQueueProcessor.c
+│   └── REST/
+│       ├── PF_KillFeedHook.c
+│       ├── Alerts/    PF_AlertSystem.c
+│       ├── KillFeed/  PF_KillFeedManager.c
+│       └── Quests/    PF_QuestWebhook.c
+└── 5_Mission/Psyerns_Framework/
+    ├── PF_MissionClient.c
+    ├── PF_MissionInit.c
+    └── PF_RestInit.c
 ```
+
+> **Leaderboard export:** `PF_LeaderboardReader` pulls per-player stats (including `PlayTimeSeconds`) from the Ninjin tracking JSONs, `PF_LeaderboardExport` periodically POSTs them to the WordPress companion via `/wp-json/psyern/v1/upload`.
 
 ## Profile Structure
 
@@ -279,11 +285,11 @@ profiles/DeadmansEcho/PsyernsFramework/
 
 ### Endpoints
 
-Three endpoints are configured by default:
+Two endpoints are configured by default. Add more entries to the `Endpoints` array for any extra REST targets you want to reach.
 
 | Name | Purpose |
 |------|---------|
-| `WordPress` | WordPress REST API for whitelist, player lookup, server status and leaderboard |
+| `WordPress` | WordPress REST API for whitelist, player lookup, server status, leaderboard upload |
 | `Discord` | Discord webhooks for notifications (server start/stop, events, kill feed) |
 
 | Field | Description |
@@ -431,9 +437,12 @@ The framework logs to both server RPT and a dedicated log file:
 
 ### <img src="https://img.shields.io/badge/WordPress-Plugin_Setup-21759B?style=flat-square&logo=wordpress&logoColor=white" alt="WordPress">
 
-The `psyerns-framework` WordPress plugin is included with the mod and handles all server-side communication — whitelist management, player lookup, server status display, leaderboard storage, and the REST API that the DayZ server connects to.
+The **`WP-Plugin_Psyerns-Leaderboard`** folder in this repo is the WordPress companion. It handles all server-side communication — whitelist management, player lookup, server status display, leaderboard storage with PvP/PvE split, kill feed, player-detail modal, and the REST API that the DayZ server connects to.
 
-1. Upload the `psyerns-framework` plugin folder to `wp-content/plugins/` → Activate
+A pre-built `WP-Plugin_Psyerns-Leaderboard.zip` ships in the repo root for one-click upload via WordPress' plugin uploader.
+
+1. Upload `WP-Plugin_Psyerns-Leaderboard.zip` via **Plugins → Add New → Upload Plugin** → Activate
+   (or copy the `WP-Plugin_Psyerns-Leaderboard/` folder to `wp-content/plugins/`)
 2. Go to **Psyerns Framework → Settings**
 3. Enter the API Key from your DayZ server config (auto-generated on first start)
 4. Set the WordPress endpoint in DayZ config:
@@ -461,7 +470,7 @@ The `psyerns-framework` WordPress plugin is included with the mod and handles al
 
 | Attribute | Values | Default | Description |
 |---|---|---|---|
-| `theme` | `military` `ops` `stalker` `outbreak` `cyberpunk` `inferno` `ash` `frostbite` | Admin setting | Visual theme |
+| `theme` | `military` `ops` `stalker` `outbreak` `cyberpunk` `inferno` `ash` `frostbite` `bubblegum` | Admin setting | Visual theme |
 | `type` | `pvp` `pve` | `pvp` | Default leaderboard tab |
 | `limit` | `10` `20` `50` | `10` | Rows per page |
 | `show_avatar` | `1` `0` | `1` | Show Steam avatars |
@@ -479,6 +488,7 @@ The `psyerns-framework` WordPress plugin is included with the mod and handles al
 | `inferno` | Blazing orange · Ember glow · Lava gradient |
 | `ash` | Rust red · Weathered paper · Post-apocalyptic |
 | `frostbite` | Ice blue · Snowflakes · Frost-rimmed borders |
+| `bubblegum` | Pink / cyan · Pastel UI · Synthwave glow |
 
 Example: `[pf_leaderboard theme="stalker" type="pvp" limit="20"]`
 
@@ -539,6 +549,43 @@ Integration points:
 3. Use `PF_WebConfig.GetInstance().GetEndpoint("name")` to read endpoint config
 4. Use `PF_JsonBuilder` for safe JSON construction
 5. Use `PF_RPCConstants` for RPC channel identifiers when communicating between server and client scripts
+
+---
+
+## Companion WordPress Plugins
+
+All three plugins are independent — install only what you need.
+
+### `WP-Plugin_Psyerns-Leaderboard/` — Leaderboard + Server Status
+
+The primary companion (described in detail above). Leaderboards (PvP/PvE), server status widget, whitelist UI, kill feed, player-detail modal, 9 themes, REST API for the DayZ server to push data into.
+
+**Shortcodes:** `[pf_leaderboard]`, `[pf_server_status]`, `[pf_top3_monthly]`, `[pf_top3_deadliest]`, `[pf_top3_bosskills]`, `[pf_player_card]`
+
+### `WP-Plugin_Psyerns_AuctionHouse/` — DME_Auction_House Bridge
+
+WordPress bridge for the **DME_Auction_House** DayZ mod. Players see active auctions, history and statistics in the browser; once logged in via Steam they can **buy and bid directly from the web**. Lives at `/wp-json/psyern-ah/v1/...`. Independent of the leaderboard plugin.
+
+**Shortcodes:** `[psyern_ah_marketplace]`, `[psyern_ah_listing]`, `[psyern_ah_my]`, `[psyern_ah_history]`, `[psyern_ah_stats]`, `[psyern_ah_price_chart]`
+
+### `psyerns-mods/` — Mods Showreel + Discord Leaderboard Sync
+
+A showreel for the Steam Workshop mods released by Psyern (custom post type with prices, repack/source options, screenshots). Also bundles an **optional Discord leaderboard sync** (`class-psm-discord-leaderboard.php`) that polls the leaderboard REST API and edits a pinned Discord message at a fixed interval — useful when you want the leaderboard mirrored into Discord without writing a separate bot.
+
+---
+
+## MISC — Tools, Standalone Backend, Templates
+
+`MISC/` is the toolbox folder:
+
+| Path | What it is |
+|---|---|
+| `MISC/standalone/` | **Full PHP fallback backend** if you don't run WordPress. Same shape as the WP plugin — `/api/leaderboard.php`, `/api/whitelist.php`, `/api/status.php`, `/api/avatar.php`, etc. Drop on any LAMP/LEMP host. |
+| `MISC/tools/` | PowerShell helpers — `Send-LeaderboardToWordPress.ps1` posts player files directly to the WP endpoint, `Install-LeaderboardSyncTask.ps1` schedules it via Task Scheduler. Useful for servers that can't run the DayZ-side `PF_LeaderboardExport`. |
+| `MISC/Themes/` | Static HTML previews of each theme — handy for showing customers/admins what they look like before committing in WordPress. |
+| `MISC/templates/` | Standalone HTML templates (`leaderboard.html`, `player-card.html`, `top3-*.html`) used by the standalone backend and as starting points for custom integrations. |
+| `MISC/wordpress-plugin/` | Older snapshot of the WordPress plugins kept for reference / diffing. Not the source of truth — use the top-level `WP-Plugin_*` folders. |
+| `MISC/*.md` | Orchestration prompts and design docs used while building features. |
 
 ---
 
