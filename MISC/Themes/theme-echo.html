@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEADMANS ECHO — Verify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Azeret+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0f0f0f;
+    --off-black: #141414;
+    --dark: #1a1a1a;
+    --mid: #2a2a2a;
+    --line: #222222;
+    --white: #f0f0f0;
+    --off-white: #d0d0d0;
+    --muted: #555555;
+    --ghost: #333333;
+    --red: #e63946;
+    --red-dim: rgba(230, 57, 70, 0.15);
+    --green: #2d6a4f;
+    --green-bright: #52b788;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'Azeret Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--black); min-height: 100vh; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes underline-grow {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes blink-once {
+    0%,100% { opacity: 1; }
+    30%,60% { opacity: 0; }
+  }
+
+  /* ─── Top bar ─── */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fade-in 0.4s ease-out;
+  }
+
+  .topbar-brand {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.06em;
+  }
+
+  .topbar-brand span {
+    color: var(--red);
+  }
+
+  /* ─── Main content ─── */
+  main {
+    padding: 80px 40px 60px;
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+    animation: fade-in 0.5s ease-out 0.1s both;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+
+  .status-dot.green { background: var(--green-bright); }
+  .status-dot.amber { background: #f59e0b; }
+
+  /* Main headline */
+  .headline {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 0;
+    animation: slide-up 0.5s ease-out 0.15s both;
+    position: relative;
+    display: inline-block;
+  }
+
+  .headline-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .headline-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 3px;
+    background: var(--red);
+    animation: underline-grow 0.6s ease-out 0.7s both;
+    width: 0;
+  }
+
+  .headline-sub {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ghost);
+    display: block;
+    animation: slide-up 0.5s ease-out 0.25s both;
+  }
+
+  /* Body copy */
+  .body-text {
+    margin-top: 40px;
+    margin-bottom: 48px;
+    color: var(--off-white);
+    font-size: 13px;
+    line-height: 1.8;
+    max-width: 460px;
+    border-left: 2px solid var(--line);
+    padding-left: 20px;
+    animation: slide-up 0.5s ease-out 0.3s both;
+  }
+
+  .body-text strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  /* Status line */
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 40px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    animation: fade-in 0.5s ease-out 0.4s both;
+  }
+
+  .status-line-label { color: var(--ghost); }
+
+  .status-value {
+    color: var(--red);
+    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: 13px;
+  }
+
+  .status-value.verified {
+    color: var(--green-bright);
+  }
+
+  .status-value.pending {
+    color: #f59e0b;
+  }
+
+  .status-sep {
+    margin: 0 8px;
+    color: var(--ghost);
+  }
+
+  /* Action area */
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    animation: slide-up 0.5s ease-out 0.5s both;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.15s ease;
+    cursor: pointer;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .action-btn:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .action-btn:hover {
+    background: var(--off-black);
+    padding-left: 16px;
+    padding-right: 16px;
+    color: var(--white);
+  }
+
+  .action-btn:hover .btn-label { color: var(--white); }
+  .action-btn:hover .btn-arrow { transform: translateX(8px); color: var(--red); }
+
+  .btn-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .btn-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    padding: 3px 8px;
+    flex-shrink: 0;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  .btn-content {}
+  .btn-label {
+    color: var(--white);
+    font-size: 15px;
+    transition: color 0.15s;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .btn-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  .btn-arrow {
+    font-size: 20px;
+    color: var(--ghost);
+    transition: transform 0.15s ease, color 0.15s;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+  }
+
+  /* Data grid */
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    margin-top: 48px;
+    border: 1px solid var(--line);
+    animation: fade-in 0.5s ease-out 0.7s both;
+  }
+
+  .data-cell {
+    background: var(--black);
+    padding: 16px 20px;
+  }
+
+  .data-key {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .data-val {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--off-white);
+    letter-spacing: 0.03em;
+  }
+
+  .data-val.red { color: var(--red); }
+  .data-val.green { color: var(--green-bright); }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    animation: fade-in 0.5s ease-out 0.8s both;
+  }
+
+  .footer-link {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .footer-link:hover { color: var(--white); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    main { padding: 48px 24px 40px; }
+    .topbar { padding: 14px 24px; }
+    footer { padding: 16px 24px; flex-direction: column; gap: 8px; text-align: center; }
+    .data-grid { grid-template-columns: 1fr; }
+    .status-line { flex-wrap: wrap; gap: 8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+    .headline-underline::after { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<header class="topbar">
+  <span class="topbar-brand">DEADMANS<span>_</span>ECHO</span>
+  <span>Verification Portal &nbsp;/&nbsp; psyerns-framework</span>
+</header>
+
+<!-- Main -->
+<main>
+
+  <div class="status-badge">
+    <div class="status-dot"></div>
+    <span>Not verified</span>
+  </div>
+
+  <h1 class="headline">
+    <span class="headline-underline">You are</span>
+    <span class="headline-sub">not on the list.</span>
+  </h1>
+
+  <p class="body-text">
+    This server requires verification before you can connect.<br>
+    Choose a method below. The process takes <strong>less than 60 seconds</strong>.<br>
+    Your Steam credentials are never shared with us.
+  </p>
+
+  <!-- Status line -->
+  <div class="status-line">
+    <span class="status-label">Status</span>
+    <span class="status-value">UNVERIFIED</span>
+    <span class="status-sep">—</span>
+    <span>Last check: never</span>
+    <span class="status-sep">—</span>
+    <span>Steam ID: —</span>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+
+    <a href="#" class="action-btn">
+      <div class="btn-left">
+        <span class="btn-tag">→ Steam</span>
+        <div class="btn-content">
+          <span class="btn-label">Verify with Steam</span>
+          <span class="btn-hint">OpenID login — no password shared</span>
+        </div>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+    <a href="#" class="action-btn">
+      <div class="btn-left">
+        <span class="btn-tag">→ Discord</span>
+        <div class="btn-content">
+          <span class="btn-label">Verify via Discord</span>
+          <span class="btn-hint">Use #verify in our Discord server</span>
+        </div>
+      </div>
+      <span class="btn-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Data grid -->
+  <div class="data-grid">
+    <div class="data-cell">
+      <div class="data-key">Server</div>
+      <div class="data-val">Deadmans Echo EU</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-key">Access</div>
+      <div class="data-val red">Denied</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-key">Verification</div>
+      <div class="data-val">Required</div>
+    </div>
+    <div class="data-cell">
+      <div class="data-key">Review</div>
+      <div class="data-val">Auto-approve</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer>
+  <span>Psyerns Framework &copy; 2026</span>
+  <span>
+    <a href="#" class="footer-link">Discord</a>
+    &nbsp;&nbsp;
+    <a href="#" class="footer-link">Rules</a>
+    &nbsp;&nbsp;
+    <a href="#" class="footer-link">Support</a>
+  </span>
+</footer>
+
+</body>
+</html>

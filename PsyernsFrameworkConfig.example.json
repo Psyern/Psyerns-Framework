@@ -1,0 +1,217 @@
+{
+    // -------------------------------------------------------------------------
+    // PSYERNS FRAMEWORK — Konfigurationsdatei (Beispiel mit Erklärungen)
+    // -------------------------------------------------------------------------
+    // Datei-Pfad auf dem Server:
+    //   profiles/DeadmansEcho/PsyernsFramework/PsyernsFrameworkConfig.json
+    //
+    // HINWEIS: Diese Datei wird beim ersten Serverstart AUTOMATISCH generiert.
+    //          ConfigVersion wird automatisch hochgezählt — NICHT manuell ändern!
+    //          Booleans werden als 0 (false) oder 1 (true) gespeichert.
+    // -------------------------------------------------------------------------
+
+    // Interne Versionsnummer der Config-Datei.
+    // Wird vom Framework genutzt um fehlende Felder automatisch nachzutragen.
+    // → NIEMALS manuell bearbeiten!
+    "ConfigVersion": 3,
+
+    // Ausführliches Debug-Logging in die .log / .RPT Datei schreiben.
+    // 0 = deaktiviert | 1 = aktiviert
+    // → Nur zur Fehlersuche aktivieren, da sehr viel Output erzeugt wird.
+    "EnableDebugLogging": 0,
+
+    // Wie oft soll ein fehlgeschlagener HTTP-Request wiederholt werden?
+    // Empfehlung: 3 (Standard). Höher = mehr Robustheit, aber mehr Delay bei Ausfällen.
+    "DefaultRetryCount": 3,
+
+    // Maximale Anzahl gleichzeitig wartender HTTP-Requests in der Queue.
+    // Bei Überschreitung werden neue Requests verworfen.
+    "QueueMaxSize": 100,
+
+    // =========================================================================
+    // SERVER-IDENTITÄT & BENACHRICHTIGUNGEN
+    // =========================================================================
+
+    // Discord-Nachricht senden wenn der Server vollständig hochgefahren ist.
+    // 0 = deaktiviert | 1 = aktiviert
+    "EnableServerStartNotification": 1,
+
+    // Verzögerung in Sekunden nach MissionServer.OnInit() bevor die
+    // Start-Nachricht gesendet wird. Sichert ab, dass BattlEye + Mods geladen sind.
+    "ServerStartDelaySeconds": 30,
+
+    // Anzeigename des Servers in Discord-Embeds und Benachrichtigungen.
+    "ServerName": "Deadmans Echo",
+
+    // Eigenes Avatar-Bild für Discord-Webhooks (PNG/JPG, mind. 256x256).
+    // Leer lassen = Standard-Discord-Avatar wird verwendet.
+    "DiscordAvatarUrl": "https://example.com/server-icon.png",
+
+    // =========================================================================
+    // ENDPOINTS — API-Verbindungen
+    // =========================================================================
+    // Jeder Endpoint ist eine HTTP-Verbindung zu einem externen Dienst.
+    // Bekannte Namen: "WordPress", "Discord", "Leaderboard"
+    //
+    // Felder pro Endpoint:
+    //   Name        → Eindeutiger Bezeichner, wird intern genutzt
+    //   BaseUrl     → Basis-URL ohne Slash am Ende
+    //   ApiKey      → Auth-Schlüssel (wird bei WordPress/Leaderboard auto-generiert)
+    //   Enabled     → 0 = ignoriert | 1 = aktiv
+    //   RateLimitMs → Mindestabstand in Millisekunden zwischen zwei Requests
+    "Endpoints": [
+        {
+            // WordPress REST API — für Whitelist, PlayerLookup, ServerStatus, Leaderboard
+            "Name": "WordPress",
+            "BaseUrl": "https://deine-seite.com/wp-json/psyern/v1",
+            // ApiKey: Wird beim ersten Start auto-generiert wenn leer oder "YOUR_API_KEY_HERE".
+            // Den generierten Key im WordPress-Plugin unter Einstellungen eintragen!
+            "ApiKey": "pf-a7kx9m2bq4w1n6tp8r3j5hcv",
+            "Enabled": 1,
+            // 5000ms = max. 1 Request alle 5 Sekunden (verhindert WordPress-Überlastung)
+            "RateLimitMs": 5000
+        },
+        {
+            // Discord Webhooks — für Server-Nachrichten, Events, KillFeed
+            "Name": "Discord",
+            "BaseUrl": "https://discord.com/api/webhooks",
+            // ApiKey Format für Discord: "WEBHOOK_ID/WEBHOOK_TOKEN"
+            // Zu finden in Discord: Kanal-Einstellungen → Integrationen → Webhooks
+            "ApiKey": "1234567890123456789/AbCdEfGhIjKlMnOpQrStUvWxYz1234567890AbCdEfGhIjKl",
+            "Enabled": 1,
+            // 1000ms = Discord Rate-Limit (max. 1 Request/Sekunde pro Webhook empfohlen)
+            "RateLimitMs": 1000
+        },
+        {
+            // Leaderboard-Endpoint — separater Key für das Ninjins Tracking Mod Export
+            // Kann dieselbe WordPress-URL wie oben nutzen
+            "Name": "Leaderboard",
+            "BaseUrl": "https://deine-seite.com/wp-json/psyern/v1",
+            // Wird ebenfalls auto-generiert wenn leer
+            "ApiKey": "pf-b3nq7yx5z8wk2mr4j1hc6tsp",
+            "Enabled": 0,
+            "RateLimitMs": 5000
+        }
+    ],
+
+    // =========================================================================
+    // REST-FEATURE-TOGGLES
+    // =========================================================================
+    // Jedes Feature kann unabhängig aktiviert werden.
+    // Voraussetzung: Der passende Endpoint muss "Enabled": 1 haben.
+
+    // Whitelist-Prüfung: Spieler werden beim Join gegen die WordPress-Whitelist geprüft.
+    "EnableWhitelist": 1,
+
+    // Player Lookup: Spielerdaten können per REST aus WordPress abgerufen werden.
+    "EnablePlayerLookup": 1,
+
+    // Server Status Push: Schreibt regelmäßig Serverdaten (Spielerzahl etc.) nach WordPress.
+    "EnableServerStatus": 1,
+
+    // Wie oft (in Sekunden) der Status an WordPress gesendet wird.
+    // Standard: 300 (= alle 5 Minuten). Minimum empfohlen: 30.
+    "ServerStatusIntervalSeconds": 30,
+
+    // Kill Feed: Kills werden per Webhook-URL gesendet (siehe WebhookUrls weiter unten).
+    "EnableKillFeed": 1,
+
+    // Discord Events: Spieler-Connect/Disconnect/Kill werden als Discord-Embed gesendet.
+    "EnableDiscordEvents": 1,
+
+    // Alert System: Zonenbasierte Trigger (z.B. Spieler betritt Militärzone → Discord-Alert).
+    "EnableAlertSystem": 1,
+
+    // =========================================================================
+    // DISCORD WEBHOOK (für Events & KillFeed — Legacy-Felder)
+    // =========================================================================
+    // Diese Felder werden ZUSÄTZLICH zu den Endpoints oben genutzt.
+    // Format: Discord → Kanal → Einstellungen → Integrationen → Webhook bearbeiten
+    // URL Beispiel: https://discord.com/api/webhooks/1234567890/AbCdEf...
+    //                                                 ^^^^^^^^^^  ^^^^^^
+    //                                                 WebhookId   WebhookToken
+    "DiscordWebhookId": "1234567890123456789",
+    "DiscordWebhookToken": "AbCdEfGhIjKlMnOpQrStUvWxYz1234567890AbCdEfGhIjKl",
+
+    // Liste von Webhook-URLs die Kill-Events empfangen sollen.
+    // Kann mehrere URLs enthalten (z.B. Discord + eigene API).
+    "WebhookUrls": [
+        "https://deine-seite.com/wp-json/psyern/v1/killfeed"
+    ],
+
+    // =========================================================================
+    // ERWEITERTE WEBHOOK-BENACHRICHTIGUNGEN
+    // =========================================================================
+
+    // Discord-Nachricht senden wenn der Server herunterfährt (graceful shutdown).
+    "EnableServerStopNotification": 0,
+
+    // Heartbeat: Sendet regelmäßig einen Ping an einen externen Dienst.
+    // Bleibt er aus → Crash-Erkennung möglich (z.B. mit UptimeRobot).
+    "EnableHeartbeat": 0,
+
+    // Abstand zwischen zwei Heartbeats in Sekunden.
+    "HeartbeatIntervalSeconds": 60,
+
+    // Benachrichtigung wenn sich Mod-Versionen geändert haben (nach Update-Neustart).
+    "EnableModUpdateNotification": 0,
+
+    // Benachrichtigung bei abgeschlossenen Expansion Quests (benötigt Expansion Mod).
+    // Wird nur kompiliert wenn #ifdef EXPANSION_QUESTS aktiv ist.
+    "EnableQuestNotifications": 0,
+
+    // =========================================================================
+    // ALERT RULES — Zonenbasierte Trigger
+    // =========================================================================
+    // Jede Regel überwacht eine Zone. Bei Betreten/Verlassen wird ein Webhook gefeuert.
+    //
+    // Felder:
+    //   TriggerType      → Art des Triggers: "zone_enter" oder "zone_exit"
+    //   Radius           → Radius der Zone in Metern
+    //   PosX, PosY, PosZ → Mittelpunkt der Zone (DayZ Weltkoordinaten)
+    //   WebhookUrl       → Wohin der Alert gesendet wird
+    //   MessageTemplate  → Nachrichtentext mit Platzhaltern:
+    //                      {playerName}, {posX}, {posZ}
+    "AlertRules": [
+        {
+            "TriggerType": "zone_enter",
+            "Radius": 200.0,
+            // Beispiel-Koordinaten: Militärbasis (Chernarus)
+            "PosX": 7500.0,
+            "PosY": 0.0,
+            "PosZ": 7500.0,
+            "WebhookUrl": "https://deine-seite.com/wp-json/psyern/v1/alerts",
+            "MessageTemplate": "Spieler {playerName} hat die gesperrte Zone betreten ({posX}, {posZ})"
+        }
+    ],
+
+    // =========================================================================
+    // ADMIN-IDs
+    // =========================================================================
+    // Steam64-IDs der Serveradmins.
+    // Diese Spieler können Admin-Befehle im Spiel nutzen (z.B. Config-Reload).
+    "AdminIDs": [
+        "76561198012345678",
+        "76561198087654321"
+    ],
+
+    // =========================================================================
+    // LEADERBOARD EXPORT (Ninjins Tracking Mod Integration)
+    // =========================================================================
+
+    // Leaderboard regelmäßig an WordPress senden.
+    // Benötigt: Ninjins Tracking Mod + Leaderboard-Endpoint aktiv.
+    "EnableLeaderboardExport": 0,
+
+    // Wie oft (in Sekunden) das Leaderboard exportiert wird.
+    // Standard: 600 (= alle 10 Minuten)
+    "LeaderboardExportIntervalSeconds": 600,
+
+    // Pfad zu den Spielerdaten des Ninjins Tracking Mods.
+    // $profile: = Server-Profil-Ordner (wird automatisch aufgelöst).
+    // Nur ändern wenn das Tracking Mod einen anderen Pfad nutzt!
+    "NinjinPlayersPath": "$profile:Ninjins_Tracking_Mod/Data/Players",
+
+    // Maximale Anzahl Spieler die im Leaderboard-Export enthalten sind.
+    "LeaderboardMaxPlayers": 100
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Spieler des Monats</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.pf-container{max-width:1100px;margin:0 auto;padding:20px 16px}
+.pf-card{border-radius:8px;padding:24px;transition:transform .2s}
+.pf-avatar-lg{width:64px;height:64px;border-radius:50%;object-fit:cover}
+.pf-player-name{font-weight:600}
+.pf-stat-value{font-size:1.1rem;font-weight:700}
+.pf-top3-grid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px;align-items:end}
+.pf-top3-card{text-align:center;padding:24px;border-radius:12px}
+.pf-top3-card.rank-1{transform:scale(1.05)}
+.pf-rank-badge{font-size:2rem;margin-bottom:8px;display:block}
+.pf-theme-switch{position:fixed;top:12px;right:12px;z-index:1000;padding:6px 14px;border:none;border-radius:20px;cursor:pointer;font-size:.8rem;font-weight:500}
+.pf-loading{text-align:center;padding:60px 20px;font-size:.9rem}
+@media(max-width:768px){.pf-top3-grid{grid-template-columns:1fr}.pf-top3-card.rank-1{transform:none}}
+.pf-dark{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif}
+.pf-dark .pf-card{background:rgba(22,33,62,.85);backdrop-filter:blur(8px);border:1px solid rgba(240,192,64,.2)}
+.pf-dark .pf-top3-card.rank-1{box-shadow:0 0 20px rgba(240,192,64,.3);border-color:rgba(240,192,64,.5)}
+.pf-dark .pf-top3-card.rank-2{box-shadow:0 0 15px rgba(192,192,192,.2);border-color:rgba(192,192,192,.3)}
+.pf-dark .pf-top3-card.rank-3{box-shadow:0 0 15px rgba(205,127,50,.2);border-color:rgba(205,127,50,.3)}
+.pf-dark .pf-stat-value{color:#e0e0e0}
+.pf-dark .pf-theme-switch{background:#16213e;color:#e0e0e0;border:1px solid rgba(240,192,64,.3)}
+.pf-dark .pf-loading{color:#8892a0}
+.pf-light{background:#f5f5f5;color:#333;font-family:'Inter','Segoe UI',system-ui,sans-serif}
+.pf-light .pf-card{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.pf-light .pf-top3-card.rank-1{box-shadow:0 4px 16px rgba(243,156,18,.2)}
+.pf-light .pf-stat-value{color:#333}
+.pf-light .pf-theme-switch{background:#fff;color:#333;border:1px solid #d1d5db}
+.pf-light .pf-loading{color:#999}
+</style>
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="var a=document.getElementById('app');a.classList.toggle('pf-dark');a.classList.toggle('pf-light')">Theme</button>
+	<h1 style="text-align:center;margin-bottom:24px;color:inherit">Top Spieler des Monats</h1>
+	<div id="content"><div class="pf-loading">Loading...</div></div>
+</div>
+<script>
+var CONFIG = { apiUrl: "./api/leaderboard.php", refreshInterval: 300000 };
+function escH(s){var d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML}
+function fmtN(n){return Number(n||0).toLocaleString()}
+function kd(k,d){k=Number(k||0);d=Number(d||0);if(d===0)return k>0?k.toFixed(1):'0.0';return(k/d).toFixed(2)}
+
+function load(){
+	fetch(CONFIG.apiUrl+'?type=pve&limit=100')
+	.then(function(r){return r.json()})
+	.then(function(data){
+		var all=data.players||data;
+		all.sort(function(a,b){return((b.pve_points||0)+(b.pvp_points||0))-((a.pve_points||0)+(a.pvp_points||0))});
+		var players=all.slice(0,3);
+		var order=[1,0,2];
+		var medals=['\uD83E\uDD48','\uD83E\uDD47','\uD83E\uDD49'];
+		var h='<div class="pf-top3-grid">';
+		for(var oi=0;oi<3;oi++){
+			var idx=order[oi];var p=players[idx];
+			if(!p){h+='<div></div>';continue}
+			var rank=idx+1;var combined=(p.pve_points||0)+(p.pvp_points||0);
+			h+='<div class="pf-top3-card pf-card rank-'+rank+'">';
+			h+='<span class="pf-rank-badge">'+medals[idx]+'</span>';
+			h+='<img class="pf-avatar-lg" src="'+escH(p.avatar_url||'')+'" alt="">';
+			h+='<h3 class="pf-player-name">'+escH(p.player_name)+'</h3>';
+			h+='<div class="pf-stat-value">'+fmtN(combined)+' Pts</div>';
+			h+='<div style="margin-top:8px;font-size:.85rem">'+fmtN(p.kills)+' Kills | '+fmtN(p.deaths)+' Deaths | K/D '+kd(p.kills,p.deaths)+'</div>';
+			h+='<div style="margin-top:4px;font-size:.8rem;opacity:.7">'+(p.playtime||0).toFixed(1)+'h played</div>';
+			h+='</div>';
+		}
+		h+='</div>';
+		document.getElementById('content').innerHTML=h;
+	}).catch(function(){document.getElementById('content').innerHTML='<div class="pf-loading">Failed to load.</div>'});
+}
+load();setInterval(load,CONFIG.refreshInterval);
+</script>
+</body>
+</html>

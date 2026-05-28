@@ -1,0 +1,250 @@
+/* THEME: Outbreak — Quarantine Zone / Hazard Amber */
+
+.psyern-lb.psyern-lb--outbreak {
+	--psyern-bg: #0d0d00;
+	background: #0d0d00;
+	color: #fde68a;
+	font-family: 'Exo 2', 'Segoe UI', sans-serif;
+	border: 1px solid #78350f;
+	border-radius: 2px;
+	position: relative;
+}
+
+/* Noise texture */
+.psyern-lb.psyern-lb--outbreak {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* Warning stripes top */
+.psyern-lb.psyern-lb--outbreak::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: repeating-linear-gradient(
+		-45deg,
+		#f59e0b 0px,
+		#f59e0b 8px,
+		#0d0d00 8px,
+		#0d0d00 16px
+	);
+	z-index: 2;
+}
+
+/* Warning stripes bottom */
+.psyern-lb.psyern-lb--outbreak::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: repeating-linear-gradient(
+		-45deg,
+		#f59e0b 0px,
+		#f59e0b 8px,
+		#0d0d00 8px,
+		#0d0d00 16px
+	);
+	z-index: 2;
+}
+
+.psyern-lb.psyern-lb--outbreak {
+	padding-top: 28px;
+	padding-bottom: 28px;
+}
+
+/* Header */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__header {
+	border-bottom: 1px solid #78350f;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__title {
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 700;
+	color: #fbbf24;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__title::before {
+	content: '\26A0  ';
+	color: #dc2626;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__meta {
+	color: #a8621f;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	font-family: 'Inconsolata', monospace;
+}
+
+/* Mode buttons */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__mode-btn {
+	color: #a8621f;
+	border: 1px solid #78350f;
+	border-radius: 2px;
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 600;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__mode-btn.active {
+	color: #fbbf24;
+	border-color: #d97706;
+	background: rgba(245, 158, 11, 0.1);
+	box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+}
+
+/* Limit buttons */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__limit-btn {
+	color: #a8621f;
+	border-color: #a8621f;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__limit-btn.active {
+	color: #f59e0b;
+	border-color: #d97706;
+}
+
+/* Top 3 */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card {
+	background: #111100;
+	border: 1px solid #78350f;
+	border-radius: 2px;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1 {
+	border-color: #d97706;
+	box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1 .psyern-lb__top3-name {
+	color: #fbbf24;
+	text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-card--1::before {
+	content: '\2622';
+	position: absolute;
+	top: -12px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 1.2rem;
+	color: #dc2626;
+	background: #0d0d00;
+	padding: 0 6px;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-rank {
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 700;
+	color: #f59e0b;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-name {
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 600;
+	color: #fde68a;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-avatar {
+	border: 2px solid #78350f;
+	filter: sepia(40%) brightness(0.85);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__top3-stats {
+	color: #92400e;
+	font-family: 'Inconsolata', monospace;
+}
+
+/* Table */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table th {
+	color: #92400e;
+	border-bottom: 1px solid #78350f;
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table td {
+	border-bottom: 1px solid rgba(120, 53, 15, 0.3);
+	font-family: 'Inconsolata', monospace;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table tbody tr:hover {
+	background: rgba(245, 158, 11, 0.04);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__rank {
+	color: #f59e0b;
+	font-family: 'Rajdhani', sans-serif;
+	font-weight: 700;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__name {
+	color: #fef9c3;
+	font-family: 'Exo 2', sans-serif;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__kd {
+	color: #dc2626;
+	text-shadow: 0 0 4px rgba(220, 38, 38, 0.3);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__avatar {
+	border: 1px solid #78350f;
+	filter: sepia(30%) brightness(0.9);
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__playtime {
+	color: #6b4a10;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__loading {
+	color: #a8621f;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__separator {
+	border: none;
+	height: 2px;
+	background: repeating-linear-gradient(
+		-45deg,
+		#78350f 0px,
+		#78350f 4px,
+		transparent 4px,
+		transparent 8px
+	);
+	margin: 16px 0;
+	opacity: 0.5;
+}
+
+.psyern-lb.psyern-lb--outbreak .psyern-lb__boss-kills { color: #f59e0b; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__reputation { color: #d4a020; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__table td { color: #d4b860; }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--east { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--west { background: rgba(253, 230, 138, 0.12); color: #fde68a; border-color: rgba(253, 230, 138, 0.3); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--neutral { background: rgba(120, 53, 15, 0.15); color: #78350f; border-color: rgba(120, 53, 15, 0.3); }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--outbreak .psyern-lb__page-btn {
+color: #7a6010 !important;
+border-color: #7a6010;
+}
+.psyern-lb.psyern-lb--outbreak .psyern-lb__page-btn.active {
+color: #fde68a !important;
+border-color: #fde68a;
+background: rgba(253, 230, 138, 0.1);
+}
+.psyern-lb.psyern-lb--outbreak .psyern-lb__page-btn:hover:not([disabled]) {
+color: #fde68a !important;
+border-color: #fde68a;
+background: rgba(253, 230, 138, 0.06);
+}
+.psyern-lb.psyern-lb--outbreak .psyern-lb__page-btn[disabled] {
+color: #7a6010 !important;
+border-color: #7a6010;
+opacity: 0.3;
+}

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUARANTINE ZONE — ACCESS CONTROL [OUTBREAK]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0d0d00;
+    --deep: #111100;
+    --panel: #161600;
+    --border-warn: #78350f;
+    --border-active: #d97706;
+    --amber: #f59e0b;
+    --amber-bright: #fbbf24;
+    --amber-dim: #92400e;
+    --amber-ghost: #1c1200;
+    --danger: #dc2626;
+    --danger-glow: rgba(220,38,38,0.2);
+    --safe: #16a34a;
+    --text-bright: #fef9c3;
+    --text-mid: #fde68a;
+    --text-dim: #78350f;
+    --font-display: 'Rajdhani', sans-serif;
+    --font-body: 'Exo 2', sans-serif;
+    --font-mono: 'Inconsolata', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: var(--void); min-height: 100vh; }
+
+  body {
+    background: var(--void);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    color: var(--text-mid);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+  }
+
+  /* Warning stripe top */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--amber) 0px,
+      var(--amber) 10px,
+      var(--void) 10px,
+      var(--void) 20px
+    );
+    z-index: 100;
+  }
+
+  /* Warning stripe bottom */
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--amber) 0px,
+      var(--amber) 10px,
+      var(--void) 10px,
+      var(--void) 20px
+    );
+    z-index: 100;
+  }
+
+  @keyframes hazard-pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.96); }
+  }
+
+  @keyframes alarm-flash {
+    0%,100% { background: transparent; }
+    50% { background: rgba(220,38,38,0.06); }
+  }
+
+  @keyframes amber-pulse {
+    0%,100% { box-shadow: 0 0 12px rgba(245,158,11,0.15), inset 0 0 20px rgba(245,158,11,0.03); }
+    50% { box-shadow: 0 0 30px rgba(245,158,11,0.3), inset 0 0 30px rgba(245,158,11,0.06); }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes progress-fill {
+    from { width: 0; }
+    to { width: var(--pw, 40%); }
+  }
+
+  @keyframes bar-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .container {
+    width: 100%;
+    max-width: 700px;
+    animation: fade-up 0.5s ease-out;
+  }
+
+  /* Zone header */
+  .zone-header {
+    border: 2px solid var(--amber);
+    border-bottom: none;
+    background: var(--panel);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .zone-header-stripe {
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--amber-ghost) 0px,
+      var(--amber-ghost) 10px,
+      rgba(245,158,11,0.06) 10px,
+      rgba(245,158,11,0.06) 20px
+    );
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* Biohazard SVG */
+  .biohazard-icon {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    animation: hazard-pulse 2.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px var(--amber));
+  }
+
+  .header-text { flex: 1; }
+
+  .zone-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--amber-bright);
+    text-shadow: 0 0 16px rgba(251,191,36,0.4);
+    line-height: 1;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .zone-subtitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--amber-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .header-level {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--amber-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .level-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--danger);
+    text-shadow: 0 0 10px var(--danger);
+    display: block;
+    letter-spacing: 0;
+  }
+
+  /* Main body */
+  .zone-body {
+    background: var(--panel);
+    border: 2px solid var(--amber);
+    border-top: 1px solid var(--border-warn);
+    animation: amber-pulse 4s ease-in-out infinite;
+  }
+
+  /* Alert bar */
+  .alert-bar {
+    background: var(--danger);
+    color: var(--text-bright);
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    padding: 8px 24px;
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+    animation: alarm-flash 3s ease-in-out infinite;
+  }
+
+  /* Threat level bar */
+  .threat-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-warn);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .threat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--amber-dim);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .threat-bar {
+    flex: 1;
+    height: 10px;
+    background: var(--deep);
+    border: 1px solid var(--border-warn);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .threat-fill {
+    height: 100%;
+    --pw: 85%;
+    background: linear-gradient(90deg,
+      var(--amber-dim) 0%,
+      var(--amber) 40%,
+      var(--danger) 100%
+    );
+    background-size: 200% 100%;
+    animation: progress-fill 1.2s ease-out both, bar-shimmer 3s linear infinite 1.2s;
+    box-shadow: 0 0 8px var(--danger);
+  }
+
+  .threat-value {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--danger);
+    letter-spacing: 0.05em;
+  }
+
+  /* Content */
+  .zone-content { padding: 28px 24px; }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-warn);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '▲';
+    font-size: 10px;
+    color: var(--danger);
+  }
+
+  .warning-text {
+    color: var(--text-mid);
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-family: var(--font-body);
+  }
+
+  .warning-text strong {
+    color: var(--amber-bright);
+    font-weight: 600;
+  }
+
+  /* Status panel */
+  .status-panel {
+    background: var(--deep);
+    border: 1px solid var(--border-warn);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+  }
+
+  .status-panel::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--amber);
+    box-shadow: 0 0 10px var(--amber);
+  }
+
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+    animation: hazard-pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  .status-dot.approved { background: var(--safe); box-shadow: 0 0 8px var(--safe); animation: none; }
+  .status-dot.rejected { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: none; }
+
+  .status-text { flex: 1; }
+  .status-primary {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--amber-bright);
+    text-transform: uppercase;
+  }
+  .status-secondary {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--amber-dim);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Auth buttons */
+  .auth-section { margin-bottom: 0; }
+
+  .auth-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid var(--border-warn);
+    color: var(--text-mid);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 16px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .auth-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 8px,
+      rgba(245,158,11,0.02) 8px,
+      rgba(245,158,11,0.02) 16px
+    );
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .auth-btn:hover {
+    border-color: var(--amber);
+    color: var(--amber-bright);
+    background: rgba(245,158,11,0.05);
+    box-shadow: 0 0 20px rgba(245,158,11,0.15);
+  }
+
+  .auth-btn:hover::after { opacity: 1; }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+  }
+
+  .btn-content { flex: 1; text-align: left; }
+  .btn-sublabel {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--amber-dim);
+    letter-spacing: 0.02em;
+    text-transform: none;
+    margin-top: 2px;
+  }
+
+  .btn-chevron {
+    color: var(--border-active);
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+  .auth-btn:hover .btn-chevron { transform: translateX(5px); }
+
+  .separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    margin: 12px 0;
+  }
+  .separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-warn);
+  }
+
+  /* Footer */
+  .zone-footer {
+    background: var(--deep);
+    border-top: 1px solid var(--border-warn);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .zone-tag {
+    background: var(--amber);
+    color: var(--void);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    padding: 6px 20px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 600px) {
+    .zone-header-stripe { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .header-level { text-align: left; }
+    .zone-content { padding: 20px 16px; }
+    .zone-title { font-size: 20px; }
+    .threat-section { flex-wrap: wrap; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Zone Header -->
+  <div class="zone-header">
+    <div class="zone-header-stripe">
+
+      <!-- Biohazard SVG -->
+      <svg class="biohazard-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="8" fill="#f59e0b"/>
+        <path d="M50 42 C50 28 28 22 22 36 C32 36 38 42 42 48 C40 44 44 40 50 42Z" fill="#f59e0b"/>
+        <path d="M50 42 C50 28 72 22 78 36 C68 36 62 42 58 48 C60 44 56 40 50 42Z" fill="#f59e0b"/>
+        <path d="M42 55 C30 62 28 82 43 84 C43 74 50 68 57 68 C52 70 48 64 42 55Z" fill="#f59e0b" transform="rotate(0, 50, 50)"/>
+        <path d="M58 55 C70 62 72 82 57 84 C57 74 50 68 43 68 C48 70 52 64 58 55Z" fill="#f59e0b"/>
+        <path d="M50 42 C56 40 60 46 58 52 C54 48 46 48 42 52 C40 46 44 40 50 42Z" fill="#0d0d00"/>
+        <circle cx="50" cy="50" r="5" fill="#f59e0b"/>
+        <circle cx="50" cy="50" r="2.5" fill="#0d0d00"/>
+      </svg>
+
+      <div class="header-text">
+        <div class="zone-title">Quarantine Zone</div>
+        <div class="zone-subtitle">DEADMANS ECHO — AUTHORIZED PERSONNEL ONLY</div>
+      </div>
+
+      <div class="header-level">
+        <div>THREAT LEVEL</div>
+        <span class="level-value">EXTREME</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Main Body -->
+  <div class="zone-body">
+
+    <!-- Alert bar -->
+    <div class="alert-bar">
+      <span>⚠ SECURITY PERIMETER ACTIVE</span>
+      <span>UNAUTHORIZED ACCESS PROHIBITED ⚠</span>
+    </div>
+
+    <!-- Threat level -->
+    <div class="threat-section">
+      <div class="threat-label">Infection Risk</div>
+      <div class="threat-bar">
+        <div class="threat-fill" style="--pw: 85%"></div>
+      </div>
+      <div class="threat-value">CRITICAL</div>
+    </div>
+
+    <!-- Content -->
+    <div class="zone-content">
+
+      <div class="section-title">Identity Verification Required</div>
+
+      <p class="warning-text">
+        This safe zone is under <strong>active quarantine protocol</strong>. All survivors must be 
+        registered before access is granted. Unauthorized individuals will be 
+        <strong>immediately ejected from the perimeter</strong> with no exceptions.
+      </p>
+
+      <!-- Status -->
+      <div class="status-panel">
+        <div class="status-dot"></div>
+        <div class="status-text">
+          <div class="status-primary">Identity Under Review — Awaiting Clearance</div>
+          <div class="status-secondary">Last check: never &nbsp;|&nbsp; Steam ID: not linked</div>
+        </div>
+      </div>
+
+      <!-- Auth -->
+      <div class="auth-section">
+
+        <a href="#" class="auth-btn">
+          <div class="btn-icon">S</div>
+          <div class="btn-content">
+            Scan Steam Account
+            <div class="btn-sublabel">Redirects to Steam — we only receive your Steam ID</div>
+          </div>
+          <span class="btn-chevron">›</span>
+        </a>
+
+        <div class="separator">or</div>
+
+        <a href="#" class="auth-btn">
+          <div class="btn-icon">#</div>
+          <div class="btn-content">
+            Verify via Discord
+            <div class="btn-sublabel">Use the #verify-here channel on our Discord server</div>
+          </div>
+          <span class="btn-chevron">›</span>
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="zone-footer">
+      <span>PSYERNS-FW / NODE EU-WEST-1</span>
+      <span>STATUS: MONITORING</span>
+    </div>
+
+  </div>
+
+  <div class="zone-tag">Deadmans Echo Survival Server — EU</div>
+
+</div>
+
+</body>
+</html>

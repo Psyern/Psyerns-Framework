@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Route WordPress-style /public/* endpoints to standalone PHP files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^public/leaderboard$ leaderboard.php [L,QSA]
+RewriteRule ^public/status$ status.php [L,QSA]
+RewriteRule ^public/top3$ top3.php [L,QSA]
+RewriteRule ^public/avatar$ avatar.php [L,QSA]

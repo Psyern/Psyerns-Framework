@@ -1,0 +1,422 @@
+/* THEME: Cyberpunk — Neon HUD / Matrix Terminal / Dystopian Tech */
+
+.psyern-lb.psyern-lb--cyberpunk {
+	--psyern-bg: #0a0a0f;
+	background: #0a0a0f;
+	color: #e0e0e0;
+	font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+	border: 1px solid #2a2a3a;
+	border-radius: 0;
+	position: relative;
+}
+
+/* Scanline overlay */
+.psyern-lb.psyern-lb--cyberpunk::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: repeating-linear-gradient(
+		0deg,
+		transparent,
+		transparent 2px,
+		rgba(0, 255, 136, 0.03) 2px,
+		rgba(0, 255, 136, 0.03) 4px
+	);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* CRT flicker */
+.psyern-lb.psyern-lb--cyberpunk::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 1;
+	animation: psyern-cyber-flicker 6s ease-in-out infinite;
+}
+
+@keyframes psyern-cyber-flicker {
+	0%, 94%, 100% { opacity: 0; }
+	95% { opacity: 0.02; background: #00ff88; }
+	96% { opacity: 0; }
+	97% { opacity: 0.015; background: #ff00ff; }
+	98% { opacity: 0; }
+}
+
+/* Header */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__header {
+	border-bottom: 1px solid #2a2a3a;
+	position: relative;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__title {
+	font-family: 'Orbitron', 'JetBrains Mono', monospace;
+	font-weight: 900;
+	color: #00ff88;
+	letter-spacing: 0.15em;
+	text-shadow:
+		0 0 7px rgba(0, 255, 136, 0.7),
+		0 0 20px rgba(0, 255, 136, 0.4),
+		0 0 40px rgba(0, 255, 136, 0.2);
+	animation: psyern-cyber-glitch 5s ease-in-out infinite;
+}
+
+@keyframes psyern-cyber-glitch {
+	0%, 92%, 100% {
+		transform: none;
+		text-shadow: 0 0 7px rgba(0, 255, 136, 0.7), 0 0 20px rgba(0, 255, 136, 0.4);
+	}
+	93% {
+		transform: translateX(-2px) skewX(-1deg);
+		text-shadow: -3px 0 #ff00ff, 3px 0 #00ffff;
+	}
+	94% {
+		transform: translateX(2px) skewX(1deg);
+		text-shadow: 3px 0 #ff00ff, -3px 0 #00ffff;
+	}
+	95% {
+		transform: translateX(-1px);
+		text-shadow: -1px 0 #ff00ff, 1px 0 #00ffff;
+	}
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__meta {
+	color: #4a4a6a;
+	font-family: 'JetBrains Mono', monospace;
+	letter-spacing: 0.08em;
+}
+
+/* Mode buttons */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__mode-btn {
+	color: #4a4a6a;
+	border: 1px solid #2a2a3a;
+	border-radius: 0;
+	font-family: 'Orbitron', monospace;
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+	padding: 8px 24px;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__mode-btn.active {
+	color: #00ff88;
+	border-color: #00ff88;
+	background: rgba(0, 255, 136, 0.08);
+	box-shadow: 0 0 15px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 255, 136, 0.03);
+	text-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+}
+
+/* Limit buttons */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__limit-btn {
+	color: #4a4a6a;
+	border-color: #2a2a3a;
+	border-radius: 0;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__limit-btn.active {
+	color: #00ffff;
+	border-color: #00ffff;
+	box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+/* Top 3 cards */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card {
+	background: #12121a;
+	border: 1px solid #2a2a3a;
+	border-radius: 0;
+	position: relative;
+}
+
+/* HUD corner brackets */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card::before {
+	content: '';
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	width: 16px;
+	height: 16px;
+	border-top: 2px solid #00ff88;
+	border-left: 2px solid #00ff88;
+	opacity: 0.6;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card::after {
+	content: '';
+	position: absolute;
+	bottom: 4px;
+	right: 4px;
+	width: 16px;
+	height: 16px;
+	border-bottom: 2px solid #00ff88;
+	border-right: 2px solid #00ff88;
+	opacity: 0.6;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--1 {
+	border-color: #ff00ff;
+	box-shadow: 0 0 25px rgba(255, 0, 255, 0.2), inset 0 0 25px rgba(255, 0, 255, 0.03);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--1::before,
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--1::after {
+	border-color: #ff00ff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--1 .psyern-lb__top3-name {
+	color: #ff00ff;
+	text-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--2 {
+	border-color: #00ffff;
+	box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--2::before,
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--2::after {
+	border-color: #00ffff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--2 .psyern-lb__top3-name {
+	color: #00ffff;
+	text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--3 {
+	border-color: #00ff88;
+	box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--3::before,
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--3::after {
+	border-color: #00ff88;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-card--3 .psyern-lb__top3-name {
+	color: #00ff88;
+	text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-rank {
+	font-family: 'Orbitron', monospace;
+	font-weight: 900;
+	color: #ff00ff;
+	text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-avatar {
+	border: 2px solid #2a2a3a;
+	filter: saturate(0.7) contrast(1.2);
+	box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__top3-stats {
+	color: #4a4a6a;
+	font-family: 'JetBrains Mono', monospace;
+}
+
+/* Table */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table {
+	font-family: 'JetBrains Mono', monospace;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table th {
+	color: #4a4a6a;
+	border-bottom: 1px solid #2a2a3a;
+	font-family: 'Orbitron', monospace;
+	font-size: 0.65rem;
+	letter-spacing: 0.12em;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table td {
+	border-bottom: 1px solid #151520;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr:hover {
+	background: rgba(0, 255, 136, 0.03);
+}
+
+/* Glitch line on hover */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr {
+	position: relative;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr:hover::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, transparent);
+	opacity: 0.6;
+}
+
+/* Rank colors */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr:nth-child(1) .psyern-lb__rank {
+	color: #ff00ff;
+	text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr:nth-child(2) .psyern-lb__rank {
+	color: #00ffff;
+	text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table tbody tr:nth-child(3) .psyern-lb__rank {
+	color: #00ff88;
+	text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__rank {
+	color: #00ff88;
+	font-family: 'Orbitron', monospace;
+	font-weight: 700;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__name {
+	color: #e0e0e0;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__kd {
+	color: #00ff88;
+	text-shadow: 0 0 4px rgba(0, 255, 136, 0.4);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__avatar {
+	border: 1px solid #2a2a3a;
+	filter: saturate(0.6) contrast(1.1);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__boss-kills {
+	color: #ff00ff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__reputation {
+	color: #00ffff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__playtime {
+	color: #2a2a4a;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__loading {
+	color: #2a2a4a;
+	text-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+}
+
+/* Badges */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__badge-online {
+	background: #00ff88;
+	box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__badge-offline {
+	background: #2a2a3a;
+}
+
+/* Rank rows */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__rank-1 td:first-child {
+	border-left-color: #ff00ff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__rank-2 td:first-child {
+	border-left-color: #00ffff;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__rank-3 td:first-child {
+	border-left-color: #00ff88;
+}
+
+/* Faction badges */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction--east {
+	background: rgba(255, 0, 255, 0.15);
+	color: #ff00ff;
+	border-color: rgba(255, 0, 255, 0.3);
+	text-shadow: 0 0 4px rgba(255, 0, 255, 0.4);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction--west {
+	background: rgba(0, 255, 255, 0.15);
+	color: #00ffff;
+	border-color: rgba(0, 255, 255, 0.3);
+	text-shadow: 0 0 4px rgba(0, 255, 255, 0.4);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction--neutral {
+	background: rgba(74, 74, 106, 0.2);
+	color: #6a6a8a;
+	border-color: rgba(74, 74, 106, 0.3);
+}
+
+/* Faction bar */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-bar-track {
+	background: #12121a;
+	border: 1px solid #2a2a3a;
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-bar-east {
+	background: linear-gradient(90deg, #ff00ff, #ff3366);
+	box-shadow: 0 0 8px rgba(255, 0, 255, 0.3);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-bar-west {
+	background: linear-gradient(90deg, #0066ff, #00ffff);
+	box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-label-east {
+	color: #ff00ff;
+	text-shadow: 0 0 6px rgba(255, 0, 255, 0.4);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-label-west {
+	color: #00ffff;
+	text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+}
+
+/* Separator */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__separator {
+	border: none;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, #ff00ff, #00ff88, #00ffff, transparent);
+	margin: 20px 0;
+	opacity: 0.5;
+}
+
+/* Neon animated border on container */
+.psyern-lb.psyern-lb--cyberpunk {
+	border-image: linear-gradient(135deg, #ff00ff, #00ff88, #00ffff, #ff00ff) 1;
+	animation: psyern-cyber-border 4s linear infinite;
+}
+
+@keyframes psyern-cyber-border {
+	0% { border-image: linear-gradient(135deg, #ff00ff, #00ff88, #00ffff, #ff00ff) 1; }
+	33% { border-image: linear-gradient(135deg, #00ffff, #ff00ff, #00ff88, #00ffff) 1; }
+	66% { border-image: linear-gradient(135deg, #00ff88, #00ffff, #ff00ff, #00ff88) 1; }
+	100% { border-image: linear-gradient(135deg, #ff00ff, #00ff88, #00ffff, #ff00ff) 1; }
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__table td { color: #c0c0c0; }
+
+/* --- Pagination --- */
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn {
+color: #006666 !important;
+border-color: #006666;
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn.active {
+color: #00ffff !important;
+border-color: #00ffff;
+background: rgba(0, 255, 255, 0.1);
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn:hover:not([disabled]) {
+color: #00ffff !important;
+border-color: #00ffff;
+background: rgba(0, 255, 255, 0.06);
+}
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__page-btn[disabled] {
+color: #006666 !important;
+border-color: #006666;
+opacity: 0.3;
+}

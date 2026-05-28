@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSYERNS FRAMEWORK — IDENTITY VERIFICATION [OPS]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #020d02;
+    --deep: #041a04;
+    --panel: #071f07;
+    --border: #0d3b0d;
+    --phosphor: #4ade80;
+    --phosphor-dim: #16a34a;
+    --phosphor-faint: #052e16;
+    --phosphor-glow: rgba(74, 222, 128, 0.15);
+    --text-bright: #86efac;
+    --text-mid: #4ade80;
+    --text-dim: #166534;
+    --text-ghost: #0f3a1a;
+    --warn: #facc15;
+    --danger: #dc2626;
+    --font-display: 'Orbitron', monospace;
+    --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: var(--void); min-height: 100vh; }
+
+  body {
+    background: var(--void);
+    color: var(--phosphor);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* CRT Scanlines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.35) 2px,
+      rgba(0,0,0,0.35) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* CRT Vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.85) 100%);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Flicker animation */
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.85; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    97% { opacity: 1; }
+  }
+
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 8px var(--phosphor-glow), inset 0 0 8px rgba(74,222,128,0.05); }
+    50% { box-shadow: 0 0 20px rgba(74,222,128,0.3), inset 0 0 15px rgba(74,222,128,0.08); }
+  }
+
+  @keyframes blink {
+    0%,49% { opacity: 1; }
+    50%,100% { opacity: 0; }
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  @keyframes radar-sweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes scan-in {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes progress-fill {
+    from { width: 0; }
+    to { width: var(--progress-width, 60%); }
+  }
+
+  @keyframes status-pulse {
+    0%,100% { color: var(--phosphor); text-shadow: 0 0 8px var(--phosphor); }
+    50% { color: var(--text-bright); text-shadow: 0 0 20px var(--phosphor), 0 0 40px rgba(74,222,128,0.4); }
+  }
+
+  .terminal {
+    width: 100%;
+    max-width: 780px;
+    animation: flicker 8s infinite, fade-up 0.6s ease-out;
+  }
+
+  /* Header Bar */
+  .term-header {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--phosphor-dim);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+
+  .term-header-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--phosphor);
+    text-shadow: 0 0 10px var(--phosphor);
+  }
+
+  .term-header-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Main Panel */
+  .term-body {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: none;
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  /* Top classification bar */
+  .classification-bar {
+    background: var(--phosphor-faint);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  .classification-bar .classif-label {
+    color: var(--phosphor);
+    font-weight: bold;
+  }
+
+  /* Content area */
+  .term-content {
+    padding: 28px 32px;
+  }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-ghost);
+  }
+
+  .step.active { color: var(--phosphor); }
+  .step.done { color: var(--phosphor-dim); }
+
+  .step-num {
+    width: 24px;
+    height: 24px;
+    border: 1px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 10px;
+  }
+
+  .step.active .step-num {
+    background: var(--phosphor);
+    color: var(--void);
+    box-shadow: 0 0 12px var(--phosphor);
+  }
+
+  .step-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 12px;
+    max-width: 80px;
+  }
+
+  .step-line.done { background: var(--phosphor-dim); }
+
+  /* Main title */
+  .main-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--phosphor);
+    text-shadow: 0 0 20px var(--phosphor), 0 0 40px rgba(74,222,128,0.3);
+    margin-bottom: 6px;
+    line-height: 1.1;
+  }
+
+  .main-subtitle {
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+  }
+
+  /* Typing text */
+  .typing-line {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--phosphor);
+    animation: typing 2.5s steps(40) forwards, blink 1s step-end infinite 2.5s;
+    width: 0;
+    animation-delay: 0.3s;
+    color: var(--phosphor-dim);
+    font-size: 12px;
+    margin-bottom: 24px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Radar + Status combined block */
+  .status-block {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .radar-container {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .radar-bg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid var(--phosphor-dim);
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 70%);
+  }
+
+  .radar-bg::before,
+  .radar-bg::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    border: 1px solid var(--border);
+  }
+  .radar-bg::before { width: 50%; height: 50%; }
+  .radar-bg::after { width: 80%; height: 80%; }
+
+  .radar-line-h, .radar-line-v {
+    position: absolute;
+    background: var(--border);
+  }
+  .radar-line-h { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+  .radar-line-v { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+
+  .radar-sweep-el {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(74,222,128,0.4) 0deg, transparent 60deg);
+    animation: radar-sweep 3s linear infinite;
+  }
+
+  .radar-dot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: var(--phosphor);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--phosphor);
+    top: 28%;
+    left: 62%;
+    animation: status-pulse 2s ease-in-out infinite;
+  }
+
+  .status-info { flex: 1; }
+
+  .status-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .status-value {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--warn);
+    text-shadow: 0 0 10px var(--warn);
+    margin-bottom: 10px;
+    animation: status-pulse 2.5s ease-in-out infinite;
+  }
+
+  .status-value.approved { color: var(--phosphor); text-shadow: 0 0 10px var(--phosphor); }
+  .status-value.rejected { color: var(--danger); text-shadow: 0 0 10px var(--danger); animation: none; }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--phosphor-dim), var(--phosphor));
+    box-shadow: 0 0 8px var(--phosphor);
+    --progress-width: 40%;
+    animation: progress-fill 1.5s ease-out 0.5s both;
+  }
+
+  /* Auth buttons area */
+  .auth-section {
+    border: 1px solid var(--border);
+    background: var(--deep);
+    padding: 24px;
+    margin-bottom: 20px;
+    animation: fade-up 0.5s ease-out 0.8s both;
+  }
+
+  .auth-section-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .auth-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--panel);
+    border: 1px solid var(--phosphor-dim);
+    color: var(--phosphor);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 14px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+
+  .auth-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--phosphor);
+    box-shadow: 0 0 8px var(--phosphor);
+  }
+
+  .auth-btn:hover {
+    background: rgba(74,222,128,0.08);
+    border-color: var(--phosphor);
+    box-shadow: 0 0 16px rgba(74,222,128,0.2);
+    transform: translateX(4px);
+  }
+
+  .auth-btn:hover .btn-arrow { transform: translateX(4px); }
+
+  .auth-btn-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid currentColor;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .auth-btn-text { flex: 1; }
+  .auth-btn-sublabel {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+    text-transform: none;
+  }
+
+  .btn-arrow {
+    transition: transform 0.15s ease;
+    color: var(--phosphor-dim);
+    font-size: 16px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-ghost);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    margin: 4px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Footer data */
+  .term-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-ghost);
+    letter-spacing: 0.1em;
+    background: var(--deep);
+  }
+
+  .footer-blink { animation: blink 1s step-end infinite; }
+
+  /* Bottom bar */
+  .bottom-bar {
+    margin-top: 2px;
+    background: var(--phosphor);
+    color: var(--void);
+    padding: 5px 20px;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .term-content { padding: 20px 16px; }
+    .main-title { font-size: 16px; }
+    .steps { font-size: 10px; gap: 4px; }
+    .step-line { max-width: 30px; }
+    .status-block { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="terminal">
+
+  <!-- Header Bar -->
+  <div class="term-header">
+    <span class="term-header-title">PSYERNS FRAMEWORK // VER-SYS v2.4</span>
+    <span class="term-header-meta">SESSION: 7F3A-9D2C &nbsp;|&nbsp; <span class="footer-blink">■</span> LIVE</span>
+  </div>
+
+  <!-- Main Panel -->
+  <div class="term-body">
+
+    <!-- Classification -->
+    <div class="classification-bar">
+      <span><span class="classif-label">// IDENTITY VERIFICATION SYSTEM //</span></span>
+      <span>NODE: EU-WEST-1 &nbsp;|&nbsp; UPTIME: 99.7%</span>
+    </div>
+
+    <div class="term-content">
+
+      <!-- Steps -->
+      <div class="steps">
+        <div class="step active">
+          <div class="step-num">01</div>
+          <span>CONNECT</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <span>VERIFY</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <span>CLEARED</span>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="main-title">CLEARANCE DENIED</div>
+      <div class="main-subtitle">▸ Identity not on record — Upgrade required</div>
+
+      <!-- Typing effect -->
+      <div class="typing-line">&gt; SEARCHING SURVIVOR DATABASE... IDENTITY NOT FOUND.</div>
+
+      <!-- Status block with radar -->
+      <div class="status-block">
+        <div class="radar-container">
+          <div class="radar-bg">
+            <div class="radar-line-h"></div>
+            <div class="radar-line-v"></div>
+            <div class="radar-sweep-el"></div>
+            <div class="radar-dot"></div>
+          </div>
+        </div>
+        <div class="status-info">
+          <div class="status-label">Current clearance status</div>
+          <div class="status-value">UNVERIFIED — ACCESS DENIED</div>
+          <div class="progress-bar-wrap">
+            <span>AUTH</span>
+            <div class="progress-bar">
+              <div class="progress-fill" style="--progress-width: 15%"></div>
+            </div>
+            <span>[15%]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Section -->
+      <div class="auth-section">
+        <div class="auth-section-label">// Select verification method</div>
+        <div class="auth-buttons">
+
+          <a href="#" class="auth-btn">
+            <div class="auth-btn-icon">S</div>
+            <div class="auth-btn-text">
+              AUTHENTICATE VIA STEAM
+              <div class="auth-btn-sublabel">Redirects to Steam OpenID — your credentials stay private</div>
+            </div>
+            <span class="btn-arrow">›</span>
+          </a>
+
+          <div class="divider">— OR —</div>
+
+          <a href="#" class="auth-btn">
+            <div class="auth-btn-icon">#</div>
+            <div class="auth-btn-text">
+              VERIFY VIA DISCORD BOT
+              <div class="auth-btn-sublabel">Use the #verify channel on our Discord server</div>
+            </div>
+            <span class="btn-arrow">›</span>
+          </a>
+
+        </div>
+      </div>
+
+    </div><!-- /term-content -->
+
+    <div class="term-footer">
+      <span>DEADMANS ECHO // SURVIVAL SERVER EU</span>
+      <span><span class="footer-blink">▌</span> AWAITING INPUT</span>
+    </div>
+
+  </div><!-- /term-body -->
+
+  <div class="bottom-bar">
+    <span>// CLASSIFIED — AUTHORIZED USE ONLY //</span>
+    <span>PSYERN-FW © 2026</span>
+  </div>
+
+</div>
+
+</body>
+</html>

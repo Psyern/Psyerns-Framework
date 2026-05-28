@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psyerns Framework — Dashboard</title>
+<link rel="stylesheet" href="./assets/css/pf-common.css">
+<link rel="stylesheet" href="./assets/css/pf-dark.css">
+<link rel="stylesheet" href="./assets/css/pf-light.css">
+</head>
+<body>
+<div id="app" class="pf-container pf-dark">
+	<button class="pf-theme-switch" onclick="PF.switchTheme(document.getElementById('app'))">Theme</button>
+
+	<div class="pf-tabs" id="main-tabs">
+		<button class="pf-tab active" onclick="showSection('leaderboard')">Leaderboard</button>
+		<button class="pf-tab" onclick="showSection('top3monthly')">Top 3 Monthly</button>
+		<button class="pf-tab" onclick="showSection('top3deadliest')">Top 3 Deadliest</button>
+		<button class="pf-tab" onclick="showSection('status')">Server Status</button>
+	</div>
+
+	<div id="section-leaderboard">
+		<div class="pf-tabs" id="lb-tabs">
+			<button class="pf-tab active" onclick="switchLBType('pve')">PvE</button>
+			<button class="pf-tab" onclick="switchLBType('pvp')">PvP</button>
+		</div>
+		<div class="pf-table-wrapper" id="lb-content"><div class="pf-loading">Loading...</div></div>
+	</div>
+	<div id="section-top3monthly" style="display:none">
+		<h2 style="text-align:center;margin-bottom:16px">Top Spieler des Monats</h2>
+		<div id="t3m-content"><div class="pf-loading">Loading...</div></div>
+	</div>
+	<div id="section-top3deadliest" style="display:none">
+		<h2 style="text-align:center;margin-bottom:16px">Deadliest Players</h2>
+		<div id="t3d-content"><div class="pf-loading">Loading...</div></div>
+	</div>
+	<div id="section-status" style="display:none">
+		<div id="status-content"><div class="pf-loading">Loading...</div></div>
+	</div>
+</div>
+
+<script src="./assets/js/pf-templates.js"></script>
+<script>
+PF.config.apiUrl = './api';
+var lbType = 'pve';
+var sections = ['leaderboard','top3monthly','top3deadliest','status'];
+
+function showSection(name) {
+	sections.forEach(function(s) {
+		document.getElementById('section-' + s).style.display = s === name ? '' : 'none';
+	});
+	var tabs = document.querySelectorAll('#main-tabs .pf-tab');
+	var idx = sections.indexOf(name);
+	tabs.forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+	if (name === 'leaderboard') loadLB();
+	if (name === 'top3monthly') loadT3M();
+	if (name === 'top3deadliest') loadT3D();
+	if (name === 'status') loadStatus();
+}
+
+function switchLBType(t) {
+	lbType = t;
+	var tabs = document.querySelectorAll('#lb-tabs .pf-tab');
+	tabs[0].classList.toggle('active', t === 'pve');
+	tabs[1].classList.toggle('active', t === 'pvp');
+	loadLB();
+}
+
+function loadLB() {
+	PF.fetchLeaderboard(lbType, 20).then(function(d) {
+		PF.renderLeaderboardTable(d, lbType, document.getElementById('lb-content'));
+	}).catch(function() {});
+}
+function loadT3M() {
+	PF.fetchTop3('monthly').then(function(d) {
+		PF.renderTop3Cards(d, document.getElementById('t3m-content'), false);
+	}).catch(function() {});
+}
+function loadT3D() {
+	PF.fetchTop3('deadliest').then(function(d) {
+		PF.renderTop3Cards(d, document.getElementById('t3d-content'), true);
+	}).catch(function() {});
+}
+function loadStatus() {
+	PF.fetchServerStatus().then(function(d) {
+		PF.renderServerStatus(d, document.getElementById('status-content'));
+	}).catch(function() {});
+}
+
+loadLB();
+PF.startAutoRefresh(function() {
+	loadLB(); loadStatus();
+});
+</script>
+</body>
+</html>
