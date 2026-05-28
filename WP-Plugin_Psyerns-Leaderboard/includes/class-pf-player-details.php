@@ -127,13 +127,27 @@ class PF_Player_Details {
 	 */
 	private function build_from_leaderboard( array $rows ) {
 		$primary = $rows[0];
+		$pvp_row = null;
+		$pve_row = null;
 		// Prefer a row that actually has gunplay data populated, in case one
-		// board hasn't received that subset yet.
+		// board hasn't received that subset yet. Also keep direct references
+		// to the pvp/pve rows so we can read per-mode kill counts later.
 		foreach ( $rows as $r ) {
+			if ( 'pvp' === $r['board_type'] ) {
+				$pvp_row = $r;
+			} elseif ( 'pve' === $r['board_type'] ) {
+				$pve_row = $r;
+			}
 			if ( (int) $r['shots_fired'] > (int) $primary['shots_fired'] ) {
 				$primary = $r;
 			}
 		}
+
+		// pvp_kills (= "Survivors Down" in the modal) is the kills column on
+		// the pvp board row (upsert_players already filtered category_kills
+		// down to player kills there). pve_kills mirrors that for the pve row.
+		$pvp_kills = $pvp_row ? (int) $pvp_row['kills'] : 0;
+		$pve_kills = $pve_row ? (int) $pve_row['kills'] : 0;
 
 		$category_kills = json_decode( $primary['category_kills'] ?: '{}', true );
 		$category_deaths = json_decode( $primary['category_deaths'] ?: '{}', true );
@@ -173,6 +187,8 @@ class PF_Player_Details {
 			'warBossKills'          => (int) $primary['war_boss_kills'],
 			'hardlineReputation'    => (int) $primary['hardline_reputation'],
 			'terjeSkills'           => $terje_skills,
+			'_pvp_kills'            => $pvp_kills,
+			'_pve_kills'            => $pve_kills,
 		);
 
 		$synthetic_row = array(
@@ -239,40 +255,78 @@ class PF_Player_Details {
 			$ranges_clean[ sanitize_text_field( (string) $k ) ] = (float) $v;
 		}
 
+		$reputation_val = isset( $raw['hardlineReputation'] ) ? (int) $raw['hardlineReputation'] : 0;
+		$boss_kills_val = isset( $raw['warBossKills'] ) ? (int) $raw['warBossKills'] : 0;
+		$playtime_val   = isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0;
+		$pvp_kills_val  = isset( $raw['_pvp_kills'] ) ? (int) $raw['_pvp_kills'] : 0;
+		$pve_kills_val  = isset( $raw['_pve_kills'] ) ? (int) $raw['_pve_kills'] : 0;
+		$dist_total     = isset( $raw['distanceTravelled'] ) ? (float) $raw['distanceTravelled'] : 0.0;
+		$dist_foot      = isset( $raw['distanceOnFoot'] ) ? (float) $raw['distanceOnFoot'] : 0.0;
+		$dist_vehicle   = isset( $raw['distanceInVehicle'] ) ? (float) $raw['distanceInVehicle'] : 0.0;
+		$suicides_val   = isset( $raw['suicides'] ) ? (int) $raw['suicides'] : 0;
+
+		// The modal JS (psyern-leaderboard.js) reads snake_case keys for
+		// every kpi card. We emit both shapes — snake_case for the modal,
+		// camelCase for any other consumer that already adopted the older
+		// spec — so this stays additive instead of breaking either side.
 		return array(
 			'playerUid'    => $player_uid,
 			'playerName'   => $player_name,
+			'player_name'  => $player_name,
 			'survivorType' => isset( $raw['survivorType'] ) ? sanitize_text_field( (string) $raw['survivorType'] ) : '',
 			'lastUpdated'  => (string) $last_updated,
 			'summary'      => array(
-				'totalKills'      => $total_kills,
-				'totalDeaths'     => $total_deaths,
-				'kd'              => $kd,
-				'playTimeSeconds' => isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0,
-				'playtime_seconds' => isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0,
-				'isOnline'        => isset( $raw['isOnline'] ) ? (bool) $raw['isOnline'] : false,
+				// camelCase (legacy)
+				'totalKills'       => $total_kills,
+				'totalDeaths'      => $total_deaths,
+				'kd'               => $kd,
+				'playTimeSeconds'  => $playtime_val,
+				'isOnline'         => isset( $raw['isOnline'] ) ? (bool) $raw['isOnline'] : false,
+				// snake_case (what the modal actually reads)
+				'kills'            => $total_kills,
+				'deaths'           => $total_deaths,
+				'kd_ratio'         => $kd,
+				'pvp_kills'        => $pvp_kills_val,
+				'pve_kills'        => $pve_kills_val,
+				'boss_kills'       => $boss_kills_val,
+				'reputation'       => $reputation_val,
+				'suicides'         => $suicides_val,
+				'playtime_seconds' => $playtime_val,
 			),
 			'war'          => array(
-				'faction'   => isset( $raw['warFaction'] ) ? sanitize_text_field( (string) $raw['warFaction'] ) : '',
-				'level'     => isset( $raw['warLevel'] ) ? (int) $raw['warLevel'] : 0,
-				'alignment' => isset( $raw['warAlignment'] ) ? (int) $raw['warAlignment'] : 0,
-				'bossKills' => isset( $raw['warBossKills'] ) ? (int) $raw['warBossKills'] : 0,
+				'faction'    => isset( $raw['warFaction'] ) ? sanitize_text_field( (string) $raw['warFaction'] ) : '',
+				'level'      => isset( $raw['warLevel'] ) ? (int) $raw['warLevel'] : 0,
+				'alignment'  => isset( $raw['warAlignment'] ) ? (int) $raw['warAlignment'] : 0,
+				'bossKills'  => $boss_kills_val,
+				'boss_kills' => $boss_kills_val,
 			),
 			'hardline'     => array(
-				'reputation' => isset( $raw['hardlineReputation'] ) ? (int) $raw['hardlineReputation'] : 0,
+				'reputation' => $reputation_val,
 			),
 			'gunplay'      => array(
+				// camelCase
 				'shotsFired'         => $shots_fired,
 				'shotsHit'           => $shots_hit,
 				'headshots'          => $headshots,
 				'accuracy'           => $accuracy,
 				'headshotPercentage' => $hs_pct,
+				// snake_case
+				'shots_fired'        => $shots_fired,
+				'shots_hit'          => $shots_hit,
+				'headshot_percent'   => $hs_pct,
+				'hs_percent'         => $hs_pct,
 			),
 			'movement'     => array(
-				'distanceTravelled' => isset( $raw['distanceTravelled'] ) ? (float) $raw['distanceTravelled'] : 0.0,
-				'distanceOnFoot'    => isset( $raw['distanceOnFoot'] ) ? (float) $raw['distanceOnFoot'] : 0.0,
-				'distanceInVehicle' => isset( $raw['distanceInVehicle'] ) ? (float) $raw['distanceInVehicle'] : 0.0,
-				'suicides'          => isset( $raw['suicides'] ) ? (int) $raw['suicides'] : 0,
+				// camelCase
+				'distanceTravelled' => $dist_total,
+				'distanceOnFoot'    => $dist_foot,
+				'distanceInVehicle' => $dist_vehicle,
+				'suicides'          => $suicides_val,
+				// snake_case (modal reads these)
+				'distance'          => $dist_total,
+				'total'             => $dist_total,
+				'on_foot'           => $dist_foot,
+				'in_vehicle'        => $dist_vehicle,
 			),
 			'kills'        => $kills_grouped,
 			'deaths'       => $deaths_grouped,
