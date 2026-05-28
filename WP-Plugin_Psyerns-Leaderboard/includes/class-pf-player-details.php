@@ -77,30 +77,102 @@ class PF_Player_Details {
 	 */
 	public function handle_get( WP_REST_Request $request ) {
 		global $wpdb;
-		$table = PF_Database::get_table_name( 'player_details' );
 
 		$uid = sanitize_text_field( $request->get_param( 'uid' ) );
 		if ( ! preg_match( '/^[A-Za-z0-9_]{1,64}$/', $uid ) ) {
 			return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
 		}
 
-		$row = $wpdb->get_row( $wpdb->prepare(
-			"SELECT player_uid, player_name, data_json, updated_at FROM {$table} WHERE player_uid = %s",
+		// Prefer the dedicated details table (richest payload, includes
+		// survivorType / lastUpdated from the DayZ side).
+		$details_table = PF_Database::get_table_name( 'player_details' );
+		$row           = $wpdb->get_row( $wpdb->prepare(
+			"SELECT player_uid, player_name, data_json, updated_at FROM {$details_table} WHERE player_uid = %s",
 			$uid
 		), ARRAY_A );
 
-		if ( null === $row ) {
+		if ( null !== $row ) {
+			$raw = json_decode( $row['data_json'] ?: '{}', true );
+			if ( ! is_array( $raw ) ) {
+				$raw = array();
+			}
+			return new WP_REST_Response( $this->transform( $raw, $row ), 200 );
+		}
+
+		// Fallback: the leaderboard table already carries the same per-player
+		// stats (war / hardline / gunplay / movement / category maps), so we
+		// can synthesize the same response shape without needing the optional
+		// playerDetails[] upload from the server PBO.
+		$lb_table = PF_Database::get_table_name( 'leaderboard' );
+		$lb_rows  = $wpdb->get_results( $wpdb->prepare(
+			"SELECT * FROM {$lb_table} WHERE steam_id = %s",
+			$uid
+		), ARRAY_A );
+
+		if ( empty( $lb_rows ) ) {
 			return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
 		}
 
-		$raw = json_decode( $row['data_json'] ?: '{}', true );
-		if ( ! is_array( $raw ) ) {
-			$raw = array();
+		return new WP_REST_Response( $this->build_from_leaderboard( $lb_rows ), 200 );
+	}
+
+	/**
+	 * Synthesize the player-detail response shape from one or more leaderboard
+	 * rows (pve + pvp). Most per-player stats are duplicated across the rows
+	 * by upsert_players(); category maps are the raw Ninjin source data so
+	 * either row works.
+	 *
+	 * @param array $rows Rows from wp_pf_leaderboard for one steam_id.
+	 * @return array
+	 */
+	private function build_from_leaderboard( array $rows ) {
+		$primary = $rows[0];
+		// Prefer a row that actually has gunplay data populated, in case one
+		// board hasn't received that subset yet.
+		foreach ( $rows as $r ) {
+			if ( (int) $r['shots_fired'] > (int) $primary['shots_fired'] ) {
+				$primary = $r;
+			}
 		}
 
-		$response = $this->transform( $raw, $row );
+		$category_kills = json_decode( $primary['category_kills'] ?: '{}', true );
+		$category_deaths = json_decode( $primary['category_deaths'] ?: '{}', true );
+		$category_ranges = json_decode( $primary['category_longest_ranges'] ?: '{}', true );
+		if ( ! is_array( $category_kills ) ) { $category_kills = array(); }
+		if ( ! is_array( $category_deaths ) ) { $category_deaths = array(); }
+		if ( ! is_array( $category_ranges ) ) { $category_ranges = array(); }
 
-		return new WP_REST_Response( $response, 200 );
+		$synthetic_raw = array(
+			'playerID'              => (string) $primary['steam_id'],
+			'playerName'            => (string) $primary['player_name'],
+			'survivorType'          => '',
+			'categoryKills'         => $category_kills,
+			'categoryDeaths'        => $category_deaths,
+			'categoryLongestRanges' => $category_ranges,
+			'totalDeaths'           => (int) $primary['total_deaths'],
+			'shotsFired'            => (int) $primary['shots_fired'],
+			'shotsHit'              => (int) $primary['shots_hit'],
+			'headshots'             => (int) $primary['headshots'],
+			'distanceTravelled'     => (float) $primary['distance_travelled'],
+			'distanceOnFoot'        => (float) $primary['distance_on_foot'],
+			'distanceInVehicle'     => (float) $primary['distance_in_vehicle'],
+			'suicides'              => (int) $primary['suicides'],
+			'playTimeSeconds'       => (int) $primary['playtime'],
+			'isOnline'              => 1 === (int) $primary['is_online'],
+			'warFaction'            => (string) $primary['war_faction'],
+			'warAlignment'          => (int) $primary['war_alignment'],
+			'warLevel'              => (int) $primary['war_level'],
+			'warBossKills'          => (int) $primary['war_boss_kills'],
+			'hardlineReputation'    => (int) $primary['hardline_reputation'],
+		);
+
+		$synthetic_row = array(
+			'player_uid'  => (string) $primary['steam_id'],
+			'player_name' => (string) $primary['player_name'],
+			'updated_at'  => (string) $primary['updated_at'],
+		);
+
+		return $this->transform( $synthetic_raw, $synthetic_row );
 	}
 
 	/**
