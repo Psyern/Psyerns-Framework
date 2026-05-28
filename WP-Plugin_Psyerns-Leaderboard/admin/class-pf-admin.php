@@ -97,10 +97,12 @@ class PF_Admin {
 	 */
 	public static function get_pve_only_columns() {
 		// distance_foot/distance_vehicle/distance are progression stats and
-		// share the same PvE-only semantics as boss/reputation/playtime —
+		// share the same PvE-only semantics as boss/reputation —
 		// only the "longest_shot" column gets a mode-specific value via
 		// pvpLongestShot/pveLongestShot, so it stays available for both.
-		return array( 'boss', 'reputation', 'playtime', 'distance', 'distance_foot', 'distance_vehicle' );
+		// playtime is a player-wide stat (total time on the server) and is
+		// the same value on both rows, so it's allowed on PvP too.
+		return array( 'boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle' );
 	}
 
 	/**

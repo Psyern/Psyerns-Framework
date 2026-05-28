@@ -128,7 +128,7 @@
 	 */
 	// Columns that are only meaningful on one board. Mirrors
 	// PF_Admin::get_pve_only_columns() / get_pvp_only_columns() server-side.
-	var PVE_ONLY_COLS = ['boss', 'reputation', 'playtime', 'distance', 'distance_foot', 'distance_vehicle'];
+	var PVE_ONLY_COLS = ['boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle'];
 	var PVP_ONLY_COLS = ['headshots', 'accuracy'];
 
 	function getAllowedCols(mode) {
