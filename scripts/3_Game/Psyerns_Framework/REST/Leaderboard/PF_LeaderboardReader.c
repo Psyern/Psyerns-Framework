@@ -270,11 +270,18 @@ class PF_LeaderboardReader
 		string escaped = "";
 		int i = 0;
 		int n = s.Length();
+		int quoteCode = 34;
+		int backslashCode = 92;
+		string QUOTE = quoteCode.AsciiToString();
+		string BACKSLASH = backslashCode.AsciiToString();
+		string ESC_QUOTE = BACKSLASH + QUOTE;
+		string ESC_BACKSLASH = BACKSLASH + BACKSLASH;
+		string ch;
 		while (i < n)
 		{
-			string ch = s.Substring(i, 1);
-			if (ch == "\"") escaped += "\\\"";
-			else if (ch == "\\") escaped += "\\\\";
+			ch = s.Substring(i, 1);
+			if (ch == QUOTE) escaped += ESC_QUOTE;
+			else if (ch == BACKSLASH) escaped += ESC_BACKSLASH;
 			else escaped += ch;
 			i++;
 		}
