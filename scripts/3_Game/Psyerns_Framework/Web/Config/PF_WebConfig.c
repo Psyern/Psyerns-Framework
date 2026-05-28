@@ -33,6 +33,10 @@ class PF_WebConfig
 	int LeaderboardMaxPlayers;
 	bool EnablePlayerDetailsExport;
 
+	// Terje Skills Export (merges Terje .dat data into the leaderboard upload)
+	bool EnableTerjeSkillsExport;
+	string TerjeSkillsPath;
+
 	// Webhook Notifications
 	bool EnableServerStopNotification;
 	bool EnableHeartbeat;
@@ -44,7 +48,7 @@ class PF_WebConfig
 	protected static ref PF_WebConfig s_Instance;
 
 	[NonSerialized()]
-	static const int CURRENT_VERSION = 3;
+	static const int CURRENT_VERSION = 4;
 
 	void PF_WebConfig()
 	{
@@ -78,6 +82,10 @@ class PF_WebConfig
 		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
 		LeaderboardMaxPlayers = 100;
 		EnablePlayerDetailsExport = true;
+
+		// Terje Skills Export
+		EnableTerjeSkillsExport = true;
+		TerjeSkillsPath = "$mission:terje_storage/profiles";
 
 		// Webhook Notifications
 		EnableServerStopNotification = false;
@@ -286,6 +294,10 @@ class PF_WebConfig
 		NinjinPlayersPath = "$profile:Ninjins_Tracking_Mod/Data/Players";
 		LeaderboardMaxPlayers = 100;
 		EnablePlayerDetailsExport = true;
+
+		// Terje Skills Export
+		EnableTerjeSkillsExport = true;
+		TerjeSkillsPath = "$mission:terje_storage/profiles";
 
 		// Endpoints
 		PF_WebEndpoint wp = new PF_WebEndpoint();

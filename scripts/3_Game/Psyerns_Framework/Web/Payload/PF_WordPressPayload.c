@@ -31,6 +31,9 @@ class PF_WP_PlayerData
 	int totalDeaths;
 	int suicides;
 
+	// Terje Skills (raw JSON, pre-serialized by PF_LeaderboardReader)
+	string terjeSkillsJson;
+
 	void PF_WP_PlayerData()
 	{
 		playerID = "";
@@ -61,6 +64,7 @@ class PF_WP_PlayerData
 		distanceInVehicle = 0.0;
 		totalDeaths = 0;
 		suicides = 0;
+		terjeSkillsJson = "";
 	}
 }
 
@@ -148,6 +152,8 @@ class PF_WordPressPayload : PF_JsonPayload
 			pb.AddRaw("categoryKills", p.categoryKillsJson);
 			pb.AddRaw("categoryDeaths", p.categoryDeathsJson);
 			pb.AddRaw("categoryLongestRanges", p.categoryLongestRangesJson);
+			if (p.terjeSkillsJson != "")
+				pb.AddRaw("terjeSkills", p.terjeSkillsJson);
 			result += pb.Build();
 		}
 		result += "]";

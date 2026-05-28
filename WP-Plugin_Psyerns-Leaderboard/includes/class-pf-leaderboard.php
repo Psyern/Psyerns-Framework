@@ -187,6 +187,7 @@ class PF_Leaderboard {
 				'distance_in_vehicle'     => floatval( $p['distanceInVehicle'] ?? 0 ),
 				'total_deaths'            => absint( $p['totalDeaths'] ?? 0 ),
 				'suicides'                => absint( $p['suicides'] ?? 0 ),
+				'terje_skills'            => isset( $p['terjeSkills'] ) ? wp_json_encode( $p['terjeSkills'] ) : '',
 			);
 
 			$existing = $wpdb->get_var( $wpdb->prepare(
@@ -353,6 +354,7 @@ class PF_Leaderboard {
 			'distance_in_vehicle'     => (float) ( $row['distance_in_vehicle'] ?? 0 ),
 			'total_deaths'            => (int) ( $row['total_deaths'] ?? 0 ),
 			'suicides'                => (int) ( $row['suicides'] ?? 0 ),
+			'terje_skills'            => ! empty( $row['terje_skills'] ) ? json_decode( $row['terje_skills'], true ) : null,
 		);
 	}
 }

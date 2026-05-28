@@ -91,6 +91,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			><?php esc_html_e( 'War', 'psyerns-framework' ); ?></button>
 
 			<button type="button"
+				id="psyern-pdm-tab-skills"
+				class="psyern-pdm__tab"
+				role="tab"
+				aria-selected="false"
+				aria-controls="psyern-pdm-pane-skills"
+				data-tab="skills"
+				hidden
+			><?php esc_html_e( 'Skills', 'psyerns-framework' ); ?></button>
+
+			<button type="button"
 				id="psyern-pdm-tab-gunplay"
 				class="psyern-pdm__tab"
 				role="tab"

@@ -80,6 +80,7 @@ class PF_Database {
 			distance_in_vehicle FLOAT DEFAULT 0,
 			total_deaths INT DEFAULT 0,
 			suicides INT DEFAULT 0,
+			terje_skills LONGTEXT,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 			UNIQUE KEY steam_board (steam_id, board_type)
 		) {$charset};

@@ -59,10 +59,27 @@ class PF_NinjinPlayerData
 
 class PF_LeaderboardReader
 {
+	// Per-run Terje cache. Populated at the start of ReadAllPlayers when the
+	// EnableTerjeSkillsExport flag is true; consumed by ConvertPlayer to attach
+	// the matching terjeSkillsJson per steam_id. Reset on each run.
+	protected static ref map<string, ref PF_TerjePlayerSkills> s_TerjeCache;
+
 	static void ReadAllPlayers(string playersPath, out array<ref PF_WP_PlayerData> outPlayers, out int outOnlineCount)
 	{
 		outPlayers = new array<ref PF_WP_PlayerData>();
 		outOnlineCount = 0;
+
+		// Refresh the Terje per-run cache.
+		s_TerjeCache = new map<string, ref PF_TerjePlayerSkills>();
+		if (PF_WebConfig.GetInstance().EnableTerjeSkillsExport)
+		{
+			string terjePath = PF_WebConfig.GetInstance().TerjeSkillsPath;
+			if (terjePath != "")
+			{
+				PF_TerjeReader.ReadAllProfiles(terjePath, s_TerjeCache);
+				PF_Logger.Debug("LeaderboardReader: Loaded " + s_TerjeCache.Count().ToString() + " Terje profiles from " + terjePath);
+			}
+		}
 
 		string fileName;
 		FileAttr fileAttr;
@@ -179,7 +196,89 @@ class PF_LeaderboardReader
 		p.categoryDeathsJson = SerializeIntMap(raw.CategoryDeaths);
 		p.categoryLongestRangesJson = SerializeIntMap(raw.CategoryLongestRanges);
 
+		// Attach Terje skills if a profile was loaded for this steam_id.
+		if (s_TerjeCache && s_TerjeCache.Count() > 0)
+		{
+			PF_TerjePlayerSkills terjeProfile;
+			if (s_TerjeCache.Find(steamId, terjeProfile) && terjeProfile != null)
+			{
+				p.terjeSkillsJson = SerializeTerjeSkills(terjeProfile);
+			}
+		}
+
 		return p;
+	}
+
+	protected static string SerializeTerjeSkills(PF_TerjePlayerSkills profile)
+	{
+		// Shape: { "<skillId>": { "experience": N, "perkPoints": N, "highLevel": N,
+		//                          "knownBooks": [...], "perks": { "<id>": N, ... } }, ... }
+		PF_JsonBuilder outer = PF_JsonBuilder.Begin();
+		foreach (string skillId, ref PF_TerjeSkillData skill : profile.skills)
+		{
+			PF_JsonBuilder inner = PF_JsonBuilder.Begin();
+			inner.AddInt("experience", skill.experience);
+			inner.AddInt("perkPoints", skill.perkPoints);
+			inner.AddInt("highLevel", skill.highLevel);
+			inner.AddRaw("knownBooks", SerializeKnownBooks(skill.knownBooksRaw));
+			inner.AddRaw("perks", SerializeIntMap(skill.perks));
+			outer.AddRaw(skillId, inner.Build());
+		}
+		return outer.Build();
+	}
+
+	protected static string SerializeKnownBooks(string raw)
+	{
+		// raw format from Terje: "<bookId1><bookId2><bookId3>"
+		if (raw == "")
+			return "[]";
+
+		string result = "[";
+		int start = -1;
+		int i = 0;
+		int len = raw.Length();
+		bool first = true;
+
+		while (i < len)
+		{
+			string ch = raw.Substring(i, 1);
+			if (ch == "<")
+			{
+				start = i + 1;
+			}
+			else if (ch == ">" && start >= 0)
+			{
+				string book = raw.Substring(start, i - start);
+				if (book != "")
+				{
+					if (!first)
+						result += ",";
+					result += "\"" + EscapeJsonString(book) + "\"";
+					first = false;
+				}
+				start = -1;
+			}
+			i++;
+		}
+
+		result += "]";
+		return result;
+	}
+
+	protected static string EscapeJsonString(string s)
+	{
+		string escaped = "";
+		int i = 0;
+		int n = s.Length();
+		while (i < n)
+		{
+			string ch = s.Substring(i, 1);
+			if (ch == "\"") escaped += "\\\"";
+			else if (ch == "\\") escaped += "\\\\";
+			else escaped += ch;
+			i++;
+		}
+		return escaped;
 	}
 
 	protected static int SumMap(map<string, int> m)

@@ -142,6 +142,14 @@ class PF_Player_Details {
 		if ( ! is_array( $category_deaths ) ) { $category_deaths = array(); }
 		if ( ! is_array( $category_ranges ) ) { $category_ranges = array(); }
 
+		$terje_skills = null;
+		if ( ! empty( $primary['terje_skills'] ) ) {
+			$decoded = json_decode( $primary['terje_skills'], true );
+			if ( is_array( $decoded ) && ! empty( $decoded ) ) {
+				$terje_skills = $decoded;
+			}
+		}
+
 		$synthetic_raw = array(
 			'playerID'              => (string) $primary['steam_id'],
 			'playerName'            => (string) $primary['player_name'],
@@ -164,6 +172,7 @@ class PF_Player_Details {
 			'warLevel'              => (int) $primary['war_level'],
 			'warBossKills'          => (int) $primary['war_boss_kills'],
 			'hardlineReputation'    => (int) $primary['hardline_reputation'],
+			'terjeSkills'           => $terje_skills,
 		);
 
 		$synthetic_row = array(
@@ -268,7 +277,56 @@ class PF_Player_Details {
 			'kills'        => $kills_grouped,
 			'deaths'       => $deaths_grouped,
 			'longestRanges' => $ranges_clean,
+			'skills'       => self::shape_skills( $raw['terjeSkills'] ?? null ),
 		);
+	}
+
+	/**
+	 * Shape Terje skills for the modal. Terje's actual level is computed from
+	 * experience via per-skill config thresholds (levels[] in athletic.hpp etc.),
+	 * which the PHP side does not have access to. We surface `highLevel` (Terje's
+	 * own peak-level high-water mark) as the displayable level, plus the raw
+	 * experience for context. Empty array if no skills data — frontend hides tab.
+	 *
+	 * @param mixed $raw_skills The decoded terjeSkills payload (or null).
+	 * @return array<int,array>
+	 */
+	private static function shape_skills( $raw_skills ) {
+		if ( ! is_array( $raw_skills ) || empty( $raw_skills ) ) {
+			return array();
+		}
+
+		$out = array();
+		foreach ( $raw_skills as $skill_id => $data ) {
+			if ( ! is_array( $data ) ) {
+				continue;
+			}
+
+			$known_books = array();
+			if ( isset( $data['knownBooks'] ) && is_array( $data['knownBooks'] ) ) {
+				foreach ( $data['knownBooks'] as $b ) {
+					$known_books[] = sanitize_text_field( (string) $b );
+				}
+			}
+
+			$perks = array();
+			if ( isset( $data['perks'] ) && is_array( $data['perks'] ) ) {
+				foreach ( $data['perks'] as $perk_id => $perk_value ) {
+					$perks[ sanitize_text_field( (string) $perk_id ) ] = (int) $perk_value;
+				}
+			}
+
+			$out[] = array(
+				'id'          => sanitize_text_field( (string) $skill_id ),
+				'level'       => (int) ( $data['highLevel'] ?? 0 ),
+				'experience'  => (int) ( $data['experience'] ?? 0 ),
+				'perkPoints'  => (int) ( $data['perkPoints'] ?? 0 ),
+				'highLevel'   => (int) ( $data['highLevel'] ?? 0 ),
+				'knownBooks'  => $known_books,
+				'perks'       => $perks,
+			);
+		}
+		return $out;
 	}
 
 	/**
