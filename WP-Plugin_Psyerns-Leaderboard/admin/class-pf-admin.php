@@ -100,9 +100,9 @@ class PF_Admin {
 		// share the same PvE-only semantics as boss/reputation —
 		// only the "longest_shot" column gets a mode-specific value via
 		// pvpLongestShot/pveLongestShot, so it stays available for both.
-		// playtime is a player-wide stat (total time on the server) and is
-		// the same value on both rows, so it's allowed on PvP too.
-		return array( 'boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle' );
+		// playtime is intentionally PvE-only in the leaderboard table view to
+		// avoid duplicating a global progression metric on PvP.
+		return array( 'boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle', 'playtime' );
 	}
 
 	/**

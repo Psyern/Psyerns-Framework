@@ -156,6 +156,48 @@ class PF_Leaderboard {
 			}
 			$longest_shot = ( 'pvp' === $board_type ) ? $pvp_longest : $pve_longest;
 
+			$playtime_candidates = array(
+				$p['playTimeSeconds'] ?? null,
+				$p['playtimeSeconds'] ?? null,
+				$p['playtime_seconds'] ?? null,
+				$p['playtime'] ?? null,
+				$p['playTime'] ?? null,
+				( 'pvp' === $board_type ) ? ( $p['pvpPlaytimeSeconds'] ?? null ) : ( $p['pvePlaytimeSeconds'] ?? null ),
+				( 'pvp' === $board_type ) ? ( $p['pvpPlaytime'] ?? null ) : ( $p['pvePlaytime'] ?? null ),
+			);
+			$playtime_value = 0.0;
+			foreach ( $playtime_candidates as $playtime_candidate ) {
+				if ( null === $playtime_candidate || '' === $playtime_candidate ) {
+					continue;
+				}
+				$playtime_value = floatval( $playtime_candidate );
+				if ( $playtime_value > 0 ) {
+					break;
+				}
+			}
+
+			$existing = $wpdb->get_row( $wpdb->prepare(
+				"SELECT id, playtime FROM {$table} WHERE steam_id = %s AND board_type = %s",
+				$steam_id,
+				$board_type
+			), ARRAY_A );
+
+			if ( $playtime_value <= 0 && ! empty( $existing['playtime'] ) ) {
+				$playtime_value = floatval( $existing['playtime'] );
+			}
+			if ( $playtime_value <= 0 ) {
+				$max_playtime = $wpdb->get_var( $wpdb->prepare(
+					"SELECT MAX(playtime) FROM {$table} WHERE steam_id = %s",
+					$steam_id
+				) );
+				if ( null !== $max_playtime ) {
+					$max_playtime = floatval( $max_playtime );
+					if ( $max_playtime > 0 ) {
+						$playtime_value = $max_playtime;
+					}
+				}
+			}
+
 			$row = array(
 				'steam_id'                => $steam_id,
 				'player_name'             => sanitize_text_field( $p['playerName'] ?? '' ),
@@ -163,7 +205,7 @@ class PF_Leaderboard {
 				'deaths'                  => $total_deaths,
 				'ai_kills'                => $ai_kills,
 				'longest_shot'            => $longest_shot,
-				'playtime'                => floatval( $p['playTimeSeconds'] ?? $p['playtime'] ?? 0 ),
+				'playtime'                => $playtime_value,
 				'pve_points'              => absint( $p['pvePoints'] ?? 0 ),
 				'pvp_points'              => absint( $p['pvpPoints'] ?? 0 ),
 				'pve_deaths'              => $pve_deaths_total,
@@ -190,14 +232,8 @@ class PF_Leaderboard {
 				'terje_skills'            => isset( $p['terjeSkills'] ) ? wp_json_encode( $p['terjeSkills'] ) : '',
 			);
 
-			$existing = $wpdb->get_var( $wpdb->prepare(
-				"SELECT id FROM {$table} WHERE steam_id = %s AND board_type = %s",
-				$steam_id,
-				$board_type
-			) );
-
-			if ( null !== $existing ) {
-				$wpdb->update( $table, $row, array( 'id' => $existing ) );
+			if ( ! empty( $existing['id'] ) ) {
+				$wpdb->update( $table, $row, array( 'id' => $existing['id'] ) );
 			} else {
 				$wpdb->insert( $table, $row );
 			}

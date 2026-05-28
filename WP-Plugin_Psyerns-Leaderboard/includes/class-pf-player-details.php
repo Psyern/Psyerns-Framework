@@ -96,6 +96,67 @@ class PF_Player_Details {
 			if ( ! is_array( $raw ) ) {
 				$raw = array();
 			}
+
+			// Some legacy playerDetails rows contain playtime=0 while the
+			// leaderboard row already has the correct value. Patch raw details
+			// before transform so the modal can always render playtime.
+			$raw_playtime = 0;
+			$playtime_keys = array( 'playTimeSeconds', 'playtimeSeconds', 'playtime_seconds', 'playTime', 'playtime' );
+			foreach ( $playtime_keys as $playtime_key ) {
+				if ( isset( $raw[ $playtime_key ] ) ) {
+					$raw_playtime = (int) $raw[ $playtime_key ];
+					if ( $raw_playtime > 0 ) {
+						break;
+					}
+				}
+			}
+
+			if ( $raw_playtime <= 0 ) {
+				$lb_table = PF_Database::get_table_name( 'leaderboard' );
+				$lb_playtime = $wpdb->get_var( $wpdb->prepare(
+					"SELECT MAX(playtime) FROM {$lb_table} WHERE steam_id = %s",
+					$uid
+				) );
+				if ( null !== $lb_playtime ) {
+					$lb_playtime = (int) $lb_playtime;
+					if ( $lb_playtime > 0 ) {
+						$raw['playTimeSeconds'] = $lb_playtime;
+					}
+				}
+			}
+
+			// Older / partial detail uploads may miss telemetry fields while
+			// the leaderboard table already has them. In that case, synthesize
+			// from leaderboard rows so Kills/Deaths/Gunplay/Movement tabs are
+			// still populated.
+			$has_kill_death_detail = (
+				( isset( $raw['categoryKills'] ) && is_array( $raw['categoryKills'] ) && ! empty( $raw['categoryKills'] ) ) ||
+				( isset( $raw['categoryDeaths'] ) && is_array( $raw['categoryDeaths'] ) && ! empty( $raw['categoryDeaths'] ) )
+			);
+			$has_gunplay_detail = (
+				isset( $raw['shotsFired'] ) ||
+				isset( $raw['shotsHit'] ) ||
+				isset( $raw['headshots'] )
+			);
+			$has_movement_detail = (
+				isset( $raw['distanceTravelled'] ) ||
+				isset( $raw['distanceOnFoot'] ) ||
+				isset( $raw['distanceInVehicle'] ) ||
+				isset( $raw['suicides'] ) ||
+				isset( $raw['playTimeSeconds'] )
+			);
+
+			if ( ! $has_kill_death_detail || ! $has_gunplay_detail || ! $has_movement_detail ) {
+				$lb_table = PF_Database::get_table_name( 'leaderboard' );
+				$lb_rows  = $wpdb->get_results( $wpdb->prepare(
+					"SELECT * FROM {$lb_table} WHERE steam_id = %s",
+					$uid
+				), ARRAY_A );
+				if ( ! empty( $lb_rows ) ) {
+					return new WP_REST_Response( $this->build_from_leaderboard( $lb_rows ), 200 );
+				}
+			}
+
 			return new WP_REST_Response( $this->transform( $raw, $row ), 200 );
 		}
 
@@ -129,6 +190,7 @@ class PF_Player_Details {
 		$primary = $rows[0];
 		$pvp_row = null;
 		$pve_row = null;
+		$max_playtime = (int) ( $primary['playtime'] ?? 0 );
 		// Prefer a row that actually has gunplay data populated, in case one
 		// board hasn't received that subset yet. Also keep direct references
 		// to the pvp/pve rows so we can read per-mode kill counts later.
@@ -137,6 +199,10 @@ class PF_Player_Details {
 				$pvp_row = $r;
 			} elseif ( 'pve' === $r['board_type'] ) {
 				$pve_row = $r;
+			}
+			$row_playtime = (int) ( $r['playtime'] ?? 0 );
+			if ( $row_playtime > $max_playtime ) {
+				$max_playtime = $row_playtime;
 			}
 			if ( (int) $r['shots_fired'] > (int) $primary['shots_fired'] ) {
 				$primary = $r;
@@ -179,7 +245,7 @@ class PF_Player_Details {
 			'distanceOnFoot'        => (float) $primary['distance_on_foot'],
 			'distanceInVehicle'     => (float) $primary['distance_in_vehicle'],
 			'suicides'              => (int) $primary['suicides'],
-			'playTimeSeconds'       => (int) $primary['playtime'],
+			'playTimeSeconds'       => $max_playtime,
 			'isOnline'              => 1 === (int) $primary['is_online'],
 			'warFaction'            => (string) $primary['war_faction'],
 			'warAlignment'          => (int) $primary['war_alignment'],
@@ -194,6 +260,7 @@ class PF_Player_Details {
 		$synthetic_row = array(
 			'player_uid'  => (string) $primary['steam_id'],
 			'player_name' => (string) $primary['player_name'],
+			'avatar_url'  => (string) ( $primary['avatar_url'] ?? '' ),
 			'updated_at'  => (string) $primary['updated_at'],
 		);
 
@@ -210,6 +277,18 @@ class PF_Player_Details {
 	private function transform( array $raw, array $row ) {
 		$player_uid  = (string) $row['player_uid'];
 		$player_name = (string) ( $raw['playerName'] ?? $row['player_name'] );
+		$avatar_url  = '';
+		if ( ! empty( $raw['avatarUrl'] ) ) {
+			$avatar_url = esc_url_raw( (string) $raw['avatarUrl'] );
+		} elseif ( ! empty( $raw['avatar_url'] ) ) {
+			$avatar_url = esc_url_raw( (string) $raw['avatar_url'] );
+		} elseif ( ! empty( $row['avatar_url'] ) ) {
+			$avatar_url = esc_url_raw( (string) $row['avatar_url'] );
+		}
+
+		if ( '' === $avatar_url && preg_match( '/^\d{15,20}$/', $player_uid ) && class_exists( 'PF_Steam' ) ) {
+			$avatar_url = esc_url_raw( (string) PF_Steam::get_avatar( $player_uid ) );
+		}
 
 		$last_updated = $raw['lastUpdated'] ?? '';
 		if ( '' === $last_updated && ! empty( $row['updated_at'] ) ) {
@@ -257,7 +336,17 @@ class PF_Player_Details {
 
 		$reputation_val = isset( $raw['hardlineReputation'] ) ? (int) $raw['hardlineReputation'] : 0;
 		$boss_kills_val = isset( $raw['warBossKills'] ) ? (int) $raw['warBossKills'] : 0;
-		$playtime_val   = isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0;
+
+		$playtime_val = 0;
+		$playtime_keys = array( 'playTimeSeconds', 'playtimeSeconds', 'playtime_seconds', 'playTime', 'playtime' );
+		foreach ( $playtime_keys as $playtime_key ) {
+			if ( isset( $raw[ $playtime_key ] ) ) {
+				$playtime_val = (int) $raw[ $playtime_key ];
+				if ( $playtime_val > 0 ) {
+					break;
+				}
+			}
+		}
 		$pvp_kills_val  = isset( $raw['_pvp_kills'] ) ? (int) $raw['_pvp_kills'] : 0;
 		$pve_kills_val  = isset( $raw['_pve_kills'] ) ? (int) $raw['_pve_kills'] : 0;
 		$dist_total     = isset( $raw['distanceTravelled'] ) ? (float) $raw['distanceTravelled'] : 0.0;
@@ -273,6 +362,8 @@ class PF_Player_Details {
 			'playerUid'    => $player_uid,
 			'playerName'   => $player_name,
 			'player_name'  => $player_name,
+			'avatar_url'   => $avatar_url,
+			'avatarUrl'    => $avatar_url,
 			'survivorType' => isset( $raw['survivorType'] ) ? sanitize_text_field( (string) $raw['survivorType'] ) : '',
 			'lastUpdated'  => (string) $last_updated,
 			'summary'      => array(

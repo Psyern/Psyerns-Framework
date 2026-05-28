@@ -13,6 +13,86 @@ body.psyern-pdm-open {
 	overflow: hidden;
 }
 
+/* ─── Theme Tokens (9 themes) ─── */
+.psyern-pdm {
+	--psyern-fg: #e8e8e8;
+	--psyern-border: rgba(255, 255, 255, 0.12);
+	--pf-accent: #ffd700;
+	--psyern-accent: var(--pf-accent);
+}
+
+.psyern-pdm.psyern-pdm--military {
+	--psyern-bg: #0a0f0a;
+	--psyern-fg: #86efac;
+	--psyern-border: #1a3a1a;
+	--pf-accent: #4ade80;
+	--psyern-accent: #4ade80;
+}
+
+.psyern-pdm.psyern-pdm--ash {
+	--psyern-bg: #1a1714;
+	--psyern-fg: #e9ddc8;
+	--psyern-border: #4b3f2e;
+	--pf-accent: #d4a853;
+	--psyern-accent: #d4a853;
+}
+
+.psyern-pdm.psyern-pdm--ops {
+	--psyern-bg: #000a00;
+	--psyern-fg: #8bff9e;
+	--psyern-border: #14421b;
+	--pf-accent: #00ff41;
+	--psyern-accent: #00ff41;
+}
+
+.psyern-pdm.psyern-pdm--outbreak {
+	--psyern-bg: #0d0d00;
+	--psyern-fg: #f0e6ba;
+	--psyern-border: #58521f;
+	--pf-accent: #d4a020;
+	--psyern-accent: #d4a020;
+}
+
+.psyern-pdm.psyern-pdm--cyberpunk {
+	--psyern-bg: #0a0a0f;
+	--psyern-fg: #f6e7ff;
+	--psyern-border: #3b2554;
+	--pf-accent: #ff4fd8;
+	--psyern-accent: #ff4fd8;
+}
+
+.psyern-pdm.psyern-pdm--stalker {
+	--psyern-bg: #0c0a06;
+	--psyern-fg: #f4e2b1;
+	--psyern-border: #5a4a24;
+	--pf-accent: #ffcc00;
+	--psyern-accent: #ffcc00;
+}
+
+.psyern-pdm.psyern-pdm--inferno {
+	--psyern-bg: #0a0200;
+	--psyern-fg: #ffd9b0;
+	--psyern-border: #6a2a10;
+	--pf-accent: #ffc800;
+	--psyern-accent: #ffc800;
+}
+
+.psyern-pdm.psyern-pdm--frostbite {
+	--psyern-bg: #060a12;
+	--psyern-fg: #d9ebff;
+	--psyern-border: #274567;
+	--pf-accent: #8ec8f0;
+	--psyern-accent: #8ec8f0;
+}
+
+.psyern-pdm.psyern-pdm--bubblegum {
+	--psyern-bg: #120818;
+	--psyern-fg: #ffe8f8;
+	--psyern-border: #6a3564;
+	--pf-accent: #c8a0b8;
+	--psyern-accent: #c8a0b8;
+}
+
 /* ─── Backdrop ─── */
 .psyern-pdm__backdrop {
 	position: fixed;
@@ -311,6 +391,25 @@ body.psyern-pdm-open {
 
 .psyern-pdm__group-row:first-child {
 	border-top: none;
+}
+
+.psyern-pdm__show-all {
+	margin: 6px 14px 12px;
+	padding: 6px 10px;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.04);
+	color: inherit;
+	font: inherit;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s;
+}
+
+.psyern-pdm__show-all:hover {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.3);
 }
 
 .psyern-pdm__group-label {

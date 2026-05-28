@@ -13,10 +13,17 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$pdm_theme = isset( $theme ) ? sanitize_key( (string) $theme ) : sanitize_key( (string) get_option( 'psyern_theme', 'military' ) );
+$pdm_allowed = array( 'military', 'ash', 'ops', 'outbreak', 'cyberpunk', 'stalker', 'inferno', 'frostbite', 'bubblegum' );
+if ( ! in_array( $pdm_theme, $pdm_allowed, true ) ) {
+	$pdm_theme = 'military';
+}
 ?>
 <div
 	id="psyern-pdm"
-	class="psyern-pdm"
+	class="psyern-pdm psyern-pdm--<?php echo esc_attr( $pdm_theme ); ?>"
+	data-theme="<?php echo esc_attr( $pdm_theme ); ?>"
 	role="dialog"
 	aria-modal="true"
 	aria-hidden="true"
@@ -73,15 +80,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			><?php esc_html_e( 'Kills', 'psyerns-framework' ); ?></button>
 
 			<button type="button"
-				id="psyern-pdm-tab-deaths"
-				class="psyern-pdm__tab"
-				role="tab"
-				aria-selected="false"
-				aria-controls="psyern-pdm-pane-deaths"
-				data-tab="deaths"
-			><?php esc_html_e( 'Deaths', 'psyerns-framework' ); ?></button>
-
-			<button type="button"
 				id="psyern-pdm-tab-war"
 				class="psyern-pdm__tab"
 				role="tab"
@@ -100,23 +98,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				hidden
 			><?php esc_html_e( 'Skills', 'psyerns-framework' ); ?></button>
 
-			<button type="button"
-				id="psyern-pdm-tab-gunplay"
-				class="psyern-pdm__tab"
-				role="tab"
-				aria-selected="false"
-				aria-controls="psyern-pdm-pane-gunplay"
-				data-tab="gunplay"
-			><?php esc_html_e( 'Gunplay', 'psyerns-framework' ); ?></button>
-
-			<button type="button"
-				id="psyern-pdm-tab-movement"
-				class="psyern-pdm__tab"
-				role="tab"
-				aria-selected="false"
-				aria-controls="psyern-pdm-pane-movement"
-				data-tab="movement"
-			><?php esc_html_e( 'Movement', 'psyerns-framework' ); ?></button>
 		</nav>
 
 		<div class="psyern-pdm__body">
@@ -152,18 +133,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</section>
 
 			<section
-				id="psyern-pdm-pane-deaths"
-				class="psyern-pdm__pane"
-				role="tabpanel"
-				aria-labelledby="psyern-pdm-tab-deaths"
-				aria-hidden="true"
-				data-pane="deaths"
-				hidden
-			>
-				<div class="psyern-pdm__groups" data-role="groups"></div>
-			</section>
-
-			<section
 				id="psyern-pdm-pane-war"
 				class="psyern-pdm__pane"
 				role="tabpanel"
@@ -185,30 +154,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				hidden
 			>
 				<div class="psyern-pdm__skills" data-role="skills"></div>
-			</section>
-
-			<section
-				id="psyern-pdm-pane-gunplay"
-				class="psyern-pdm__pane"
-				role="tabpanel"
-				aria-labelledby="psyern-pdm-tab-gunplay"
-				aria-hidden="true"
-				data-pane="gunplay"
-				hidden
-			>
-				<div class="psyern-pdm__kpi-grid" data-role="kpi-grid"></div>
-			</section>
-
-			<section
-				id="psyern-pdm-pane-movement"
-				class="psyern-pdm__pane"
-				role="tabpanel"
-				aria-labelledby="psyern-pdm-tab-movement"
-				aria-hidden="true"
-				data-pane="movement"
-				hidden
-			>
-				<div class="psyern-pdm__kpi-grid" data-role="kpi-grid"></div>
 			</section>
 
 		</div>

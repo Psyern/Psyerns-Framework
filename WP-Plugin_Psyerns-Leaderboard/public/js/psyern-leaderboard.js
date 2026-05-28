@@ -128,7 +128,7 @@
 	 */
 	// Columns that are only meaningful on one board. Mirrors
 	// PF_Admin::get_pve_only_columns() / get_pvp_only_columns() server-side.
-	var PVE_ONLY_COLS = ['boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle'];
+	var PVE_ONLY_COLS = ['boss', 'reputation', 'distance', 'distance_foot', 'distance_vehicle', 'playtime'];
 	var PVP_ONLY_COLS = ['headshots', 'accuracy'];
 
 	function getAllowedCols(mode) {
@@ -574,11 +574,12 @@
 			panes:    modal.querySelectorAll('.psyern-pdm__pane'),
 			loading:  modal.querySelector('.psyern-pdm__loading'),
 			error:    modal.querySelector('.psyern-pdm__error'),
+			updated:  modal.querySelector('[data-bind="lastUpdated"]'),
 			name:     modal.querySelector('.psyern-pdm__name'),
 			avatar:   modal.querySelector('.psyern-pdm__avatar'),
-			faction:  modal.querySelector('.psyern-pdm__faction-chip'),
-			level:    modal.querySelector('.psyern-pdm__level-chip'),
-			rep:      modal.querySelector('.psyern-pdm__rep-chip')
+			faction:  modal.querySelector('[data-bind="war.faction"]'),
+			level:    modal.querySelector('[data-bind="war.level"]'),
+			rep:      modal.querySelector('[data-bind="hardline.reputation"]')
 		};
 		return pdmRefs;
 	}
@@ -592,8 +593,41 @@
 		return Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'm';
 	}
 
+	function resolvePlaytimeSeconds(data, summary) {
+		var candidates = [
+			summary && summary.playtime_seconds,
+			summary && summary.playTimeSeconds,
+			summary && summary.playtimeSeconds,
+			summary && summary.playTime,
+			summary && summary.playtime,
+			data && data.playtime_seconds,
+			data && data.playTimeSeconds,
+			data && data.playtimeSeconds,
+			data && data.playTime,
+			data && data.playtime
+		];
+
+		for (var i = 0; i < candidates.length; i++) {
+			var val = parseInt(candidates[i], 10);
+			if (!isNaN(val) && val > 0) {
+				return val;
+			}
+		}
+
+		return 0;
+	}
+
 	function setPaneHtml(modal, pane, html) {
-		var el = modal.querySelector('.psyern-pdm__pane[data-pane="' + pane + '"] .psyern-pdm__pane-body');
+		var selector = '.psyern-pdm__pane[data-pane="' + pane + '"]';
+		if (pane === 'kills') {
+			selector += ' [data-role="groups"]';
+		} else if (pane === 'skills') {
+			selector += ' [data-role="skills"]';
+		} else {
+			selector += ' [data-role="kpi-grid"]';
+		}
+
+		var el = modal.querySelector(selector);
 		if (!el) {
 			el = modal.querySelector('.psyern-pdm__pane[data-pane="' + pane + '"]');
 		}
@@ -642,7 +676,7 @@
 			var capped = arr.length > cap;
 
 			html += '<details open class="psyern-pdm__group" data-group="' + escAttr(gk) + '">';
-			html += '<summary class="psyern-pdm__group-header">' +
+			html += '<summary class="psyern-pdm__group-summary">' +
 				escHtml(GROUP_LABELS[gk]) + ' (' + fmtN(total) + ')' +
 				'</summary>';
 			html += '<div class="psyern-pdm__group-list">';
@@ -710,7 +744,14 @@
 		if (refs.error) {
 			refs.error.setAttribute('hidden', '');
 			refs.error.style.display = 'none';
-			refs.error.textContent = '';
+			var errText = refs.error.querySelector('[data-bind="errorText"]');
+			if (errText) {
+				errText.textContent = '';
+			}
+		}
+
+		if (refs.updated) {
+			refs.updated.textContent = 'Stand: —';
 		}
 
 		setActiveTab(refs, 'overview');
@@ -752,9 +793,10 @@
 		return '/wp-json/psyern/v1/public/player/' + encUid;
 	}
 
-	function showPdmError(msg) {
+	function showPdmError(uid, msg) {
 		var refs = getPdmRefs();
 		if (!refs) return;
+		if (uid !== pdmCurrentUid) return;
 		if (refs.loading) {
 			refs.loading.setAttribute('hidden', '');
 			refs.loading.style.display = 'none';
@@ -762,7 +804,10 @@
 		if (refs.error) {
 			refs.error.removeAttribute('hidden');
 			refs.error.style.display = '';
-			refs.error.textContent = msg;
+			var errText = refs.error.querySelector('[data-bind="errorText"]');
+			if (errText) {
+				errText.textContent = msg;
+			}
 		}
 	}
 
@@ -778,11 +823,11 @@
 		fetch(url, { credentials: 'same-origin' })
 			.then(function(res) {
 				if (res.status === 404) {
-					showPdmError('Keine Daten gefunden');
+					showPdmError(uid, 'Keine Daten gefunden');
 					return null;
 				}
 				if (!res.ok) {
-					showPdmError('Bitte später erneut');
+					showPdmError(uid, 'Bitte später erneut');
 					return null;
 				}
 				return res.json();
@@ -796,7 +841,7 @@
 				renderPlayer(data);
 			})
 			.catch(function() {
-				showPdmError('Bitte später erneut');
+				showPdmError(uid, 'Bitte später erneut');
 			});
 	}
 
@@ -811,18 +856,21 @@
 		if (refs.error) {
 			refs.error.setAttribute('hidden', '');
 			refs.error.style.display = 'none';
+			var errText = refs.error.querySelector('[data-bind="errorText"]');
+			if (errText) {
+				errText.textContent = '';
+			}
 		}
 
 		var s = data.summary || {};
 		var war = data.war || {};
-		var gun = data.gunplay || {};
-		var mov = data.movement || {};
+		var playtimeSeconds = resolvePlaytimeSeconds(data, s);
 
 		// Header chips.
 		if (refs.name) refs.name.textContent = data.player_name || s.player_name || refs.name.textContent;
 
 		if (refs.avatar) {
-			var avatarUrl = data.avatar_url || '';
+			var avatarUrl = data.avatar_url || data.avatarUrl || s.avatar_url || s.avatarUrl || '';
 			if (config.playerDetailsShowAvatar === false) {
 				refs.avatar.src = '';
 				refs.avatar.setAttribute('hidden', '');
@@ -849,11 +897,25 @@
 		}
 		if (refs.level) {
 			var lvl = parseInt(war.level || data.war_level, 10) || 0;
-			refs.level.textContent = 'Lv ' + lvl;
+			if (lvl > 0) {
+				refs.level.textContent = 'Lv ' + lvl;
+				refs.level.removeAttribute('hidden');
+				refs.level.style.display = '';
+			} else {
+				refs.level.setAttribute('hidden', '');
+				refs.level.style.display = 'none';
+			}
 		}
 		if (refs.rep) {
 			var rep = parseInt(s.reputation || data.hardline_reputation, 10) || 0;
-			refs.rep.textContent = fmtN(rep);
+			if (rep > 0) {
+				refs.rep.textContent = fmtN(rep);
+				refs.rep.removeAttribute('hidden');
+				refs.rep.style.display = '';
+			} else {
+				refs.rep.setAttribute('hidden', '');
+				refs.rep.style.display = 'none';
+			}
 		}
 
 		// Overview pane.
@@ -862,7 +924,7 @@
 			kpiCard('Total Kills',     fmtN(s.kills || 0)) +
 			kpiCard('K/D',             kdRatio) +
 			kpiCard('Boss Kills',      fmtN(s.boss_kills || war.boss_kills || 0)) +
-			kpiCard('Playtime',        fmtPlaytime(s.playtime_seconds || 0)) +
+			kpiCard('Playtime',        fmtPlaytime(playtimeSeconds)) +
 			kpiCard('Reputation',      fmtN(s.reputation || 0)) +
 			kpiCard('Survivors Down',  fmtN(s.pvp_kills || 0));
 		setPaneHtml(refs.modal, 'overview', overviewHtml);
@@ -875,45 +937,8 @@
 			kpiCard('Boss Kills',  fmtN(war.boss_kills || 0));
 		setPaneHtml(refs.modal, 'war', warHtml);
 
-		// Gunplay pane.
-		var ranges = (data.longestRanges || data.longest_ranges || []).slice().sort(function(a, b) {
-			return (parseFloat(b.range || b.distance || 0)) - (parseFloat(a.range || a.distance || 0));
-		}).slice(0, 3);
-		var rangesHtml = '';
-		for (var ri = 0; ri < ranges.length; ri++) {
-			var r = ranges[ri];
-			var rDist = parseFloat(r.range || r.distance || 0);
-			var rLabel = r.weapon || r.label || ('#' + (ri + 1));
-			rangesHtml += '<div class="psyern-pdm__range-row">' +
-				'<span class="psyern-pdm__range-label">' + escHtml(rLabel) + '</span>' +
-				'<span class="psyern-pdm__range-val">' + fmtN(Math.round(rDist)) + ' m</span>' +
-				'</div>';
-		}
-		if (rangesHtml === '') rangesHtml = '<div class="psyern-pdm__empty">—</div>';
-		var gunHtml =
-			kpiCard('Shots Fired',  fmtN(gun.shots_fired || 0)) +
-			kpiCard('Shots Hit',    fmtN(gun.shots_hit || 0)) +
-			kpiCard('Accuracy',     (parseFloat(gun.accuracy) || 0) + '%') +
-			kpiCard('Headshots',    fmtN(gun.headshots || 0)) +
-			kpiCard('HS %',         (parseFloat(gun.headshot_percent || gun.hs_percent) || 0) + '%') +
-			'<div class="psyern-pdm__longest-shots">' +
-			'<div class="psyern-pdm__section-title">Longest Shots</div>' +
-			rangesHtml +
-			'</div>';
-		setPaneHtml(refs.modal, 'gunplay', gunHtml);
-
-		// Movement pane.
-		var movHtml =
-			kpiCard('Total Distance', fmtKm(mov.distance || mov.total || 0)) +
-			kpiCard('On Foot',        fmtKm(mov.on_foot || 0)) +
-			kpiCard('In Vehicle',     fmtKm(mov.in_vehicle || 0)) +
-			kpiCard('Suicides',       fmtN(mov.suicides || s.suicides || 0)) +
-			kpiCard('Playtime',       fmtPlaytime(s.playtime_seconds || 0));
-		setPaneHtml(refs.modal, 'movement', movHtml);
-
-		// Kills / Deaths panes.
+		// Kills pane.
 		setPaneHtml(refs.modal, 'kills',  buildGroupedList(data.kills));
-		setPaneHtml(refs.modal, 'deaths', buildGroupedList(data.deaths));
 
 		// Skills pane — only surface the tab when the backend actually has
 		// Terje data for this player. Hidden by default in the template.
@@ -930,6 +955,15 @@
 		// Show panes container (in case Agent 4 hides until loaded).
 		var body = refs.modal.querySelector('.psyern-pdm__body');
 		if (body) body.removeAttribute('hidden');
+
+		if (refs.updated) {
+			var lu = data.lastUpdated || data.last_updated || '';
+			if (lu) {
+				refs.updated.textContent = 'Stand: ' + lu;
+			} else {
+				refs.updated.textContent = 'Stand: —';
+			}
+		}
 	}
 
 	function buildSkillsHtml(skills) {
