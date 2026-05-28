@@ -216,10 +216,11 @@ class PF_Leaderboard {
 		$type  = sanitize_text_field( $request->get_param( 'type' ) ?: 'pve' );
 		$limit = min( max( absint( $request->get_param( 'limit' ) ?: 20 ), 1 ), 100 );
 
-		$order_col = ( 'pvp' === $type ) ? 'pvp_points' : 'pve_points';
-
+		// Sort by kills DESC (mode-specific — `kills` column already holds the
+		// per-mode count via upsert_players), then by deaths ASC so a cleaner
+		// K/D wins ties, then by player_name for stable ordering.
 		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM {$table} WHERE board_type = %s ORDER BY {$order_col} DESC LIMIT %d",
+			"SELECT * FROM {$table} WHERE board_type = %s ORDER BY kills DESC, deaths ASC, player_name ASC LIMIT %d",
 			$type,
 			$limit
 		), ARRAY_A );
