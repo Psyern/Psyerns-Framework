@@ -199,6 +199,8 @@
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--east { background: rgba(200, 57, 43, 0.12); color: #c8392b; border-color: rgba(200, 57, 43, 0.3); }
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--west { background: rgba(212, 168, 83, 0.12); color: #d4a853; border-color: rgba(212, 168, 83, 0.3); }
 .psyern-lb.psyern-lb--ash .psyern-lb__faction--neutral { background: rgba(138, 126, 112, 0.15); color: #8a7e70; border-color: rgba(138, 126, 112, 0.3); }
+.psyern-lb.psyern-lb--ash .psyern-lb__faction--bandit { background: rgba(12, 8, 6, 0.92); color: #c8392b; border-color: rgba(200, 57, 43, 0.5); }
+.psyern-lb.psyern-lb--ash .psyern-lb__faction--hero { background: rgba(240, 220, 180, 0.18); color: #f0dcb4; border-color: rgba(240, 220, 180, 0.5); }
 
 /* --- Pagination --- */
 .psyern-lb.psyern-lb--ash .psyern-lb__page-btn {

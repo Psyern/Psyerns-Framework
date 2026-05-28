@@ -76,7 +76,9 @@ const PF = {
 		var f = faction.toUpperCase();
 		var cls = 'psyern-lb__faction--neutral';
 		if (f === 'EAST') cls = 'psyern-lb__faction--east';
-		if (f === 'WEST') cls = 'psyern-lb__faction--west';
+		else if (f === 'WEST') cls = 'psyern-lb__faction--west';
+		else if (f === 'BANDIT') cls = 'psyern-lb__faction--bandit';
+		else if (f === 'HERO') cls = 'psyern-lb__faction--hero';
 		return ' <span class="psyern-lb__faction ' + cls + '">' + PF.escHtml(f) + '</span>';
 	},
 

@@ -850,6 +850,20 @@
 	border: 1px solid rgba(149, 165, 166, 0.3);
 }
 
+/* BANDIT — outlaw black + gold accent (wanted-poster aesthetic). */
+.psyern-lb__faction--bandit {
+	background: rgba(0, 0, 0, 0.85);
+	color: #f5c542;
+	border: 1px solid rgba(245, 197, 66, 0.5);
+}
+
+/* HERO — clean light + dark text (counterpart to bandit). */
+.psyern-lb__faction--hero {
+	background: rgba(245, 245, 240, 0.92);
+	color: #1f1f1f;
+	border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
 /* ─── Level Badge ─── */
 .psyern-lb__level {
 	display: inline-block;

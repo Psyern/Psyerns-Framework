@@ -238,6 +238,8 @@
 .psyern-lb.psyern-lb--military .psyern-lb__faction--east { background: rgba(231, 76, 60, 0.12); color: #e74c3c; border-color: rgba(231, 76, 60, 0.3); }
 .psyern-lb.psyern-lb--military .psyern-lb__faction--west { background: rgba(52, 152, 219, 0.12); color: #3498db; border-color: rgba(52, 152, 219, 0.3); }
 .psyern-lb.psyern-lb--military .psyern-lb__faction--neutral { background: rgba(74, 222, 128, 0.08); color: #3a7a3a; border-color: rgba(74, 222, 128, 0.2); }
+.psyern-lb.psyern-lb--military .psyern-lb__faction--bandit { background: rgba(0, 0, 0, 0.9); color: #f5c542; border-color: rgba(245, 197, 66, 0.5); text-shadow: 0 0 4px rgba(245, 197, 66, 0.3); }
+.psyern-lb.psyern-lb--military .psyern-lb__faction--hero { background: rgba(189, 255, 175, 0.18); color: #1f3a1f; border-color: rgba(189, 255, 175, 0.5); }
 .psyern-lb.psyern-lb--military .psyern-lb__faction-bar-east { background: #c0392b; }
 .psyern-lb.psyern-lb--military .psyern-lb__faction-bar-west { background: #2980b9; }
 .psyern-lb.psyern-lb--military .psyern-lb__faction-label-east { color: #e74c3c; }

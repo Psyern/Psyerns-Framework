@@ -248,6 +248,8 @@
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction--east { background: rgba(255, 69, 0, 0.12); color: #ff4500; border-color: rgba(255, 69, 0, 0.3); }
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction--west { background: rgba(255, 200, 0, 0.12); color: #ffc800; border-color: rgba(255, 200, 0, 0.3); }
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction--neutral { background: rgba(122, 74, 32, 0.15); color: #a06830; border-color: rgba(122, 74, 32, 0.3); }
+.psyern-lb.psyern-lb--inferno .psyern-lb__faction--bandit { background: rgba(15, 5, 0, 0.92); color: #ff4500; border-color: rgba(255, 69, 0, 0.6); text-shadow: 0 0 6px rgba(255, 69, 0, 0.5); }
+.psyern-lb.psyern-lb--inferno .psyern-lb__faction--hero { background: rgba(255, 220, 100, 0.2); color: #ffeec0; border-color: rgba(255, 220, 100, 0.5); }
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction-bar-track { background: #1a0800; border: 1px solid #3d1800; }
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction-bar-east { background: linear-gradient(90deg, #cc2200, #ff4500); box-shadow: 0 0 10px rgba(255, 69, 0, 0.4); }
 .psyern-lb.psyern-lb--inferno .psyern-lb__faction-bar-west { background: linear-gradient(90deg, #cc9900, #ffc800); box-shadow: 0 0 10px rgba(255, 200, 0, 0.4); }

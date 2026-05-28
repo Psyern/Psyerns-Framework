@@ -308,6 +308,8 @@
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction--east { background: rgba(91, 168, 224, 0.12); color: #5ba8e0; border-color: rgba(91, 168, 224, 0.3); }
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction--west { background: rgba(160, 212, 255, 0.12); color: #a0d4ff; border-color: rgba(160, 212, 255, 0.3); }
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction--neutral { background: rgba(58, 96, 128, 0.15); color: #3a6080; border-color: rgba(58, 96, 128, 0.3); }
+.psyern-lb.psyern-lb--frostbite .psyern-lb__faction--bandit { background: rgba(5, 10, 18, 0.92); color: #ff7d8a; border-color: rgba(255, 125, 138, 0.5); }
+.psyern-lb.psyern-lb--frostbite .psyern-lb__faction--hero { background: rgba(220, 240, 255, 0.22); color: #e0f0ff; border-color: rgba(220, 240, 255, 0.5); }
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction-bar-track { background: #0a1220; border: 1px solid #152540; }
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction-bar-east { background: linear-gradient(90deg, #2a6090, #5ba8e0); box-shadow: 0 0 8px rgba(91, 168, 224, 0.3); }
 .psyern-lb.psyern-lb--frostbite .psyern-lb__faction-bar-west { background: linear-gradient(90deg, #6bb8e8, #a0d4ff); box-shadow: 0 0 8px rgba(160, 212, 255, 0.3); }

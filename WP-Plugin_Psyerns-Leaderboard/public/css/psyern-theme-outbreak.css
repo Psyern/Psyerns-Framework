@@ -227,6 +227,8 @@
 .psyern-lb.psyern-lb--outbreak .psyern-lb__faction--east { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
 .psyern-lb.psyern-lb--outbreak .psyern-lb__faction--west { background: rgba(253, 230, 138, 0.12); color: #fde68a; border-color: rgba(253, 230, 138, 0.3); }
 .psyern-lb.psyern-lb--outbreak .psyern-lb__faction--neutral { background: rgba(120, 53, 15, 0.15); color: #78350f; border-color: rgba(120, 53, 15, 0.3); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--bandit { background: rgba(0, 0, 0, 0.92); color: #f59e0b; border: 1px dashed rgba(245, 158, 11, 0.6); }
+.psyern-lb.psyern-lb--outbreak .psyern-lb__faction--hero { background: rgba(253, 230, 138, 0.2); color: #4a3010; border-color: rgba(253, 230, 138, 0.5); }
 
 /* --- Pagination --- */
 .psyern-lb.psyern-lb--outbreak .psyern-lb__page-btn {

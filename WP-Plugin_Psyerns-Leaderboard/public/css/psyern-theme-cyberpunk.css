@@ -350,6 +350,20 @@
 	border-color: rgba(74, 74, 106, 0.3);
 }
 
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction--bandit {
+	background: rgba(0, 0, 0, 0.92);
+	color: #ff2a6d;
+	border-color: rgba(255, 42, 109, 0.6);
+	text-shadow: 0 0 6px rgba(255, 42, 109, 0.5);
+}
+
+.psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction--hero {
+	background: rgba(220, 255, 255, 0.18);
+	color: #d4ffff;
+	border-color: rgba(220, 255, 255, 0.5);
+	text-shadow: 0 0 4px rgba(220, 255, 255, 0.5);
+}
+
 /* Faction bar */
 .psyern-lb.psyern-lb--cyberpunk .psyern-lb__faction-bar-track {
 	background: #12121a;
