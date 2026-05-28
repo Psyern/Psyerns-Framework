@@ -168,6 +168,7 @@ class PF_Player_Details {
 				'totalDeaths'     => $total_deaths,
 				'kd'              => $kd,
 				'playTimeSeconds' => isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0,
+				'playtime_seconds' => isset( $raw['playTimeSeconds'] ) ? (int) $raw['playTimeSeconds'] : 0,
 				'isOnline'        => isset( $raw['isOnline'] ) ? (bool) $raw['isOnline'] : false,
 			),
 			'war'          => array(

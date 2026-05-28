@@ -332,6 +332,7 @@ class PF_Leaderboard {
 			'pvp_deaths'              => (int) $row['pvp_deaths'],
 			'longest_shot'            => (float) $row['longest_shot'],
 			'playtime'                => (float) $row['playtime'],
+			'playtime_seconds'        => (int) $row['playtime'],
 			'is_online'               => (int) $row['is_online'],
 			'last_login'              => $row['last_login'],
 			'category_kills'          => json_decode( $row['category_kills'] ?: '{}', true ),
