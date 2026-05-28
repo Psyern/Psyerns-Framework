@@ -913,9 +913,97 @@
 		setPaneHtml(refs.modal, 'kills',  buildGroupedList(data.kills));
 		setPaneHtml(refs.modal, 'deaths', buildGroupedList(data.deaths));
 
+		// Skills pane — only surface the tab when the backend actually has
+		// Terje data for this player. Hidden by default in the template.
+		var skillsArr = (data.skills && data.skills.length) ? data.skills : null;
+		var skillsTab = refs.modal.querySelector('[data-tab="skills"]');
+		if (skillsArr) {
+			setPaneHtml(refs.modal, 'skills', buildSkillsHtml(skillsArr));
+			if (skillsTab) skillsTab.removeAttribute('hidden');
+		} else {
+			setPaneHtml(refs.modal, 'skills', '<div class="psyern-pdm__empty">—</div>');
+			if (skillsTab) skillsTab.setAttribute('hidden', '');
+		}
+
 		// Show panes container (in case Agent 4 hides until loaded).
 		var body = refs.modal.querySelector('.psyern-pdm__body');
 		if (body) body.removeAttribute('hidden');
+	}
+
+	function buildSkillsHtml(skills) {
+		// Sort by level desc for nicer ordering.
+		skills.sort(function(a, b) {
+			return (parseInt(b.level, 10) || 0) - (parseInt(a.level, 10) || 0);
+		});
+
+		var SKILL_LABELS = {
+			athletic:   'Athletic',
+			ath:        'Athletic',
+			hunting:    'Hunting',
+			hunt:       'Hunting',
+			fishing:    'Fishing',
+			fish:       'Fishing',
+			survival:   'Survival',
+			surv:       'Survival',
+			stealth:    'Stealth',
+			ste:        'Stealth',
+			strength:   'Strength',
+			str:        'Strength',
+			metabolism: 'Metabolism',
+			meta:       'Metabolism'
+		};
+
+		var html = '<div class="psyern-pdm__skills-grid">';
+		for (var i = 0; i < skills.length; i++) {
+			var sk     = skills[i];
+			var id     = String(sk.id || '');
+			var label  = SKILL_LABELS[id] || (id.charAt(0).toUpperCase() + id.slice(1));
+			var level  = parseInt(sk.level, 10) || 0;
+			var xp     = parseInt(sk.experience, 10) || 0;
+			var pp     = parseInt(sk.perkPoints, 10) || 0;
+			var perks  = sk.perks || {};
+			var books  = sk.knownBooks || [];
+
+			html += '<article class="psyern-pdm__skill" data-skill="' + escHtml(id) + '">';
+			html += '<header class="psyern-pdm__skill-head">';
+			html += '<span class="psyern-pdm__skill-name">' + escHtml(label) + '</span>';
+			html += '<span class="psyern-pdm__skill-level">Lv ' + level + '</span>';
+			html += '</header>';
+
+			html += '<div class="psyern-pdm__skill-meta">';
+			html += '<span>XP: ' + fmtN(xp) + '</span>';
+			html += '<span>Perk Pts: ' + fmtN(pp) + '</span>';
+			html += '</div>';
+
+			// Perks (only ones with value > 0).
+			var perkKeys = Object.keys(perks).filter(function(k) {
+				return (parseInt(perks[k], 10) || 0) > 0;
+			});
+			if (perkKeys.length > 0) {
+				html += '<div class="psyern-pdm__skill-section-title">Perks</div>';
+				html += '<ul class="psyern-pdm__skill-perks">';
+				for (var pk = 0; pk < perkKeys.length; pk++) {
+					var pid = perkKeys[pk];
+					html += '<li><span class="psyern-pdm__perk-id">' + escHtml(pid) + '</span>';
+					html += '<span class="psyern-pdm__perk-val">' + (parseInt(perks[pid], 10) || 0) + '</span></li>';
+				}
+				html += '</ul>';
+			}
+
+			// Known books (compact list).
+			if (books.length > 0) {
+				html += '<div class="psyern-pdm__skill-section-title">Books Read (' + books.length + ')</div>';
+				html += '<ul class="psyern-pdm__skill-books">';
+				for (var bk = 0; bk < books.length; bk++) {
+					html += '<li>' + escHtml(books[bk]) + '</li>';
+				}
+				html += '</ul>';
+			}
+
+			html += '</article>';
+		}
+		html += '</div>';
+		return html;
 	}
 
 	function bindPdmHandlers() {

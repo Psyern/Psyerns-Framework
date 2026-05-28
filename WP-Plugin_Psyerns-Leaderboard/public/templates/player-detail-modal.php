@@ -176,6 +176,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</section>
 
 			<section
+				id="psyern-pdm-pane-skills"
+				class="psyern-pdm__pane"
+				role="tabpanel"
+				aria-labelledby="psyern-pdm-tab-skills"
+				aria-hidden="true"
+				data-pane="skills"
+				hidden
+			>
+				<div class="psyern-pdm__skills" data-role="skills"></div>
+			</section>
+
+			<section
 				id="psyern-pdm-pane-gunplay"
 				class="psyern-pdm__pane"
 				role="tabpanel"
