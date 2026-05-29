@@ -1249,8 +1249,16 @@
 /* ─── Cell Styles ─── */
 .psyern-lb__rank {
 	font-weight: 700;
-	min-width: 30px;
+}
+
+/* When the class lands on a <span> (legacy template) we still want a
+   minimum width and inline-block so the column stays visually aligned;
+   on a <td> (current ajax renderer) leaving `display: inline-block`
+   active breaks the table-cell layout and shrinks the rank column to
+   its content, which is what produced the "boxed" rank cells. */
+span.psyern-lb__rank {
 	display: inline-block;
+	min-width: 30px;
 }
 
 .psyern-lb__avatar {
