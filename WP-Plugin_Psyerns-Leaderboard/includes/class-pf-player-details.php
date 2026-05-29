@@ -83,8 +83,27 @@ class PF_Player_Details {
 			return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
 		}
 
-		// Prefer the dedicated details table (richest payload, includes
-		// survivorType / lastUpdated from the DayZ side).
+		// Source of truth is the leaderboard table. It is rewritten on every
+		// upload from the DayZ side and already carries every field the modal
+		// needs (categoryKills/Deaths, gunplay, movement, war, hardline,
+		// playtime, terje_skills). The dedicated wp_pf_player_details table
+		// often holds older rows from a previous PBO version — preferring it
+		// would show stale kill counts while the leaderboard list itself
+		// shows the fresh ones. Always start from the leaderboard rows; only
+		// fall back to player_details when the player is not present there.
+		$lb_table = PF_Database::get_table_name( 'leaderboard' );
+		$lb_rows  = $wpdb->get_results( $wpdb->prepare(
+			"SELECT * FROM {$lb_table} WHERE steam_id = %s",
+			$uid
+		), ARRAY_A );
+
+		if ( ! empty( $lb_rows ) ) {
+			return new WP_REST_Response( $this->build_from_leaderboard( $lb_rows ), 200 );
+		}
+
+		// Fallback: the player isn't in the leaderboard table (possible if
+		// the upload payload uses the playerDetails-only path or the row was
+		// pruned). Use whatever the details table has.
 		$details_table = PF_Database::get_table_name( 'player_details' );
 		$row           = $wpdb->get_row( $wpdb->prepare(
 			"SELECT player_uid, player_name, data_json, updated_at FROM {$details_table} WHERE player_uid = %s",
@@ -96,85 +115,10 @@ class PF_Player_Details {
 			if ( ! is_array( $raw ) ) {
 				$raw = array();
 			}
-
-			// Some legacy playerDetails rows contain playtime=0 while the
-			// leaderboard row already has the correct value. Patch raw details
-			// before transform so the modal can always render playtime.
-			$raw_playtime = 0;
-			$playtime_keys = array( 'playTimeSeconds', 'playtimeSeconds', 'playtime_seconds', 'playTime', 'playtime' );
-			foreach ( $playtime_keys as $playtime_key ) {
-				if ( isset( $raw[ $playtime_key ] ) ) {
-					$raw_playtime = (int) $raw[ $playtime_key ];
-					if ( $raw_playtime > 0 ) {
-						break;
-					}
-				}
-			}
-
-			if ( $raw_playtime <= 0 ) {
-				$lb_table = PF_Database::get_table_name( 'leaderboard' );
-				$lb_playtime = $wpdb->get_var( $wpdb->prepare(
-					"SELECT MAX(playtime) FROM {$lb_table} WHERE steam_id = %s",
-					$uid
-				) );
-				if ( null !== $lb_playtime ) {
-					$lb_playtime = (int) $lb_playtime;
-					if ( $lb_playtime > 0 ) {
-						$raw['playTimeSeconds'] = $lb_playtime;
-					}
-				}
-			}
-
-			// Older / partial detail uploads may miss telemetry fields while
-			// the leaderboard table already has them. In that case, synthesize
-			// from leaderboard rows so Kills/Deaths/Gunplay/Movement tabs are
-			// still populated.
-			$has_kill_death_detail = (
-				( isset( $raw['categoryKills'] ) && is_array( $raw['categoryKills'] ) && ! empty( $raw['categoryKills'] ) ) ||
-				( isset( $raw['categoryDeaths'] ) && is_array( $raw['categoryDeaths'] ) && ! empty( $raw['categoryDeaths'] ) )
-			);
-			$has_gunplay_detail = (
-				isset( $raw['shotsFired'] ) ||
-				isset( $raw['shotsHit'] ) ||
-				isset( $raw['headshots'] )
-			);
-			$has_movement_detail = (
-				isset( $raw['distanceTravelled'] ) ||
-				isset( $raw['distanceOnFoot'] ) ||
-				isset( $raw['distanceInVehicle'] ) ||
-				isset( $raw['suicides'] ) ||
-				isset( $raw['playTimeSeconds'] )
-			);
-
-			if ( ! $has_kill_death_detail || ! $has_gunplay_detail || ! $has_movement_detail ) {
-				$lb_table = PF_Database::get_table_name( 'leaderboard' );
-				$lb_rows  = $wpdb->get_results( $wpdb->prepare(
-					"SELECT * FROM {$lb_table} WHERE steam_id = %s",
-					$uid
-				), ARRAY_A );
-				if ( ! empty( $lb_rows ) ) {
-					return new WP_REST_Response( $this->build_from_leaderboard( $lb_rows ), 200 );
-				}
-			}
-
 			return new WP_REST_Response( $this->transform( $raw, $row ), 200 );
 		}
 
-		// Fallback: the leaderboard table already carries the same per-player
-		// stats (war / hardline / gunplay / movement / category maps), so we
-		// can synthesize the same response shape without needing the optional
-		// playerDetails[] upload from the server PBO.
-		$lb_table = PF_Database::get_table_name( 'leaderboard' );
-		$lb_rows  = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM {$lb_table} WHERE steam_id = %s",
-			$uid
-		), ARRAY_A );
-
-		if ( empty( $lb_rows ) ) {
-			return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
-		}
-
-		return new WP_REST_Response( $this->build_from_leaderboard( $lb_rows ), 200 );
+		return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
 	}
 
 	/**
