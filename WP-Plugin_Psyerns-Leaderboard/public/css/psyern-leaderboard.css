@@ -18,6 +18,14 @@
 .psyern-lb .psyern-lb__table td {
 	color: inherit;
 	font-family: inherit;
+	/* Neutralise WP-theme cell borders. Themes that ship a generic
+	   `td { border: 1px solid ... }` rule draw a box around every cell,
+	   which around small content (the rank digit) reads as a tight green
+	   outline that doesn't span the column width. We re-apply the
+	   per-theme `border-bottom` later. */
+	border-top: 0 !important;
+	border-left: 0 !important;
+	border-right: 0 !important;
 }
 
 .psyern-lb a,
@@ -1251,14 +1259,21 @@
 	font-weight: 700;
 }
 
-/* When the class lands on a <span> (legacy template) we still want a
-   minimum width and inline-block so the column stays visually aligned;
-   on a <td> (current ajax renderer) leaving `display: inline-block`
-   active breaks the table-cell layout and shrinks the rank column to
-   its content, which is what produced the "boxed" rank cells. */
+/* When the class lands on a <span> (legacy pf-templates.js renderer)
+   we want inline-block + min-width so the digit reserves space. When
+   it lands on a <td> (current psyern-leaderboard.js renderer) those
+   rules collapse the cell out of its column. Force the <td> form to
+   stay a real table-cell with no extra borders so the row spans the
+   full table width. */
 span.psyern-lb__rank {
 	display: inline-block;
 	min-width: 30px;
+}
+td.psyern-lb__rank {
+	display: table-cell;
+	min-width: 48px;
+	border: 0;
+	outline: 0;
 }
 
 .psyern-lb__avatar {
