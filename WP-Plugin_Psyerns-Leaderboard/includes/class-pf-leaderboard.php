@@ -25,7 +25,13 @@ class PF_Leaderboard {
 	 * @return WP_REST_Response
 	 */
 	public function handle_upload( WP_REST_Request $request ) {
-		$data = $request->get_json_params();
+		// DIAGNOSTIC INSTRUMENTATION: capture exactly what reaches WordPress so the
+		// DayZ-side RPT (which logs the response body) shows whether the POST body
+		// arrived as parseable JSON. Remove once the upload pipeline is confirmed.
+		$raw_body   = $request->get_body();
+		$body_bytes = strlen( (string) $raw_body );
+		$data       = $request->get_json_params();
+		$parse_ok   = is_array( $data );
 
 		set_transient( 'pf_leaderboard_meta', array(
 			'generatedAt'         => sanitize_text_field( $data['generatedAt'] ?? '' ),
@@ -35,8 +41,11 @@ class PF_Leaderboard {
 			'globalWestPoints'    => absint( $data['globalWestPoints'] ?? 0 ),
 		), 600 );
 
-		$this->upsert_players( $data['topPVEPlayers'] ?? array(), 'pve' );
-		$this->upsert_players( $data['topPVPPlayers'] ?? array(), 'pvp' );
+		$pve_received = is_array( $data['topPVEPlayers'] ?? null ) ? count( $data['topPVEPlayers'] ) : 0;
+		$pvp_received = is_array( $data['topPVPPlayers'] ?? null ) ? count( $data['topPVPPlayers'] ) : 0;
+
+		$pve_result = $this->upsert_players( $data['topPVEPlayers'] ?? array(), 'pve' );
+		$pvp_result = $this->upsert_players( $data['topPVPPlayers'] ?? array(), 'pvp' );
 
 		// Player rows changed — invalidate the cached global kill total.
 		delete_transient( 'pf_total_kills' );
@@ -47,7 +56,21 @@ class PF_Leaderboard {
 			}
 		}
 
-		return new WP_REST_Response( array( 'success' => true ), 200 );
+		$diag = array(
+			'success'      => true,
+			'body_bytes'   => $body_bytes,
+			'parse_ok'     => $parse_ok,
+			'pve_received' => $pve_received,
+			'pvp_received' => $pvp_received,
+			'pve_written'  => $pve_result['written'],
+			'pve_failed'   => $pve_result['failed'],
+			'pvp_written'  => $pvp_result['written'],
+			'pvp_failed'   => $pvp_result['failed'],
+			'last_db_error' => $pve_result['last_error'] ?: $pvp_result['last_error'],
+		);
+		error_log( '[Psyerns] leaderboard upload diag: ' . wp_json_encode( $diag ) );
+
+		return new WP_REST_Response( $diag, 200 );
 	}
 
 	/**
@@ -55,11 +78,15 @@ class PF_Leaderboard {
 	 *
 	 * @param array  $players    Array of player data from the DayZ server.
 	 * @param string $board_type Either 'pve' or 'pvp'.
-	 * @return void
+	 * @return array{written:int,failed:int,last_error:string} Write outcome counters.
 	 */
 	private function upsert_players( $players, $board_type ) {
 		global $wpdb;
 		$table = PF_Database::get_table_name( 'leaderboard' );
+
+		$written    = 0;
+		$failed     = 0;
+		$last_error = '';
 
 		foreach ( $players as $p ) {
 			// Support both Ninjin format (playerID) and PF format (odolozId)
@@ -233,11 +260,26 @@ class PF_Leaderboard {
 			);
 
 			if ( ! empty( $existing['id'] ) ) {
-				$wpdb->update( $table, $row, array( 'id' => $existing['id'] ) );
+				$result = $wpdb->update( $table, $row, array( 'id' => $existing['id'] ) );
 			} else {
-				$wpdb->insert( $table, $row );
+				$result = $wpdb->insert( $table, $row );
+			}
+
+			if ( false === $result ) {
+				$failed++;
+				if ( $wpdb->last_error ) {
+					$last_error = $wpdb->last_error;
+				}
+			} else {
+				$written++;
 			}
 		}
+
+		return array(
+			'written'    => $written,
+			'failed'     => $failed,
+			'last_error' => $last_error,
+		);
 	}
 
 	/**
