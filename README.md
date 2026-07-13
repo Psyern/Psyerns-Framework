@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/DayZ-1.29+-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29+">
   <img src="https://img.shields.io/badge/Enforce_Script-Enfusion-FF851B?style=for-the-badge" alt="Enforce Script">
   <img src="https://img.shields.io/badge/Dependencies-Zero-2ECC40?style=for-the-badge" alt="Zero Dependencies">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License MIT"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-green?style=for-the-badge" alt="License AGPL-3.0"></a>
 </p>
 
 <p align="center">
@@ -596,3 +596,26 @@ A showreel for the Steam Workshop mods released by Psyern (custom post type with
   <b>Community:</b> <a href="https://deadmansecho.com">Deadmans Echo</a><br><br>
   Built as a reusable HTTP framework for the DayZ modding community.
 </p>
+
+---
+
+## License & Attribution
+
+Psyerns_Framework is licensed under the **GNU Affero General Public License v3.0
+(AGPL-3.0)** — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+
+This project incorporates and builds upon **DayZ-UniversalApi** by **daemonforge**
+([GitHub](https://github.com/DaemonForge/DayZ-UniveralApi), branch/tag `1.3.2`),
+which is licensed AGPL-3.0. daemonforge's original copyright is retained in the
+incorporated files; those files carry an AGPL §5 change note and were modernized
+and renamed into the `DME_Api_` namespace for integration here. The combined work
+is distributed under AGPL-3.0.
+
+Prior released versions of Psyerns_Framework under the MIT License remain
+available under those terms; this and later versions are AGPL-3.0.
+
+**Network use (AGPL §13).** Because Psyerns_Framework runs a network service that
+interacts with players, the complete corresponding source code is made publicly
+available in this repository. Bundled WordPress plugins and web assets keep their
+own compatible licenses (MIT / BSD-3-Clause / Apache-2.0 / GPL-2.0-or-later) as
+listed in [`NOTICE`](NOTICE).

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Psyerns_Framework
+ * Copyright (c) 2026 Psyern / Deadmans Echo
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
 require_once __DIR__ . '/config.php';
 
 $type = $_GET['type'] ?? 'monthly';

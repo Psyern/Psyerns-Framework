@@ -1,0 +1,5 @@
+{
+    "_README": "SECURITY: the embedded TLS private key + self-signed certificate that used to live here were REMOVED. Shipping a private key in the repo let anyone decrypt/MITM traffic. There is no built-in TLS fallback anymore. Terminate TLS at a reverse proxy (nginx / Caddy / Cloudflare) and run this service as plain HTTP, OR point config.json Certificate + CertificateKey at your OWN cert files on disk. This file is now an unused placeholder kept only for documentation.",
+    "Key": "",
+    "Cert": ""
+}

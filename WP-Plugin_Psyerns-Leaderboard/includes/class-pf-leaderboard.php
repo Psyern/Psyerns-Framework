@@ -41,11 +41,25 @@ class PF_Leaderboard {
 			'globalWestPoints'    => absint( $data['globalWestPoints'] ?? 0 ),
 		), 600 );
 
-		$pve_received = is_array( $data['topPVEPlayers'] ?? null ) ? count( $data['topPVEPlayers'] ) : 0;
-		$pvp_received = is_array( $data['topPVPPlayers'] ?? null ) ? count( $data['topPVPPlayers'] ) : 0;
+		$pve_players  = is_array( $data['topPVEPlayers'] ?? null ) ? $data['topPVEPlayers'] : array();
+		$pvp_players  = is_array( $data['topPVPPlayers'] ?? null ) ? $data['topPVPPlayers'] : array();
+		$pve_received = count( $pve_players );
+		$pvp_received = count( $pvp_players );
 
-		$pve_result = $this->upsert_players( $data['topPVEPlayers'] ?? array(), 'pve' );
-		$pvp_result = $this->upsert_players( $data['topPVPPlayers'] ?? array(), 'pvp' );
+		// Resolve Steam avatars ONCE per upload, batched (≤100 IDs per HTTP call),
+		// and persist the URL on each row. This keeps every page load purely
+		// DB-local — no synchronous Steam API calls on the read hot path.
+		$ids = array();
+		foreach ( array_merge( $pve_players, $pvp_players ) as $p ) {
+			$id = $p['playerID'] ?? $p['odolozId'] ?? '';
+			if ( '' !== $id ) {
+				$ids[] = $id;
+			}
+		}
+		$avatars = PF_Steam::get_avatars_batch( $ids );
+
+		$pve_result = $this->upsert_players( $pve_players, 'pve', $avatars );
+		$pvp_result = $this->upsert_players( $pvp_players, 'pvp', $avatars );
 
 		// Player rows changed — invalidate the cached global kill total.
 		delete_transient( 'pf_total_kills' );
@@ -78,9 +92,10 @@ class PF_Leaderboard {
 	 *
 	 * @param array  $players    Array of player data from the DayZ server.
 	 * @param string $board_type Either 'pve' or 'pvp'.
+	 * @param array  $avatars    Map of steam_id => avatar URL (resolved once per upload).
 	 * @return array{written:int,failed:int,last_error:string} Write outcome counters.
 	 */
-	private function upsert_players( $players, $board_type ) {
+	private function upsert_players( $players, $board_type, $avatars = array() ) {
 		global $wpdb;
 		$table = PF_Database::get_table_name( 'leaderboard' );
 
@@ -259,6 +274,13 @@ class PF_Leaderboard {
 				'terje_skills'            => isset( $p['terjeSkills'] ) ? wp_json_encode( $p['terjeSkills'] ) : '',
 			);
 
+			// Only persist a freshly resolved avatar; never clobber an existing
+			// stored URL with an empty string when Steam resolution was skipped.
+			$avatar = $avatars[ $steam_id ] ?? '';
+			if ( '' !== $avatar ) {
+				$row['avatar_url'] = $avatar;
+			}
+
 			if ( ! empty( $existing['id'] ) ) {
 				$result = $wpdb->update( $table, $row, array( 'id' => $existing['id'] ) );
 			} else {
@@ -418,7 +440,7 @@ class PF_Leaderboard {
 			'category_kills'          => json_decode( $row['category_kills'] ?: '{}', true ),
 			'category_deaths'         => json_decode( $row['category_deaths'] ?: '{}', true ),
 			'category_longest_ranges' => json_decode( $row['category_longest_ranges'] ?: '{}', true ),
-			'avatar_url'              => PF_Steam::get_avatar( $row['steam_id'] ),
+			'avatar_url'              => ! empty( $row['avatar_url'] ) ? $row['avatar_url'] : PF_Steam::get_default_avatar(),
 			'war_faction'             => $row['war_faction'] ?? '',
 			'war_alignment'           => (int) ( $row['war_alignment'] ?? 0 ),
 			'war_level'               => (int) ( $row['war_level'] ?? 0 ),

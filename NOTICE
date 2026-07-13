@@ -1,0 +1,52 @@
+Psyerns_Framework
+Copyright (c) 2026 Psyern / Deadmans Echo
+
+This product is licensed under version 3 of the GNU Affero General Public
+License (AGPL-3.0-only). See the LICENSE file for the full license text.
+SPDX-License-Identifier: AGPL-3.0-only
+
+===============================================================================
+Incorporated third-party work
+===============================================================================
+
+DayZ-UniversalApi
+  Original work Copyright (c) daemonforge
+  Source: https://github.com/DaemonForge/DayZ-UniveralApi (branch/tag 1.3.2)
+  License: GNU Affero General Public License v3.0 (AGPL-3.0)
+
+  Portions of Psyerns_Framework are derived from DayZ-UniversalApi. Those files
+  retain daemonforge's original copyright notice and carry a change note as
+  required by AGPL-3.0 section 5 ("modified by Deadmans Echo, 2026"). The
+  incorporated code has been modernized (DayZ 1.29 / current toolchains) and
+  renamed into the DME_Api_ namespace for integration into Psyerns_Framework.
+
+  Not incorporated: UApiMass.pbo was excluded because it ships as a compiled
+  binary with no corresponding source, which AGPL-3.0 (sections 1 and 6)
+  does not permit us to redistribute as part of a source-available work.
+
+===============================================================================
+Bundled components under their own licenses (compatible with AGPL-3.0)
+===============================================================================
+
+The following components are distributed under their own licenses and are not
+placed under AGPL-3.0. They remain governed by the license in their respective
+directories:
+
+  WP-Plugin_Psyerns-Leaderboard/      MIT License
+  WP-Plugin_Psyerns_AuctionHouse/     MIT License
+  psyerns-mods/                       GPL-2.0-or-later
+  (bundled web assets)                highlight.js BSD-3-Clause; JSONEditor and
+                                      Roboto Apache-2.0; water.css MIT
+
+MIT, BSD-3-Clause, Apache-2.0 and "GPL-2.0-or-later" are all compatible with
+AGPL-3.0. GPL-2.0-or-later is combinable via its "or later" option (GPLv3),
+and AGPL-3.0 section 13 provides the bridge for combined network use.
+
+===============================================================================
+Network use — AGPL-3.0 section 13
+===============================================================================
+
+Psyerns_Framework includes a network service that interacts with players over
+a network. In accordance with AGPL-3.0 section 13, the complete corresponding
+source code of this service is made publicly available. See the project README
+for the source repository location.

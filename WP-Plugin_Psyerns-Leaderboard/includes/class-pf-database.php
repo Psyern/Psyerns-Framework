@@ -81,8 +81,10 @@ class PF_Database {
 			total_deaths INT DEFAULT 0,
 			suicides INT DEFAULT 0,
 			terje_skills LONGTEXT,
+			avatar_url VARCHAR(255) NOT NULL DEFAULT '',
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			UNIQUE KEY steam_board (steam_id, board_type)
+			UNIQUE KEY steam_board (steam_id, board_type),
+			KEY board_kills (board_type, kills)
 		) {$charset};
 
 		CREATE TABLE {$killfeed} (

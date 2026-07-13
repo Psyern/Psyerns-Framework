@@ -3,7 +3,7 @@
  * Plugin Name: Psyerns Leaderboard
  * Plugin URI:  https://deadmansecho.com
  * Description: DayZ Server Integration — Leaderboard, Server Status, Whitelist, KillFeed
- * Version:     1.1.2
+ * Version:     1.1.4
  * Author:      Psyern
  * Author URI:  https://deadmansecho.com
  * License:     MIT
@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PF_VERSION', '1.1.2' );
-define( 'PF_DB_VERSION', '1.4.0' );
+define( 'PF_VERSION', '1.1.4' );
+define( 'PF_DB_VERSION', '1.5.0' );
 define( 'PF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

@@ -1,0 +1,22 @@
+DME_Api_WebService — a component of Psyerns_Framework
+SPDX-License-Identifier: AGPL-3.0-only
+
+This component is part of Psyerns_Framework and is licensed under version 3 of
+the GNU Affero General Public License (AGPL-3.0-only). The full license text is
+in the LICENSE file at the repository root, which governs this component.
+
+This web service is derived from the DayZWebService of DayZ-UniversalApi by
+daemonforge (https://github.com/DaemonForge/DayZ-UniveralApi). daemonforge's
+original copyright is retained in the individual source files, which carry an
+AGPL section 5 change notice ("modified by Deadmans Echo, 2026"). See the NOTICE
+file at the repository root for full attribution.
+
+Note: the upstream DayZWebService shipped a GPL-3.0 LICENSE file while its
+package.json declared AGPL-3.0. In this combined work the whole is licensed
+AGPL-3.0-only; that prior GPL-3.0 LICENSE text has been replaced by this notice
+to remove the ambiguity. AGPL-3.0 and GPL-3.0 are mutually compatible, so this
+relicensing of the maintainer's own contradiction is consistent.
+
+Network use (AGPL section 13): because this service interacts with players over
+a network, its complete corresponding source is made publicly available with
+Psyerns_Framework.

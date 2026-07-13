@@ -169,7 +169,7 @@ class Psyern_Main {
 				'kd_ratio'            => $row['deaths'] > 0 ? round( $row['kills'] / $row['deaths'], 2 ) : (float) $row['kills'],
 				'playtime_seconds'    => (int) round( (float) $row['playtime'] ),
 				'score'               => ( 'pvp' === $mode ) ? (int) $row['pvp_points'] : (int) $row['pve_points'],
-				'avatar_url'          => PF_Steam::get_avatar( $row['steam_id'] ),
+				'avatar_url'          => ! empty( $row['avatar_url'] ) ? $row['avatar_url'] : PF_Steam::get_default_avatar(),
 				'war_faction'         => $row['war_faction'] ?? '',
 				'war_level'           => (int) ( $row['war_level'] ?? 0 ),
 				'war_boss_kills'      => (int) ( $row['war_boss_kills'] ?? 0 ),

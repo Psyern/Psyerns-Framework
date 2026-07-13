@@ -4,11 +4,35 @@ const PF = {
 		refreshInterval: 300000,
 	},
 
-	async fetchLeaderboard(type, limit) {
+	// Short-lived in-flight cache: the leaderboard page embeds several widgets
+	// (top-of-month, deadliest, boss slayers, player cards) that each request the
+	// full board. Without sharing, that's a dozen+ parallel full-board downloads
+	// which saturate the browser's ~6-connection-per-host limit and starve the
+	// main table's request → empty table / stuck "Loading…" until a manual reload.
+	// Memoising identical requests for a few seconds collapses the initial burst
+	// (and each auto-refresh tick) into one network call per (type, limit).
+	_lbCache: {},
+
+	fetchLeaderboard: function(type, limit) {
 		type = type || 'pve'; limit = limit || 20;
-		var res = await fetch(PF.config.apiUrl + '/public/leaderboard?type=' + type + '&limit=' + limit);
-		if (!res.ok) throw new Error('HTTP ' + res.status);
-		return res.json();
+		var key = type + '_' + limit;
+		var hit = PF._lbCache[key];
+		var now = new Date().getTime();
+		if (hit && (now - hit.t) < 5000) {
+			return hit.p;
+		}
+		var p = fetch(PF.config.apiUrl + '/public/leaderboard?type=' + type + '&limit=' + limit)
+			.then(function(res) {
+				if (!res.ok) { throw new Error('HTTP ' + res.status); }
+				return res.json();
+			})
+			.catch(function(err) {
+				// Don't cache failures — let the next caller retry.
+				delete PF._lbCache[key];
+				throw err;
+			});
+		PF._lbCache[key] = { t: now, p: p };
+		return p;
 	},
 
 	async fetchServerStatus() {
