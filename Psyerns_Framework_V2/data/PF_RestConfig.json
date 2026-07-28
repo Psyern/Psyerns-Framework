@@ -1,0 +1,27 @@
+{
+    "BaseUrl": "https://your-api.example.com/api",
+    "ApiKey": "YOUR_REST_API_KEY",
+    "WebhookUrls": [
+        "https://your-webhook-endpoint.com/hook"
+    ],
+    "EnableWhitelist": false,
+    "EnablePlayerLookup": false,
+    "EnableServerStatus": false,
+    "EnableKillFeed": false,
+    "EnableDiscordEvents": false,
+    "EnableAlertSystem": false,
+    "ServerStatusIntervalSeconds": 30,
+    "DiscordWebhookId": "YOUR_WEBHOOK_ID",
+    "DiscordWebhookToken": "YOUR_WEBHOOK_TOKEN",
+    "AlertRules": [
+        {
+            "TriggerType": "zone_enter",
+            "Radius": 200.0,
+            "PosX": 7500.0,
+            "PosY": 0.0,
+            "PosZ": 7500.0,
+            "WebhookUrl": "https://your-webhook-endpoint.com/alerts",
+            "MessageTemplate": "Player {playerName} entered zone at {posX},{posZ}"
+        }
+    ]
+}

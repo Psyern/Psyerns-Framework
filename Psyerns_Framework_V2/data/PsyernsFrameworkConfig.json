@@ -1,0 +1,56 @@
+{
+    "EnableDebugLogging": false,
+    "DefaultRetryCount": 3,
+    "QueueMaxSize": 100,
+    "EnableServerStartNotification": false,
+    "ServerStartDelaySeconds": 30,
+    "ServerName": "DayZ Server",
+    "Endpoints": [
+        {
+            "Name": "WordPress",
+            "BaseUrl": "https://your-site.com/wp-json/psyern/v1",
+            "ApiKey": "YOUR_API_KEY_HERE",
+            "Enabled": false,
+            "RateLimitMs": 5000
+        },
+        {
+            "Name": "Discord",
+            "BaseUrl": "https://discord.com/api/webhooks",
+            "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
+            "Enabled": false,
+            "RateLimitMs": 1000
+        }
+    ],
+    "EnableWhitelist": false,
+    "EnablePlayerLookup": false,
+    "EnableServerStatus": false,
+    "EnableKillFeed": false,
+    "EnableDiscordEvents": false,
+    "EnableAlertSystem": false,
+    "ServerStatusIntervalSeconds": 300,
+    "DiscordWebhookId": "YOUR_DISCORD_WEBHOOK_ID",
+    "DiscordWebhookToken": "YOUR_DISCORD_WEBHOOK_TOKEN",
+    "WebhookUrls": [
+        "https://your-site.com/wp-json/psyern/v1/killfeed"
+    ],
+    "EnableLeaderboardExport": false,
+    "LeaderboardExportIntervalSeconds": 600,
+    "NinjinPlayersPath": "$profile:Ninjins_Tracking_Mod/Data/Players",
+    "LeaderboardMaxPlayers": 100,
+    "EnableServerStopNotification": false,
+    "EnableHeartbeat": false,
+    "HeartbeatIntervalSeconds": 60,
+    "EnableModUpdateNotification": false,
+    "EnableQuestNotifications": false,
+    "AlertRules": [
+        {
+            "TriggerType": "zone_enter",
+            "Radius": 200.0,
+            "PosX": 7500.0,
+            "PosY": 0.0,
+            "PosZ": 7500.0,
+            "WebhookUrl": "https://your-site.com/wp-json/psyern/v1/alerts",
+            "MessageTemplate": "Player {playerName} entered zone at {posX},{posZ}"
+        }
+    ]
+}
