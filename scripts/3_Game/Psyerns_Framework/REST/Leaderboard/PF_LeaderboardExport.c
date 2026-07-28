@@ -140,19 +140,31 @@ class PF_LeaderboardExport : PF_RestBase
 		}
 	}
 
+	// Teilsortierung: Der Aufrufer verwirft alles jenseits von m_MaxPlayers,
+	// also muessen nur die ersten k Plaetze stimmen. O(n*k) statt O(n^2) beim
+	// vorherigen Bubblesort, und n Vertauschungen statt bis zu n^2/2 — laeuft
+	// im Hauptthread, daher zaehlt jede eingesparte Operation.
 	protected void SortByPvE(array<ref PF_WP_PlayerData> players)
 	{
 		int count = players.Count();
-		for (int i = 0; i < count - 1; i++)
+		int limit = m_MaxPlayers;
+		if (limit > count)
+			limit = count;
+
+		for (int i = 0; i < limit; i++)
 		{
-			for (int j = 0; j < count - i - 1; j++)
+			int best = i;
+			for (int j = i + 1; j < count; j++)
 			{
-				if (players[j].pvePoints < players[j + 1].pvePoints)
-				{
-					PF_WP_PlayerData tmp = players[j];
-					players[j] = players[j + 1];
-					players[j + 1] = tmp;
-				}
+				if (players[j].pvePoints > players[best].pvePoints)
+					best = j;
+			}
+
+			if (best != i)
+			{
+				PF_WP_PlayerData tmp = players[i];
+				players[i] = players[best];
+				players[best] = tmp;
 			}
 		}
 	}
@@ -160,16 +172,24 @@ class PF_LeaderboardExport : PF_RestBase
 	protected void SortByPvP(array<ref PF_WP_PlayerData> players)
 	{
 		int count = players.Count();
-		for (int i = 0; i < count - 1; i++)
+		int limit = m_MaxPlayers;
+		if (limit > count)
+			limit = count;
+
+		for (int i = 0; i < limit; i++)
 		{
-			for (int j = 0; j < count - i - 1; j++)
+			int best = i;
+			for (int j = i + 1; j < count; j++)
 			{
-				if (players[j].pvpPoints < players[j + 1].pvpPoints)
-				{
-					PF_WP_PlayerData tmp = players[j];
-					players[j] = players[j + 1];
-					players[j + 1] = tmp;
-				}
+				if (players[j].pvpPoints > players[best].pvpPoints)
+					best = j;
+			}
+
+			if (best != i)
+			{
+				PF_WP_PlayerData tmp = players[i];
+				players[i] = players[best];
+				players[best] = tmp;
 			}
 		}
 	}
