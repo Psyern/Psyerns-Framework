@@ -39,6 +39,7 @@ class DME_Api_BaseEndpoint extends Managed {
 	protected void Post(string route, string jsonString, RestCallback UCBX)
 	{
 		//Print(EndpointBaseUrl() + route);
+		PF_RestCallback.PF_Retain(UCBX);
 		Api().POST(UCBX, route, jsonString);
 	}
 	

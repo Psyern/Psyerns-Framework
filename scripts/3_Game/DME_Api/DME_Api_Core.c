@@ -65,7 +65,9 @@ class DME_Api_Core extends Managed {
 	{
 		RestContext ctx = RestCore().GetRestContext(url);
 		ctx.SetHeader("application/json");
-		ctx.POST(new DME_Api_SilentCallBack, "", "{}");
+		DME_Api_SilentCallBack silent = new DME_Api_SilentCallBack;
+		PF_RestCallback.PF_Retain(silent);
+		ctx.POST(silent, "", "{}");
 		return 0;
 	}
 
@@ -77,6 +79,7 @@ class DME_Api_Core extends Managed {
 		}
 		RestContext ctx = RestCore().GetRestContext(url);
 		ctx.SetHeader(contentType);
+		PF_RestCallback.PF_Retain(UCBX);
 		ctx.POST(UCBX, "", jsonString);
 		return 0;
 	}
@@ -88,7 +91,9 @@ class DME_Api_Core extends Managed {
 		if (cb){
 			RestContext ctx = RestCore().GetRestContext(url);
 			ctx.SetHeader(contentType);
-			ctx.POST(new DME_Api_DBNestedCallBack(cb,cid), "", jsonString);
+			DME_Api_DBNestedCallBack nested = new DME_Api_DBNestedCallBack(cb,cid);
+			PF_RestCallback.PF_Retain(nested);
+			ctx.POST(nested, "", jsonString);
 			return cid;
 		}
 		return -1;
@@ -98,7 +103,9 @@ class DME_Api_Core extends Managed {
 	static int Get(string url)
 	{
 		RestContext ctx =  RestCore().GetRestContext(url);
-		ctx.GET(new DME_Api_SilentCallBack, "");
+		DME_Api_SilentCallBack silent = new DME_Api_SilentCallBack;
+		PF_RestCallback.PF_Retain(silent);
+		ctx.GET(silent, "");
 		return 0;
 	}
 	//A super simple Get Interface to help people
@@ -108,6 +115,7 @@ class DME_Api_Core extends Managed {
 			UCBX = new DME_Api_SilentCallBack;
 		}
 		RestContext ctx =  RestCore().GetRestContext(url);
+		PF_RestCallback.PF_Retain(UCBX);
 		ctx.GET(UCBX , "");
 		return 0;
 	}
@@ -117,7 +125,9 @@ class DME_Api_Core extends Managed {
 		int cid = DME_Api().CallId();
 		if (cb){
 			RestContext ctx =  RestCore().GetRestContext(url);
-			ctx.GET(new DME_Api_DBNestedCallBack(cb,cid), "");
+			DME_Api_DBNestedCallBack nested = new DME_Api_DBNestedCallBack(cb,cid);
+			PF_RestCallback.PF_Retain(nested);
+			ctx.GET(nested, "");
 			return cid;
 		}
 		return -1;

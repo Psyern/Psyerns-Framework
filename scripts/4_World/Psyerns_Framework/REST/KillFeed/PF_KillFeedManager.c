@@ -170,6 +170,7 @@ class PF_KillFeedManager
 		for (int i = 0; i < m_WebhookUrls.Count(); i++)
 		{
 			PF_RestCallback cb = new PF_RestCallback();
+			PF_RestCallback.PF_Retain(cb);
 			m_Contexts[i].POST(cb, "", json);
 			Print("[PF-REST] KillFeed sent to: " + m_WebhookUrls[i]);
 		}

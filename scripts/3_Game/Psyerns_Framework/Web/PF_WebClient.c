@@ -7,7 +7,10 @@ class PF_WebClient
 	void PF_WebClient()
 	{
 		m_Contexts = new map<string, RestContext>();
-		m_RestApi = CreateRestApi();
+		// Nicht direkt GetRestApi() aufrufen - der Name ist in dieser Klasse
+		// bereits als Member vergeben und wuerde statt der Engine-Funktion
+		// den Getter treffen.
+		m_RestApi = PF_WebApiBase.PF_AcquireRestApi();
 	}
 
 	static PF_WebClient GetInstance()
@@ -51,6 +54,7 @@ class PF_WebClient
 		ctx.SetHeader(request.GetHeader());
 
 		PF_RestCallback callback = new PF_RestCallback();
+		PF_RestCallback.PF_Retain(callback);
 
 		if (request.GetMethod() == 1)
 			ctx.POST(callback, request.GetEndpoint(), request.GetBody());

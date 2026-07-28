@@ -38,6 +38,7 @@ class DME_Api_DiscordRest extends Managed {
 		}
 		RestContext ctx =  Api().GetRestContext(url);
 		ctx.SetHeader(DME_Api().GetAuthToken());
+		PF_RestCallback.PF_Retain(UCBX);
 		ctx.POST(UCBX , "", jsonString);
 	}
 	
@@ -47,6 +48,7 @@ class DME_Api_DiscordRest extends Managed {
 			UCBX = new DME_Api_SilentCallBack;
 		}
 		RestContext ctx =  Api().GetRestContext(url);
+		PF_RestCallback.PF_Retain(UCBX);
 		ctx.GET(UCBX , "");
 	}
 	

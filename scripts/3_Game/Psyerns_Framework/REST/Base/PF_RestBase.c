@@ -39,6 +39,7 @@ class PF_RestBase : PF_WebApiBase
 	{
 		string endpoint = BuildEndpoint(path);
 		Print("[PF-REST] POST " + m_BaseUrl + endpoint);
+		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.POST(cb, endpoint, jsonData);
 	}
 
@@ -47,6 +48,7 @@ class PF_RestBase : PF_WebApiBase
 	{
 		string endpoint = BuildEndpoint(path);
 		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
 
@@ -55,6 +57,7 @@ class PF_RestBase : PF_WebApiBase
 	{
 		string endpoint = BuildEndpointArgs(path, args);
 		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
 

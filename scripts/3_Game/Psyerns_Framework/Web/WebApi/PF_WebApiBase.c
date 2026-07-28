@@ -4,11 +4,23 @@ class PF_WebApiBase
 	protected RestContext m_RestContext;
 	protected string m_BaseUrl;
 
+	// Zentraler Zugriff auf die Engine-RestApi. Ein bedingungsloses
+	// CreateRestApi() ersetzt die globale Instanz und macht alle bereits
+	// gecachten RestContext-Pointer (auch die anderer Mods) zu Dangling
+	// Pointers - RestApi/RestContext haben private Destruktoren, das Skript
+	// besitzt sie nie.
+	static RestApi PF_AcquireRestApi()
+	{
+		RestApi api = GetRestApi();
+		if (!api)
+			api = CreateRestApi();
+
+		return api;
+	}
+
 	void PF_WebApiBase()
 	{
-		m_Rest = GetRestApi();
-		if (!m_Rest)
-			m_Rest = CreateRestApi();
+		m_Rest = PF_AcquireRestApi();
 	}
 
 	string GetBaseUrl()
@@ -24,7 +36,9 @@ class PF_WebApiBase
 			return;
 		}
 		PF_Logger.Debug("POST " + m_BaseUrl + endpoint + " (" + data.Length().ToString() + " bytes)");
-		m_RestContext.POST(new PF_RestCallback(), endpoint, data);
+		PF_RestCallback cb = new PF_RestCallback();
+		PF_RestCallback.PF_Retain(cb);
+		m_RestContext.POST(cb, endpoint, data);
 	}
 
 	void Get(string endpoint)
@@ -35,6 +49,8 @@ class PF_WebApiBase
 			return;
 		}
 		PF_Logger.Debug("GET " + m_BaseUrl + endpoint);
-		m_RestContext.GET(new PF_RestCallback(), endpoint);
+		PF_RestCallback cb = new PF_RestCallback();
+		PF_RestCallback.PF_Retain(cb);
+		m_RestContext.GET(cb, endpoint);
 	}
 }

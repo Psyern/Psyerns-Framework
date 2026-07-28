@@ -87,6 +87,7 @@ class PF_AlertRule
 		string json = b.Build();
 
 		PF_RestCallback cb = new PF_RestCallback();
+		PF_RestCallback.PF_Retain(cb);
 		m_RestCtx.POST(cb, "", json);
 		Print("[PF-REST] Alert fired: " + triggerType + " — " + message);
 	}
