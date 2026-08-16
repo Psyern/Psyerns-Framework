@@ -140,58 +140,56 @@ class PF_LeaderboardExport : PF_RestBase
 		}
 	}
 
-	// Teilsortierung: Der Aufrufer verwirft alles jenseits von m_MaxPlayers,
-	// also muessen nur die ersten k Plaetze stimmen. O(n*k) statt O(n^2) beim
-	// vorherigen Bubblesort, und n Vertauschungen statt bis zu n^2/2 — laeuft
-	// im Hauptthread, daher zaehlt jede eingesparte Operation.
+	// Stable Timsort via PF_Sort (see Utils/PF_Sort.c). Keys are extracted
+	// once per player instead of being read on every comparison; only an
+	// int permutation array moves during the sort. Full descending order,
+	// ties keep their input order; the caller still caps at m_MaxPlayers.
+	protected void SortByPoints(array<ref PF_WP_PlayerData> players, bool usePvE)
+	{
+		array<int> keys;
+		array<int> order;
+		PF_WP_PlayerData entry;
+		int points;
+		int i;
+		int count;
+
+		if (!players)
+			return;
+
+		count = players.Count();
+		if (count < 2)
+			return;
+
+		keys = new array<int>();
+		order = new array<int>();
+
+		for (i = 0; i < count; i++)
+		{
+			entry = players.Get(i);
+			points = 0;
+			if (entry)
+			{
+				if (usePvE)
+					points = entry.pvePoints;
+				else
+					points = entry.pvpPoints;
+			}
+			keys.Insert(points);
+		}
+
+		// false == descending
+		PF_Sort.BuildOrderByInt(keys, false, order);
+		PF_Sort.ApplyOrderPlayers(players, order);
+	}
+
 	protected void SortByPvE(array<ref PF_WP_PlayerData> players)
 	{
-		int count = players.Count();
-		int limit = m_MaxPlayers;
-		if (limit > count)
-			limit = count;
-
-		for (int i = 0; i < limit; i++)
-		{
-			int best = i;
-			for (int j = i + 1; j < count; j++)
-			{
-				if (players[j].pvePoints > players[best].pvePoints)
-					best = j;
-			}
-
-			if (best != i)
-			{
-				PF_WP_PlayerData tmp = players[i];
-				players[i] = players[best];
-				players[best] = tmp;
-			}
-		}
+		SortByPoints(players, true);
 	}
 
 	protected void SortByPvP(array<ref PF_WP_PlayerData> players)
 	{
-		int count = players.Count();
-		int limit = m_MaxPlayers;
-		if (limit > count)
-			limit = count;
-
-		for (int i = 0; i < limit; i++)
-		{
-			int best = i;
-			for (int j = i + 1; j < count; j++)
-			{
-				if (players[j].pvpPoints > players[best].pvpPoints)
-					best = j;
-			}
-
-			if (best != i)
-			{
-				PF_WP_PlayerData tmp = players[i];
-				players[i] = players[best];
-				players[best] = tmp;
-			}
-		}
+		SortByPoints(players, false);
 	}
 
 	protected string GetTimestamp()
