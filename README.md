@@ -7,7 +7,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/DayZ-1.29+-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29+">
   <img src="https://img.shields.io/badge/Enforce_Script-Enfusion-FF851B?style=for-the-badge" alt="Enforce Script">
-  <img src="https://img.shields.io/badge/Dependencies-Zero-2ECC40?style=for-the-badge" alt="Zero Dependencies">
+  <img src="https://img.shields.io/badge/Requires-Community_Framework-2ECC40?style=for-the-badge" alt="Requires Community Framework">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-green?style=for-the-badge" alt="License AGPL-3.0"></a>
 </p>
 
@@ -19,8 +19,9 @@
 </p>
 
 <p align="center">
-  <b>A standalone, dependency-free HTTP/Webhook framework for DayZ mods</b><br>
-  Built on the engine-native <code>RestApi</code>. No external programs, no companion services, no root server access required.
+  <b>A standalone HTTP/Webhook framework for DayZ mods</b><br>
+  Built on the engine-native <code>RestApi</code>. No external programs, no companion services, no root server access required.<br>
+  Only dependency: <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036">Community Framework (CF)</a>.
 </p>
 
 <p align="center">
@@ -54,7 +55,7 @@ Psyerns_Framework/                  ← DayZ mod (this README)
 └── PsyernsFrameworkConfig.example.json
 ```
 
-The DayZ mod is **standalone and zero-dependency** — the companion plugins are optional consumers, each documented in its own subfolder.
+The DayZ mod is **standalone** — its only dependency is **Community Framework (CF)**, used for the RPC layer. The companion plugins are optional consumers, each documented in its own subfolder.
 
 ---
 
@@ -85,6 +86,8 @@ The DayZ mod is **standalone and zero-dependency** — the companion plugins are
 - Zone-based alert system
 - Quest notifications (`#ifdef`)
 - Leaderboard web export
+- Terje skills export
+- Auction House web bridge
 
 </td>
 <td width="33%" valign="top">
@@ -159,7 +162,8 @@ scripts/
 │   ├── RPC/          PF_RPCConstants.c
 │   ├── Utils/        PF_HttpArguments.c, PF_JsonBuilder.c
 │   ├── Integrations/
-│   │   └── AuctionHouse/           ← bridge for DME_Auction_House mod
+│   │   ├── AuctionHouse/           ← bridge for DME_Auction_House mod
+│   │   └── TerjeSkills/            ← reads Terje skill .dat files for the leaderboard export
 │   ├── REST/
 │   │   ├── Base/          PF_RestBase.c
 │   │   ├── Config/        PF_RestConfig.c
@@ -190,6 +194,8 @@ scripts/
     └── PF_RestInit.c
 ```
 
+> **DME_Api layer:** Alongside the `Psyerns_Framework` scripts, the mod ships a modernized integration of **DayZ-UniversalApi** by daemonforge under the `DME_Api_` namespace (`scripts/1_Core|3_Game|4_World|5_Mission/DME_Api/`). It provides the auth-token flow, Discord REST endpoints (users, channels, messages), a document DB/query API, entity store and QnA chat — see [License & Attribution](#license--attribution).
+
 > **Leaderboard export:** `PF_LeaderboardReader` pulls per-player stats (including `PlayTimeSeconds`) from the Ninjin tracking JSONs, `PF_LeaderboardExport` periodically POSTs them to the WordPress companion via `/wp-json/psyern/v1/upload`.
 
 ## Profile Structure
@@ -209,7 +215,7 @@ profiles/DeadmansEcho/PsyernsFramework/
 
 ```json
 {
-    "ConfigVersion": 2,
+    "ConfigVersion": 4,
     "EnableDebugLogging": false,
     "DefaultRetryCount": 3,
     "QueueMaxSize": 100,
@@ -217,6 +223,9 @@ profiles/DeadmansEcho/PsyernsFramework/
     "ServerStartDelaySeconds": 30,
     "ServerName": "DayZ Server",
     "DiscordAvatarUrl": "",
+    "AdminIDs": [
+        "YOUR_STEAM64_ID_HERE"
+    ],
     "Endpoints": [
         {
             "Name": "WordPress",
@@ -231,8 +240,29 @@ profiles/DeadmansEcho/PsyernsFramework/
             "ApiKey": "YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
             "Enabled": false,
             "RateLimitMs": 1000
+        },
+        {
+            "Name": "Leaderboard",
+            "BaseUrl": "https://your-site.com/wp-json/psyern/v1",
+            "ApiKey": "YOUR_API_KEY_HERE",
+            "Enabled": false,
+            "RateLimitMs": 5000
+        },
+        {
+            "Name": "TopGames",
+            "BaseUrl": "https://api.top-games.net",
+            "ApiKey": "",
+            "Enabled": false,
+            "RateLimitMs": 1000
         }
     ],
+    "EnableLeaderboardExport": false,
+    "LeaderboardExportIntervalSeconds": 600,
+    "NinjinPlayersPath": "$profile:Ninjins_Tracking_Mod/Data/Players",
+    "LeaderboardMaxPlayers": 100,
+    "EnablePlayerDetailsExport": true,
+    "EnableTerjeSkillsExport": true,
+    "TerjeSkillsPath": "$mission:terje_storage/profiles",
     "EnableWhitelist": false,
     "EnablePlayerLookup": false,
     "EnableServerStatus": false,
@@ -272,7 +302,7 @@ profiles/DeadmansEcho/PsyernsFramework/
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| `ConfigVersion` | `2` | Internal version — used for auto-upgrade (do not edit manually) |
+| `ConfigVersion` | `4` | Internal version — used for auto-upgrade (do not edit manually) |
 | `EnableDebugLogging` | `false` | Verbose debug output to log file and RPT |
 | `DefaultRetryCount` | `3` | Retries for failed HTTP requests |
 | `QueueMaxSize` | `100` | Maximum queued requests |
@@ -280,17 +310,20 @@ profiles/DeadmansEcho/PsyernsFramework/
 | `ServerStartDelaySeconds` | `30` | Delay in seconds after init before notification is sent |
 | `ServerName` | `"DayZ Server"` | Server name shown in notifications and Discord embeds |
 | `DiscordAvatarUrl` | `""` | Custom avatar image URL for Discord webhooks (PNG/JPG, 256x256+) |
+| `AdminIDs` | `[]` | Steam64 IDs allowed to use the F9 live config reload |
 
 > **Server Start Notification:** The Discord webhook is only sent after the server has fully booted — including BattlEye initialization, map loading, and mod loading. The framework waits `ServerStartDelaySeconds` after `MissionServer.OnInit()` completes, which ensures the server is unlocked and accepting player connections before the notification fires. If the server crashes during startup, no notification is sent. The embed shows connection status for all configured endpoints (:green_circle: connected / :red_circle: disabled).
 
 ### Endpoints
 
-Two endpoints are configured by default. Add more entries to the `Endpoints` array for any extra REST targets you want to reach.
+Four endpoints are configured by default. Add more entries to the `Endpoints` array for any extra REST targets you want to reach.
 
 | Name | Purpose |
 |------|---------|
-| `WordPress` | WordPress REST API for whitelist, player lookup, server status, leaderboard upload |
+| `WordPress` | WordPress REST API for whitelist, player lookup, server status |
 | `Discord` | Discord webhooks for notifications (server start/stop, events, kill feed) |
+| `Leaderboard` | Target for the periodic leaderboard upload (usually same base URL as `WordPress`) |
+| `TopGames` | top-games.net vote service (`https://api.top-games.net`) |
 
 | Field | Description |
 |-------|-------------|
@@ -314,6 +347,13 @@ Two endpoints are configured by default. Add more entries to the `Endpoints` arr
 | `EnableHeartbeat` | `false` | Periodic heartbeat for crash detection |
 | `EnableModUpdateNotification` | `false` | Notify when mod versions change |
 | `EnableQuestNotifications` | `false` | Notify on Expansion Quest completion (`#ifdef`) |
+| `EnableLeaderboardExport` | `false` | Periodic leaderboard upload to the `Leaderboard` endpoint |
+| `LeaderboardExportIntervalSeconds` | `600` | Leaderboard upload interval (seconds) |
+| `NinjinPlayersPath` | `$profile:Ninjins_Tracking_Mod/Data/Players` | Source folder for Ninjin tracking JSONs |
+| `LeaderboardMaxPlayers` | `100` | Max players included per upload |
+| `EnablePlayerDetailsExport` | `true` | Include per-player detail payloads in the upload |
+| `EnableTerjeSkillsExport` | `true` | Merge Terje skill data into the leaderboard upload |
+| `TerjeSkillsPath` | `$mission:terje_storage/profiles` | Source folder for Terje `.dat` profiles |
 | `ServerStatusIntervalSeconds` | `300` | Status push interval (seconds) |
 | `HeartbeatIntervalSeconds` | `60` | Heartbeat interval (seconds) |
 | `DiscordWebhookId` | `""` | Discord webhook ID for events |
@@ -405,7 +445,7 @@ The framework logs to both server RPT and a dedicated log file:
 | | |
 |---|---|
 | **DayZ** | 1.29+ |
-| **Dependencies** | None — standalone framework |
+| **Dependencies** | [Community Framework (CF)](https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036) |
 | **WordPress** | Optional — plugin included for web integration |
 
 ### Step-by-Step
@@ -439,9 +479,7 @@ The framework logs to both server RPT and a dedicated log file:
 
 The **`WP-Plugin_Psyerns-Leaderboard`** folder in this repo is the WordPress companion. It handles all server-side communication — whitelist management, player lookup, server status display, leaderboard storage with PvP/PvE split, kill feed, player-detail modal, and the REST API that the DayZ server connects to.
 
-A pre-built `WP-Plugin_Psyerns-Leaderboard.zip` ships in the repo root for one-click upload via WordPress' plugin uploader.
-
-1. Upload `WP-Plugin_Psyerns-Leaderboard.zip` via **Plugins → Add New → Upload Plugin** → Activate
+1. Zip the `WP-Plugin_Psyerns-Leaderboard/` folder and upload it via **Plugins → Add New → Upload Plugin** → Activate
    (or copy the `WP-Plugin_Psyerns-Leaderboard/` folder to `wp-content/plugins/`)
 2. Go to **Psyerns Framework → Settings**
 3. Enter the API Key from your DayZ server config (auto-generated on first start)
