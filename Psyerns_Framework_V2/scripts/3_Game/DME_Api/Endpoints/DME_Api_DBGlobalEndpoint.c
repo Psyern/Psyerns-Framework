@@ -152,4 +152,21 @@ class DME_Api_DBGlobalEndpoint extends DME_Api_BaseEndpoint {
 		return cid;
 	}
 
+	int Update(string mod, string element, string value, string operation, DME_Api_CallbackBase cb) {
+		int cid = DME_Api().CallId();
+
+		string endpoint = "/Update/" + mod;
+
+		DME_Api_UpdateData updatedata = new DME_Api_UpdateData(element, value, operation);
+
+		if ( element && updatedata && cb){
+			cb.SetOID(mod); //Only sets if not set
+			Post(endpoint, updatedata.ToJson(), new DME_Api_DBNestedCallBack(cb, cid));
+		} else {
+			Print("[DME_Api] [Api] Error Transaction " +  mod);
+			cid = -1;
+		}
+		return cid;
+	}
+
 }

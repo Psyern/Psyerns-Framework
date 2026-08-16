@@ -14,8 +14,16 @@ class PF_RestBase : PF_WebApiBase
 	{
 		m_BaseUrl = baseUrl;
 		m_ApiKey = apiKey;
+		if (m_BaseUrl == "")
+		{
+			Print("[PF-REST] [ERROR] REST base not initialized - empty base URL");
+			return;
+		}
 		m_RestContext = m_Rest.GetRestContext(m_BaseUrl);
-		m_RestContext.SetHeader("application/json");
+		if (m_RestContext)
+		{
+			m_RestContext.SetHeader("application/json");
+		}
 		Print("[PF-REST] REST base initialized: " + m_BaseUrl);
 	}
 
@@ -37,6 +45,11 @@ class PF_RestBase : PF_WebApiBase
 	// POST with custom callback for response handling
 	void PostWithCallback(string path, string jsonData, RestCallback cb)
 	{
+		if (!m_RestContext)
+		{
+			Print("[PF-REST] [ERROR] PostWithCallback - RestContext is null");
+			return;
+		}
 		string endpoint = BuildEndpoint(path);
 		Print("[PF-REST] POST " + m_BaseUrl + endpoint);
 		PF_RestCallback.PF_Retain(cb);
@@ -46,6 +59,11 @@ class PF_RestBase : PF_WebApiBase
 	// GET with custom callback for response handling
 	void GetWithCallback(string path, RestCallback cb)
 	{
+		if (!m_RestContext)
+		{
+			Print("[PF-REST] [ERROR] GetWithCallback - RestContext is null");
+			return;
+		}
 		string endpoint = BuildEndpoint(path);
 		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
 		PF_RestCallback.PF_Retain(cb);
@@ -55,6 +73,11 @@ class PF_RestBase : PF_WebApiBase
 	// GET with extra query parameters and custom callback
 	void GetWithArgs(string path, PF_HttpArguments args, RestCallback cb)
 	{
+		if (!m_RestContext)
+		{
+			Print("[PF-REST] [ERROR] GetWithArgs - RestContext is null");
+			return;
+		}
 		string endpoint = BuildEndpointArgs(path, args);
 		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
 		PF_RestCallback.PF_Retain(cb);

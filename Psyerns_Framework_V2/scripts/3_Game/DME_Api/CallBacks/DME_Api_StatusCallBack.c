@@ -43,7 +43,7 @@ class DME_Api_StatusCallBack : DME_Api_DBCallBack
 				g_Game.GameScript.CallFunctionParams(Instance, Function, NULL, new Param4<int, int, string, DME_Api_StatusObject>(CallId, DME_API_SUCCESS, OID, DME_Api_StatusObject.Cast(obj)));
 				return;
 			} 
-			if (obj.Status && (obj.Status == "NotFound" || obj.Status ==  "NotSetup")){
+			if (obj && obj.Status && (obj.Status == "NotFound" || obj.Status ==  "NotSetup")){
 				g_Game.GameScript.CallFunctionParams(Instance, Function, NULL, new Param4<int, int, string, DME_Api_StatusObject>(CallId, DME_API_NOTFOUND, OID, DME_Api_StatusObject.Cast(obj)));
 				return;
 			}

@@ -33,19 +33,23 @@ modded class MissionServer
 
 		int enabledCount = 0;
 
-		if (restCfg.IsWhitelistEnabled())
+		bool hasBaseUrl = baseUrl != "";
+		if (!hasBaseUrl)
+			PF_Logger.Log("REST base URL is empty - skipping Whitelist, PlayerLookup and ServerStatus.");
+
+		if (hasBaseUrl && restCfg.IsWhitelistEnabled())
 		{
 			g_PF_WhitelistManager = new PF_WhitelistManager(baseUrl, apiKey);
 			enabledCount++;
 		}
 
-		if (restCfg.IsPlayerLookupEnabled())
+		if (hasBaseUrl && restCfg.IsPlayerLookupEnabled())
 		{
 			g_PF_PlayerLookup = new PF_PlayerLookup(baseUrl, apiKey);
 			enabledCount++;
 		}
 
-		if (restCfg.IsServerStatusEnabled())
+		if (hasBaseUrl && restCfg.IsServerStatusEnabled())
 		{
 			g_PF_ServerStatus = new PF_ServerStatus(baseUrl, apiKey, restCfg.GetServerStatusInterval());
 			enabledCount++;

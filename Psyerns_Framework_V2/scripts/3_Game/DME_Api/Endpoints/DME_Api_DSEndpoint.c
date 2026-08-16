@@ -340,7 +340,7 @@ class DME_Api_DSEndpoint extends DME_Api_BaseEndpoint
 	
 	
 	int ChannelSendEmbed(string id, DME_Api_DiscordEmbed message, Class cbInstance = NULL, string cbFunction = "", bool ReturnString = false){
-		if (id == "" || message != NULL){
+		if (id == "" || message == NULL){
 			Error2("[DME_Api] Error Sending Embed to channel","Both Channel ID and message must be valid");
 			return -1;
 		}

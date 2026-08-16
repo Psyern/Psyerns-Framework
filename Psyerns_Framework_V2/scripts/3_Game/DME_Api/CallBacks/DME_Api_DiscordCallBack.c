@@ -27,6 +27,10 @@ class DME_Api_DiscordCallBack: RestCallback
 		JsonSerializer js = new JsonSerializer();
 		string error;
 		js.ReadFromString(user, data, error);
+		if (!user){
+			Print("[DME_Api] [DME_Api_DiscordCallBack] Error: " + error);
+			return;
+		}
 		if (error != ""){
 			Print("[DME_Api] [DME_Api_DiscordCallBack] Error: " + error);
 		}

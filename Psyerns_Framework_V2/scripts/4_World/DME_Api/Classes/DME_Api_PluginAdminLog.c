@@ -272,7 +272,7 @@ modded class PluginAdminLog extends PluginBase
 		array<Man> theManList = new array<Man>;
 		g_Game.GetPlayers( theManList );
 		array<ref DME_Api_LogPlayerPos> thePlayerList = new array<ref DME_Api_LogPlayerPos>;
-		if ( m_PlayerArray.Count() != 0 ) {	
+		if ( theManList.Count() != 0 ) {
 			for (int i = 0; i < theManList.Count(); i++ ) {
 				PlayerBase thePlayer = PlayerBase.Cast(theManList.Get(i));
 				if (thePlayer && thePlayer.GetIdentity()) { 

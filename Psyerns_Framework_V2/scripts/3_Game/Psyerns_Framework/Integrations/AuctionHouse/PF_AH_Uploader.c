@@ -78,6 +78,7 @@ class PF_AH_Uploader : PF_RestBase
 		if (!arr.Listings || arr.Listings.Count() == 0)
 			return "[]";
 
+		int emitCount = 0;
 		string result = "[";
 		for (int i = 0; i < arr.Listings.Count(); i++)
 		{
@@ -85,10 +86,11 @@ class PF_AH_Uploader : PF_RestBase
 			if (!l)
 				continue;
 
-			if (i > 0)
+			if (emitCount > 0)
 				result += ",";
 
 			result += SerializeListing(l);
+			emitCount++;
 		}
 		result += "]";
 		return result;
@@ -194,6 +196,7 @@ class PF_AH_Uploader : PF_RestBase
 		if (!entries || entries.Count() == 0)
 			return "[]";
 
+		int emitCount = 0;
 		string result = "[";
 		for (int i = 0; i < entries.Count(); i++)
 		{
@@ -201,7 +204,7 @@ class PF_AH_Uploader : PF_RestBase
 			if (!e)
 				continue;
 
-			if (i > 0)
+			if (emitCount > 0)
 				result += ",";
 
 			PF_JsonBuilder b = PF_JsonBuilder.Begin();
@@ -209,6 +212,7 @@ class PF_AH_Uploader : PF_RestBase
 			b.Add("source", e.source);
 			b.AddInt("balance", e.balance);
 			result += b.Build();
+			emitCount++;
 		}
 		result += "]";
 		return result;

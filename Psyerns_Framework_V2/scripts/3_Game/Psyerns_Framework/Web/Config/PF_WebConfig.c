@@ -176,7 +176,7 @@ class PF_WebConfig
 				if (ep.ApiKey != sharedKey)
 				{
 					ep.ApiKey = sharedKey;
-					PF_Logger.Log("Synced shared WordPress API key for endpoint: " + ep.Name + " → " + ep.ApiKey);
+					PF_Logger.Log("Synced shared WordPress API key for endpoint: " + ep.Name);
 					changed = true;
 				}
 				continue;
@@ -185,7 +185,7 @@ class PF_WebConfig
 			if (ep.ApiKey == "" || ep.ApiKey == "YOUR_API_KEY_HERE")
 			{
 				ep.ApiKey = GenerateRandomKey();
-				PF_Logger.Log("Auto-generated API key for endpoint: " + ep.Name + " → " + ep.ApiKey);
+				PF_Logger.Log("Auto-generated API key for endpoint: " + ep.Name);
 				changed = true;
 			}
 		}

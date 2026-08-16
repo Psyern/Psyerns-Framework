@@ -33,7 +33,7 @@ class DME_Api_QnACallBack : RestCallback
 	override void OnSuccess(string data, int dataSize) {
 		DME_Api_QnAAnswer AnswerObj;
 		JsonFileLoader<DME_Api_QnAAnswer>.JsonLoadData(data, AnswerObj);
-		if (AnswerObj.get() != "null" && AnswerObj.get() != "error" &&  AnswerObj.get() != "ERROR" &&  AnswerObj.get() != ""){
+		if (AnswerObj && AnswerObj.get() != "null" && AnswerObj.get() != "error" &&  AnswerObj.get() != "ERROR" &&  AnswerObj.get() != ""){
 			DME_Api_GetQnAMaker().ProcessAnswer(AnswerObj.get());
 		} else if (m_AlwaysAnswer) {
 			DME_Api_GetQnAMaker().SendRespone("Sorry couldn't find the an answer to your question? Try rephrasing it or asking a real person");

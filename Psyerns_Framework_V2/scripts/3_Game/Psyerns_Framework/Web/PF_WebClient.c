@@ -51,7 +51,10 @@ class PF_WebClient
 		PF_Logger.Debug("Send " + method + " " + request.GetBaseUrl() + request.GetEndpoint());
 
 		RestContext ctx = GetRestContext(request.GetBaseUrl());
-		ctx.SetHeader(request.GetHeader());
+		string header = request.GetHeader();
+		if (header == "")
+			header = "application/json";
+		ctx.SetHeader(header);
 
 		PF_RestCallback callback = new PF_RestCallback();
 		PF_RestCallback.PF_Retain(callback);

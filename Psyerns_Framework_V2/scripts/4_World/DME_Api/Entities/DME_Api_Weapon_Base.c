@@ -40,9 +40,11 @@ modded class Weapon_Base extends Weapon {
 					Print("[DME_Api] Pushing Round to Chamber");
 					PushCartridgeToChamber(mi, data.m_ChamberedRound.dmg(), data.m_ChamberedRound.cartTypeName());
 				}
-				for (i = 0; i < data.m_MagAmmo.Count(); i++){
-					if (i > data.m_Quantity) {break;}
-					PushCartridgeToInternalMagazine( mi, data.m_MagAmmo.Get(i).dmg(), data.m_MagAmmo.Get(i).cartTypeName());
+				if (data.m_MagAmmo){
+					for (i = 0; i < data.m_MagAmmo.Count(); i++){
+						if (i > data.m_Quantity) {break;}
+						PushCartridgeToInternalMagazine( mi, data.m_MagAmmo.Get(i).dmg(), data.m_MagAmmo.Get(i).cartTypeName());
+					}
 				}
 			}
 			SetStepZeroing(GetCurrentMuzzle(), data.GetInt("m_Zeroing"));

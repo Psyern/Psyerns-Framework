@@ -17,10 +17,6 @@ modded class MissionServer
 	void MissionServer()
 	{
 		DME_Api();
-		if (g_Game){
-			ScriptCallQueue queue = g_Game.GetCallQueue(CALL_CATEGORY_SYSTEM);
-			if (queue){ queue.Call(this.DME_Api_Ready); }
-		}
 	}
 
 	override void OnClientPrepareEvent(PlayerIdentity identity, out bool useDB, out vector pos, out float yaw, out int preloadTimeout)

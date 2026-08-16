@@ -379,6 +379,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 
 
 	bool Read(string var, out bool data){
+		if (!m_MetaData) { return false; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
 				data = m_MetaData.Get(i).ReadInt();
@@ -388,6 +389,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return false;
 	}
 	bool Read(string var, out int data){
+		if (!m_MetaData) { return false; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
 				data = m_MetaData.Get(i).ReadInt();
@@ -397,6 +399,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return false;
 	}
 	bool Read(string var, out float data){
+		if (!m_MetaData) { return false; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
 				data = m_MetaData.Get(i).ReadFloat();
@@ -406,6 +409,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return false;
 	}
 	bool Read(string var, out vector data){
+		if (!m_MetaData) { return false; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
 				data = m_MetaData.Get(i).ReadVector();
@@ -415,6 +419,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return false;
 	}
 	bool Read(string var, out TStringArray data){
+		if (!m_MetaData) { return false; }
 		bool found = false;
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
@@ -425,6 +430,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return found;
 	}
 	bool Read(string var, out TIntArray data){
+		if (!m_MetaData) { return false; }
 		bool found = false;
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
@@ -435,6 +441,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return found;
 	}
 	bool Read(string var, out TFloatArray data){
+		if (!m_MetaData) { return false; }
 		bool found = false;
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
@@ -445,6 +452,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return found;
 	}
 	bool Read(string var, out TBoolArray data){
+		if (!m_MetaData) { return false; }
 		bool found = false;
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
@@ -456,6 +464,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return found;
 	}
 	bool Read(string var, out TVectorArray data){
+		if (!m_MetaData) { return false; }
 		bool found = false;
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
@@ -466,6 +475,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return found;
 	}
 	bool Read(string var, out string data){
+		if (!m_MetaData) { return false; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){
 				data = m_MetaData.Get(i).ReadString();
@@ -480,24 +490,28 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 	}
 
 	int GetInt(string var){
+		if (!m_MetaData) { return 0; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){return m_MetaData.Get(i).ReadInt();}
 		}
 		return 0;
 	}
 	float GetFloat(string var){
+		if (!m_MetaData) { return 0; }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){ return m_MetaData.Get(i).ReadFloat(); }
 		}
 		return 0;
 	}
 	vector GetVector(string var){
+		if (!m_MetaData) { return Vector(0,0,0); }
 		for(int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){ return m_MetaData.Get(i).ReadVector(); }
 		}
 		return Vector(0,0,0);
 	}
 	string GetString(string var){
+		if (!m_MetaData) { return ""; }
 		for (int i = 0; i < m_MetaData.Count(); i++){
 			if (m_MetaData.Get(i) && m_MetaData.Get(i).Is(var)){ return m_MetaData.Get(i).ReadString(); }
 		}
@@ -511,6 +525,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		return true;
 	}
 	bool ReadZoneHealth(string zone, out float health){
+		if (!m_HealthZones) { return false; }
 		for (int i = 0; i < m_HealthZones.Count(); i++){
 			if (m_HealthZones.Get(i) && m_HealthZones.Get(i).Is(zone)){
 				health = m_HealthZones.Get(i).Health();

@@ -77,6 +77,7 @@ class PF_KillFeedManager
 
 		if (webhookUrls)
 		{
+			RestApi api = PF_WebApiBase.PF_AcquireRestApi();
 			for (int i = 0; i < webhookUrls.Count(); i++)
 			{
 				string url = webhookUrls[i];
@@ -84,7 +85,6 @@ class PF_KillFeedManager
 					continue;
 
 				m_WebhookUrls.Insert(url);
-				RestApi api = CreateRestApi();
 				m_RestApis.Insert(api);
 				RestContext ctx = api.GetRestContext(url);
 				ctx.SetHeader("application/json");

@@ -32,7 +32,7 @@ class PF_AlertRule
 
 		if (webhookUrl != "")
 		{
-			m_RestApi = CreateRestApi();
+			m_RestApi = PF_WebApiBase.PF_AcquireRestApi();
 			m_RestCtx = m_RestApi.GetRestContext(webhookUrl);
 			m_RestCtx.SetHeader("application/json");
 		}

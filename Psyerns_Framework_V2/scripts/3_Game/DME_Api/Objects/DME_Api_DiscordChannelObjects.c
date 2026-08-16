@@ -54,7 +54,7 @@ class DME_Api_UpdateChannelObject extends DME_Api_Object_Base{
 class DME_Api_ChannelUpdateOptions extends DME_Api_ChannelOptions {
 	string name;
 	
-	void DME_Api_ChannelOptions(string Reason, string Name, string Topic = ""){
+	void DME_Api_ChannelUpdateOptions(string Reason = "Created Via DayZ", string Name = "", string Topic = ""){
 		name = Name;
 		reason =  Reason;
 		topic = Topic;

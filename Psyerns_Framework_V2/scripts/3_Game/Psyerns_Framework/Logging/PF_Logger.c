@@ -39,7 +39,7 @@ class PF_Logger
 			return result;
 
 		int valueStart = keyPos + 8;
-		int valueEnd = result.IndexOf("&");
+		int valueEnd = result.IndexOfFrom(valueStart, "&");
 		if (valueEnd < 0 || valueEnd < valueStart)
 			valueEnd = result.Length();
 
