@@ -92,7 +92,7 @@ class DME_Api_Util extends Managed {
 		return DayZPlayer.Cast(g_Game.GetObjectByNetworkId(lowBits, highBits));
 	}
 	
-	static void SendNotificationEx(string Header, string Text, PlayerIdentity player, string Icon = "Psyerns_Framework/images/info.edds") {
+	static void SendNotificationEx(string Header, string Text, PlayerIdentity player, string Icon = "Psyerns_Framework_V2/images/info.edds") {
 		if (!g_Game) return;
 		if (g_Game.IsDedicatedServer()){
 			NotificationSystem.SendNotificationToPlayerIdentityExtended(player, 5, Header, Text, Icon );
@@ -101,7 +101,7 @@ class DME_Api_Util extends Managed {
 		}
 	}
 	
-	static void SendNotification(string Header, string Text, PlayerIdentity player, string Icon = "Psyerns_Framework/images/info.edds") {
+	static void SendNotification(string Header, string Text, PlayerIdentity player, string Icon = "Psyerns_Framework_V2/images/info.edds") {
 		if (!player) return;
 		SendNotificationEx(Header,Text,player,Icon);
 	}

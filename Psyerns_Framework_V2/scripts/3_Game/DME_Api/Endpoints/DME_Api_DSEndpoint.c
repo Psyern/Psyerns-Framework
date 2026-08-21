@@ -370,8 +370,10 @@ class DME_Api_DSEndpoint extends DME_Api_BaseEndpoint
 		}
 		int cid = DME_Api().CallId();
 		
+		DME_Api_DiscordChannelFilter pf_fallbackFilter;
 		if (!filter){
-			filter = new DME_Api_DiscordChannelFilter();
+			pf_fallbackFilter = new DME_Api_DiscordChannelFilter();
+			filter = pf_fallbackFilter;
 		}
 		
 		RestCallback DBCBX;

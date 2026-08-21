@@ -18,7 +18,7 @@ class CfgMods
 		author = "Psyern";
 		credits = "Psyern, Deadmans Echo Community. Incorporates DayZ-UniversalApi by daemonforge (AGPL-3.0). Whole work AGPL-3.0.";
 		version = "1.0.0";
-		inputs = "Psyerns_Framework/data/modded_inputs.xml";
+		inputs = "Psyerns_Framework_V2/data/modded_inputs.xml";
 		dependencies[] = {"Core", "Game", "World", "Mission"};
 
 		class defs
@@ -27,32 +27,32 @@ class CfgMods
 			{
 				value = "";
 				files[] = {
-					"Psyerns_Framework/scripts/Common",
-					"Psyerns_Framework/scripts/1_Core"
+					"Psyerns_Framework_V2/scripts/Common",
+					"Psyerns_Framework_V2/scripts/1_Core"
 				};
 			};
 			class gameScriptModule
 			{
 				value = "";
 				files[] = {
-					"Psyerns_Framework/scripts/Common",
-					"Psyerns_Framework/scripts/3_Game"
+					"Psyerns_Framework_V2/scripts/Common",
+					"Psyerns_Framework_V2/scripts/3_Game"
 				};
 			};
 			class worldScriptModule
 			{
 				value = "";
 				files[] = {
-					"Psyerns_Framework/scripts/Common",
-					"Psyerns_Framework/scripts/4_World"
+					"Psyerns_Framework_V2/scripts/Common",
+					"Psyerns_Framework_V2/scripts/4_World"
 				};
 			};
 			class missionScriptModule
 			{
 				value = "";
 				files[] = {
-					"Psyerns_Framework/scripts/Common",
-					"Psyerns_Framework/scripts/5_Mission"
+					"Psyerns_Framework_V2/scripts/Common",
+					"Psyerns_Framework_V2/scripts/5_Mission"
 				};
 			};
 		};

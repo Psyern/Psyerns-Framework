@@ -62,7 +62,7 @@ class DME_Api_QnAMakerServerAnswers extends Managed
 				} else if (strlen > 60){
 					nTime = 15;
 				}
-				NotificationSystem.SimpleNoticiation(text, BotName, "Psyerns_Framework/images/Bot.edds", ARGB(230, 142, 180, 230), nTime, NULL);
+				NotificationSystem.SimpleNoticiation(text, BotName, "Psyerns_Framework_V2/images/Bot.edds", ARGB(230, 142, 180, 230), nTime, NULL);
 			#endif
 		}
 	}

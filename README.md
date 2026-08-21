@@ -37,9 +37,11 @@
 This repository is a small ecosystem: the DayZ mod itself plus the WordPress companions that consume its REST API and Discord webhooks.
 
 ```text
-Psyerns_Framework/                  ← DayZ mod (this README)
-├── config.cpp / mod.cpp / scripts/
-├── data/                           ← banner, screenshots, default configs
+Psyerns-Framework/                  ← repository root (this README)
+├── Psyerns_Framework_V2/           ← the DayZ mod — PBO source folder
+│   ├── config.cpp / mod.cpp / scripts/
+│   ├── data/                       ← banner, screenshots, default configs
+│   └── $PBOPREFIX$                 ← must equal the folder name (see Packing)
 │
 ├── WP-Plugin_Psyerns-Leaderboard/  ← WordPress: leaderboards, server status,
 │                                     whitelist, kill feed, player details
@@ -146,6 +148,8 @@ Admins can reload the config live without restarting the server:
 ---
 
 ## DayZ Mod Structure
+
+Everything below lives in `Psyerns_Framework_V2/` and is packed under the PBO prefix `Psyerns_Framework_V2`.
 
 ```text
 config.cpp
@@ -455,6 +459,21 @@ The framework logs to both server RPT and a dedicated log file:
 3. API key is auto-generated for the WordPress endpoint (check server log)
 4. Configure your endpoints (URLs, enable/disable features)
 5. Restart the server
+
+### Packing — PBO Prefix
+
+The mod source folder is `Psyerns_Framework_V2/`, and most packers derive the PBO prefix from the folder name. The script module paths in `config.cpp` must use the **same** root, or the mod loads but does nothing.
+
+| | |
+|---|---|
+| PBO prefix / `$PBOPREFIX$` | `Psyerns_Framework_V2` |
+| `config.cpp` → `files[]`, `inputs` | `Psyerns_Framework_V2/scripts/…`, `Psyerns_Framework_V2/data/…` |
+| `CfgPatches` / `CfgMods` class | `Psyerns_Framework` — **do not rename**, dependent mods reference it via `requiredAddons[]` |
+| `$profile:Psyerns_Framework\…` | server config/log directory — unrelated to the prefix, leave as is |
+
+If the prefix and the `files[]` paths disagree, DayZ **silently skips** the script modules — nothing is logged to the RPT. Dependent mods then fail at compile time with `Can't find variable 'PF_WebClient'` or `Unknown type 'PF_HttpArguments'`, which points at the consumer rather than the real cause.
+
+Check after every build that the PBO header's `prefix` property and the `files[]` paths inside `config.bin` share the same root.
 
 ---
 

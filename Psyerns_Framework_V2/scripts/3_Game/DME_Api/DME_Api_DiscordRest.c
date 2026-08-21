@@ -33,8 +33,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	protected static void Post(string url, string jsonString = "{}", RestCallback UCBX = NULL)
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx =  Api().GetRestContext(url);
 		ctx.SetHeader(DME_Api().GetAuthToken());
@@ -44,8 +46,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	protected static void Get(string url, RestCallback UCBX = NULL)
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx =  Api().GetRestContext(url);
 		PF_RestCallback.PF_Retain(UCBX);
@@ -67,8 +71,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void AddRole(string GUID, string RoleId, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 
 		string url = BaseUrl() + "Discord/AddRole/" + GUID;
@@ -85,8 +91,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void RemoveRole(string GUID, string RoleId, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Discord/RemoveRole/" + GUID;
@@ -142,8 +150,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void ChannelDelete(string id, string reason,  RestCallback UCBX = NULL){
 
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		DME_Api_UpdateChannelObject obj = new DME_Api_UpdateChannelObject(reason, NULL);
@@ -158,8 +168,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void ChannelEdit(string id, string reason, DME_Api_ChannelUpdateOptions options, RestCallback UCBX = NULL){
 
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		DME_Api_UpdateChannelObject obj = new DME_Api_UpdateChannelObject(reason, DME_Api_ChannelUpdateOptions.Cast(options));
@@ -174,8 +186,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void ChannelSend(string id, string message, RestCallback UCBX = NULL){
 
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		DME_Api_DiscordBasicMessage obj = new DME_Api_DiscordBasicMessage(message);
@@ -190,8 +204,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void ChannelSendEmbed(string id, DME_Api_DiscordEmbed message, RestCallback UCBX = NULL){
 
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 				
 		if (message){
@@ -206,8 +222,10 @@ class DME_Api_DiscordRest extends Managed {
 	
 	static void ChannelMessages(string id,  RestCallback UCBX, DME_Api_DiscordChannelFilter filter = NULL,  string auth = ""){
 	
+		DME_Api_DiscordChannelFilter pf_fallbackFilter;
 		if (!filter){
-			filter = new DME_Api_DiscordChannelFilter();
+			pf_fallbackFilter = new DME_Api_DiscordChannelFilter();
+			filter = pf_fallbackFilter;
 		}
 		
 		string url = BaseUrl() + "Discord/Channel/Messages/" + id;

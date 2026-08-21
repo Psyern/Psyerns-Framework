@@ -25,8 +25,10 @@ class DME_Api_Rest extends Managed
 	
 	protected static void Post(string url, string jsonString = "{}", RestCallback UCBX = NULL)
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx =  Api().GetRestContext(url);
 		ctx.SetHeader(DME_Api().GetAuthToken());
@@ -36,8 +38,10 @@ class DME_Api_Rest extends Managed
 	
 	protected static void Get(string url, RestCallback UCBX = NULL)
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx =  Api().GetRestContext(url);
 		PF_RestCallback.PF_Retain(UCBX);
@@ -56,8 +60,10 @@ class DME_Api_Rest extends Managed
 	
 	static void PlayerSave(string mod, string guid, string jsonString, RestCallback UCBX = NULL) {	
 		string url = BaseUrl() + "Player/Save/" + guid + "/" + mod;
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		if (jsonString){
@@ -93,8 +99,10 @@ class DME_Api_Rest extends Managed
 	
 	static void PlayerTransaction(string mod, string guid, string element, float value = 1, RestCallback UCBX = NULL) {
 		
+		DME_Api_TransactionCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_TransactionCallBack;
+			pf_fallbackCB = new DME_Api_TransactionCallBack;
+			UCBX = pf_fallbackCB;
 		}
 				
 		string url = BaseUrl() + "Player/Transaction/" + guid   + "/"+ mod;
@@ -111,8 +119,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void PlayerUpdate(string mod, string guid, string element, string value, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 				
 		string url = BaseUrl() + "Player/Update/" + guid   + "/"+ mod;
@@ -129,8 +139,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void PlayerUpdateAdv(string mod, string guid, string element, string value, string operation, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Player/Update/" + guid   + "/"+ mod;
@@ -148,8 +160,10 @@ class DME_Api_Rest extends Managed
 
 		string url = BaseUrl() + "Globals/Save/" + mod;
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		if (jsonString){
@@ -178,8 +192,10 @@ class DME_Api_Rest extends Managed
 	
 	static void GlobalsTransaction(string mod, string element, float value = 1, RestCallback UCBX = NULL) {
 		
+		DME_Api_TransactionCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_TransactionCallBack;
+			pf_fallbackCB = new DME_Api_TransactionCallBack;
+			UCBX = pf_fallbackCB;
 		}
 
 		string url = BaseUrl() + "Globals/Transaction/" + mod;
@@ -197,8 +213,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void GlobalsUpdate(string mod, string element, string value, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 
 		string url = BaseUrl() + "Globals/Update/" + mod;
@@ -216,8 +234,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void GlobalsUpdateAdv(string mod, string element, string value, string operation, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 
 		string url = BaseUrl() + "Globals/Update/" + mod;
@@ -236,8 +256,10 @@ class DME_Api_Rest extends Managed
 	//in the ObjectId var of the Class so make sure your Class has the varible ObjectId if you plan on using this feature
 	static void ObjectSave(string mod, string objectId, string jsonString, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 
 		string url = BaseUrl() + "Object/Save/" + objectId + "/" +  mod;
@@ -277,8 +299,10 @@ class DME_Api_Rest extends Managed
 	
 	static void ObjectTransaction(string mod, string objectId, string element, float value = 1, RestCallback UCBX = NULL) {
 		
+		DME_Api_TransactionCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_TransactionCallBack;
+			pf_fallbackCB = new DME_Api_TransactionCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Object/Transaction/" + objectId + "/"+ mod;
@@ -296,8 +320,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void ObjectUpdate(string mod, string guid, string element, string value, RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Object/Update/" + guid  + "/"+ mod;
@@ -314,8 +340,10 @@ class DME_Api_Rest extends Managed
 	//String Values must be wrapped with Quotes example string newValue = "\"NewValue\""
 	static void ObjectUpdateAdv(string mod, string guid, string element, string value, string operation = "set", RestCallback UCBX = NULL) {
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Object/Update/" + guid  + "/" + mod;
@@ -331,8 +359,10 @@ class DME_Api_Rest extends Managed
 	
 	static void Request(DME_Api_Forwarder data, RestCallback UCBX = NULL){
 				
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Forward";
@@ -346,8 +376,10 @@ class DME_Api_Rest extends Managed
 
 	static void Log(string jsonString, RestCallback UCBX = NULL){
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Logger/One/" + DME_Api_GetConfig().ServerID;
@@ -362,8 +394,10 @@ class DME_Api_Rest extends Managed
 	//JsonFileLoader<array<autoptr LogObject>>.JsonMakeData(AnArrayOfYourObjects);
 	static void LogBulk(string jsonString, RestCallback UCBX = NULL){
 		
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		
 		string url = BaseUrl() + "Logger/Many/" + DME_Api_GetConfig().ServerID;

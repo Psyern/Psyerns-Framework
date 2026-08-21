@@ -20,17 +20,17 @@ class CfgMods
 			class gameScriptModule
 			{
 				value = "";
-				files[] = {"Psyerns_Framework/scripts/3_Game"};
+				files[] = {"Psyerns_Framework_V2/scripts/3_Game"};
 			};
 			class worldScriptModule
 			{
 				value = "";
-				files[] = {"Psyerns_Framework/scripts/4_World"};
+				files[] = {"Psyerns_Framework_V2/scripts/4_World"};
 			};
 			class missionScriptModule
 			{
 				value = "";
-				files[] = {"Psyerns_Framework/scripts/5_Mission"};
+				files[] = {"Psyerns_Framework_V2/scripts/5_Mission"};
 			};
 		};
 	};

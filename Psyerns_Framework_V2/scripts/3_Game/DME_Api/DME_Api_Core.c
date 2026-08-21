@@ -74,8 +74,10 @@ class DME_Api_Core extends Managed {
 	//A super simple Post Interface to help people
 	static int Post(string url, string jsonString, RestCallback UCBX = NULL, string contentType = "application/json")
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx = RestCore().GetRestContext(url);
 		ctx.SetHeader(contentType);
@@ -111,8 +113,10 @@ class DME_Api_Core extends Managed {
 	//A super simple Get Interface to help people
 	static int Get(string url, RestCallback UCBX)
 	{
+		DME_Api_SilentCallBack pf_fallbackCB;
 		if (!UCBX){
-			UCBX = new DME_Api_SilentCallBack;
+			pf_fallbackCB = new DME_Api_SilentCallBack;
+			UCBX = pf_fallbackCB;
 		}
 		RestContext ctx =  RestCore().GetRestContext(url);
 		PF_RestCallback.PF_Retain(UCBX);
