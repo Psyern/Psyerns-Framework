@@ -71,6 +71,13 @@ class DME_Api_Config extends Managed {
 		return ServerURL;
 	}
 
+	//No ServerURL means the DME_Api webservice was never set up. Every REST call the
+	//subsystem fires in that state resolves against an empty base url and comes back
+	//as a connection error, so callers have to skip them instead.
+	bool IsConfigured(){
+		return ServerURL != "";
+	}
+
 	string GetAuth(){
 		if (g_Game && g_Game.IsDedicatedServer()){
 			return ServerAuth;
@@ -98,4 +105,28 @@ static DME_Api_Config DME_Api_GetConfig()
 		}
 	}
 	return m_DME_Api_Config;
+};
+
+//Null-safe wrapper - on clients the config stays NULL until the server RPCs it over.
+static bool DME_Api_IsConfigured()
+{
+	DME_Api_Config cfg = DME_Api_GetConfig();
+	if (!cfg){
+		return false;
+	}
+	return cfg.IsConfigured();
+};
+
+//Null-safe url for log lines, so an unset config never prints an empty "URL: ".
+static string DME_Api_GetBaseURLSafe()
+{
+	DME_Api_Config cfg = DME_Api_GetConfig();
+	if (!cfg){
+		return "(no config loaded)";
+	}
+	string url = cfg.GetBaseURL();
+	if (url == ""){
+		return "(not configured)";
+	}
+	return url;
 };

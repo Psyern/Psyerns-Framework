@@ -22,11 +22,11 @@ static const int DME_API_LOG_DEBUG = 3;
 
 class DME_Api_Log extends DME_Api_LoggerBase {
 	protected static ref DME_Api_LoggerBaseInstance m_ULoggerBaseInstance;
-	static void CreateInstance(){
+	override static void CreateInstance(){
 		m_type = "DME_Api";
 		m_ULoggerBaseInstance = new DME_Api_LoggerBaseInstance("DME_Api");
 	}
-	static DME_Api_LoggerBaseInstance GetInstance(){
+	override static DME_Api_LoggerBaseInstance GetInstance(){
 		if (!m_ULoggerBaseInstance){CreateInstance();}
 		return m_ULoggerBaseInstance;
 	}

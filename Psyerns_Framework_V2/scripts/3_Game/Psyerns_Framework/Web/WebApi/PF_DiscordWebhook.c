@@ -18,7 +18,10 @@ class PF_DiscordWebhook : PF_WebApiBase
 
 	void Send(PF_DiscordPayload payload)
 	{
-		string endpoint = "/" + m_WebhookId + "/" + m_WebhookToken;
+		//?wait=true makes Discord answer 200 + message JSON instead of 204 No Content.
+		//Without it the engine reports the empty body as EREST_ERROR_APPERROR (8) and
+		//every delivered webhook is logged as an HTTP error.
+		string endpoint = "/" + m_WebhookId + "/" + m_WebhookToken + "?wait=true";
 		string data = payload.Serialize();
 		PF_Logger.Log("Sending Discord webhook to /" + m_WebhookId + "/***");
 		PF_Logger.Debug("Discord payload size: " + data.Length().ToString() + " bytes");

@@ -162,6 +162,9 @@ class DME_Api_Core extends Managed {
 
 	//Checks to see if the Random Numbers are below half and add's more
 	void CheckAndRenewQRandom(){
+		if (!DME_Api_IsConfigured()){
+			return;
+		}
 		if (Math.QRandomRemaining()<= 2000){
 			GetQRandomNumbers();
 		}
@@ -300,11 +303,13 @@ class DME_Api_Core extends Managed {
 			GetRPCManager().AddRPC( "DME_Api", "RPCRequestQnAConfig", this, SingleplayerExecutionType.Both );
 			GetRPCManager().AddRPC( "DME_Api", "RPCRequestAuthToken", this, SingleplayerExecutionType.Both );
 			GetRPCManager().AddRPC( "DME_Api", "RPCRequestRetry", this, SingleplayerExecutionType.Both );
-			if (m_IsServer && g_Game){
+			if (m_IsServer && g_Game && DME_Api_IsConfigured()){
 				DME_Api().api().Status(this, "CBStatusCheck");
 				CheckAndRenewQRandom();
 				ScriptCallQueue queue = g_Game.GetCallQueue(CALL_CATEGORY_SYSTEM);
 				if (queue){ queue.CallLater(this.CheckAndRenewQRandom, 10 * 60 * 1000, true); }
+			} else if (m_IsServer){
+				Print("[DME_Api] No ServerURL set in $profile:DeadmansEcho\\PsyernsFramework\\DME_Api.json - webservice features stay disabled");
 			}
 		}
 	}
@@ -324,11 +329,15 @@ class DME_Api_Core extends Managed {
 
 	protected void OnTokenReceived(){
 		if (!g_Game) return;
-		DME_Api().api().Status(this, "CBStatusCheck");
-		if (m_DME_Api_Config.QnAEnabled){
+		if (DME_Api_IsConfigured()){
+			DME_Api().api().Status(this, "CBStatusCheck");
+		}
+		if (m_DME_Api_Config && m_DME_Api_Config.QnAEnabled){
 			GetRPCManager().SendRPC("DME_Api", "RPCRequestQnAConfig", new Param1<DME_Api_QnAMakerServerAnswers>(NULL), true);
 		}
-		DME_Api().ds().GetUser(GetDayZGame().GetSteamId(), GetDayZGame(), "CBCacheDiscordInfo");
+		if (DME_Api_IsConfigured()){
+			DME_Api().ds().GetUser(GetDayZGame().GetSteamId(), GetDayZGame(), "CBCacheDiscordInfo");
+		}
 		g_Game.GameScript.CallFunction(g_Game.GetMission(), "DME_Api_ReadyTokenReceived", NULL, NULL);
 		CheckAndRenewQRandom();
 		Print("[DME_Api] OnTokenReceived Proccessed");
@@ -350,6 +359,9 @@ class DME_Api_Core extends Managed {
 	}
 
 	void PreparePlayerAuth(string guid){
+		if (!DME_Api_IsConfigured()){
+			return;
+		}
 		this.Rest().GetAuth(guid);
 	}
 
@@ -553,16 +565,25 @@ class DME_Api_Core extends Managed {
 				return;
 			}
 			return;
-		} else if (status == DME_API_ERROR){
-			Error2("DME_Api", "[DME_Api] Something went wrong communicating with the webservice check to make sure it is installed correctly and the mongodb service is running correctly! URL: " + DME_Api_GetConfig().GetBaseURL());
-			m_DME_Api_Online = false;
-		}  else if (status == DME_API_TIMEOUT){
-			Error2("DME_Api", "[DME_Api] Webservice is offline or unreachable! URL: " + DME_Api_GetConfig().GetBaseURL());
-			m_DME_Api_Online = false;
-		} else {
-			Error2("DME_Api", "[DME_Api] Error with WebService! Status: " + status + " URL: " + DME_Api_GetConfig().GetBaseURL());
-			m_DME_Api_Online = false;
 		}
+		m_DME_Api_Online = false;
+		string url = DME_Api_GetBaseURLSafe();
+		if (status == DME_API_ERROR){
+			Error2("DME_Api", "[DME_Api] Something went wrong communicating with the webservice check to make sure it is installed correctly and the mongodb service is running correctly! URL: " + url);
+			return;
+		}
+		if (status == DME_API_TIMEOUT){
+			Error2("DME_Api", "[DME_Api] Webservice is offline or unreachable! URL: " + url);
+			return;
+		}
+		//Transport level failures (host unreachable, bad url, HTTP 4xx/5xx). Not a script
+		//fault, so they are logged instead of raised - Error2 writes a Virtual Machine
+		//Exception into crash_*.log and makes a dead webservice look like a mod crash.
+		if (status == DME_API_SERVERERROR || status == DME_API_CLIENTERROR){
+			Print("[DME_Api] Webservice unreachable (status " + status + ") URL: " + url + " - webservice features stay disabled");
+			return;
+		}
+		Print("[DME_Api] Unexpected webservice status " + status + " URL: " + url);
 	}
 
 };

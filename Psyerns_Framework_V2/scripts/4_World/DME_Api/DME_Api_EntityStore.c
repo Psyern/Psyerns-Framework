@@ -263,14 +263,20 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 		float dmg;
 		string cartType;
 		int count;
+		DME_Api_AmmoData ammoData;
 		if (m_IsMagazine && Class.CastTo(mag, item)){
 			count = m_Quantity;
 			mag.ServerSetAmmoCount(count);
 			if (m_MagAmmo){
 				for (i = 0; i < mag.GetAmmoCount(); i++){
 					if (i >= m_MagAmmo.Count()){break;}
-					if (m_MagAmmo.Get(i) && m_MagAmmo.Get(i).dmg() >= 0 && m_MagAmmo.Get(i).cartTypeName() != "" && m_MagAmmo.Get(i).cartIndex() == i){
-						mag.SetCartridgeAtIndex(m_MagAmmo.Get(i).cartIndex(), m_MagAmmo.Get(i).dmg(), m_MagAmmo.Get(i).cartTypeName());
+					ammoData = m_MagAmmo.Get(i);
+					if (ammoData && ammoData.dmg() >= 0 && ammoData.cartTypeName() != "" && ammoData.cartIndex() == i){
+						//dmg and cartTypeName are declared 'out' on SetCartridgeAtIndex - the compiler
+						//rejects computed values there (FIX-ME warning), so pass plain locals.
+						dmg = ammoData.dmg();
+						cartType = ammoData.cartTypeName();
+						mag.SetCartridgeAtIndex(ammoData.cartIndex(), dmg, cartType);
 					}
 				}
 			}
