@@ -90,6 +90,30 @@ class PF_JsonBuilder
 		output.Replace("\n", "\\n");
 		output.Replace("\r", "\\r");
 		output.Replace("\t", "\\t");
-		return output;
+		return StripControlChars(output);
+	}
+
+	// Remaining control chars (< 0x20) are invalid unescaped in JSON strings
+	protected string StripControlChars(string input)
+	{
+		int len = input.Length();
+		string result = "";
+		bool changed = false;
+		for (int i = 0; i < len; i++)
+		{
+			string ch = input.Substring(i, 1);
+			int code = ch.ToAscii();
+			if (code >= 0 && code < 32)
+			{
+				changed = true;
+				continue;
+			}
+			result += ch;
+		}
+
+		if (!changed)
+			return input;
+
+		return result;
 	}
 }

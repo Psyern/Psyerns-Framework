@@ -34,20 +34,66 @@ class PF_Logger
 	static string MaskSecrets(string input)
 	{
 		string result = input;
-		int keyPos = result.IndexOf("api_key=");
-		if (keyPos < 0)
-			return result;
-
-		int valueStart = keyPos + 8;
-		int valueEnd = result.IndexOfFrom(valueStart, "&");
-		if (valueEnd < 0 || valueEnd < valueStart)
-			valueEnd = result.Length();
-
-		string key = result.Substring(valueStart, valueEnd - valueStart);
-		if (key.Length() > 6)
-			result = result.Substring(0, valueStart) + key.Substring(0, 3) + "***" + result.Substring(valueEnd, result.Length() - valueEnd);
-
+		result = MaskQueryValue(result, "api_key=");
+		result = MaskQueryValue(result, "server_token=");
+		// Discord: /webhooks/<id>/<token>, TopGames: /servers/<token>/...
+		result = MaskPathSegment(result, "/webhooks/", 1);
+		result = MaskPathSegment(result, "/servers/", 0);
 		return result;
+	}
+
+	protected static string MaskQueryValue(string input, string marker)
+	{
+		int keyPos = input.IndexOf(marker);
+		if (keyPos < 0)
+			return input;
+
+		int valueStart = keyPos + marker.Length();
+		int valueEnd = input.IndexOfFrom(valueStart, "&");
+		if (valueEnd < valueStart)
+			valueEnd = input.Length();
+
+		return MaskRange(input, valueStart, valueEnd);
+	}
+
+	// Masks the path segment that follows marker after skipping skipSegments segments
+	protected static string MaskPathSegment(string input, string marker, int skipSegments)
+	{
+		int markerPos = input.IndexOf(marker);
+		if (markerPos < 0)
+			return input;
+
+		int segStart = markerPos + marker.Length();
+		for (int i = 0; i < skipSegments; i++)
+		{
+			int slash = input.IndexOfFrom(segStart, "/");
+			if (slash < 0)
+				return input;
+			segStart = slash + 1;
+		}
+
+		int segEnd = input.Length();
+		int nextSlash = input.IndexOfFrom(segStart, "/");
+		if (nextSlash >= segStart && nextSlash < segEnd)
+			segEnd = nextSlash;
+		int query = input.IndexOfFrom(segStart, "?");
+		if (query >= segStart && query < segEnd)
+			segEnd = query;
+
+		return MaskRange(input, segStart, segEnd);
+	}
+
+	protected static string MaskRange(string input, int valueStart, int valueEnd)
+	{
+		int len = valueEnd - valueStart;
+		if (len <= 0)
+			return input;
+
+		string visible = "";
+		if (len > 6)
+			visible = input.Substring(valueStart, 3);
+
+		return input.Substring(0, valueStart) + visible + "***" + input.Substring(valueEnd, input.Length() - valueEnd);
 	}
 
 	protected static void WriteToFile(string message)

@@ -58,7 +58,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		}
 
 		rankingEndpoint = NormalizeEndpoint(rankingEndpoint);
-		Print("[PF-REST] GET " + m_BaseUrl + rankingEndpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + rankingEndpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, rankingEndpoint);
 	}
@@ -83,7 +83,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		args.Add("standard_http_code", "0");
 
 		string endpoint = args.ToQuery("/v1/votes/claim-steam");
-		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -107,7 +107,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		args.Add("playername", playerName);
 
 		string endpoint = args.ToQuery("/v1/votes/claim-username");
-		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}

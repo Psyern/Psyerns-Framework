@@ -47,6 +47,10 @@ class PF_RestCallback : RestCallback
 		int i = s_PF_InFlight.Count() - 1;
 		while (i >= 0)
 		{
+			// 0 = retained before g_Game existed: start the hold window now instead of dropping it
+			if (s_PF_RetainUntil[i] == 0)
+				s_PF_RetainUntil.Set(i, now + PF_RETAIN_SECONDS);
+
 			bool isExpired = s_PF_RetainUntil[i] < now;
 			if (isExpired)
 			{

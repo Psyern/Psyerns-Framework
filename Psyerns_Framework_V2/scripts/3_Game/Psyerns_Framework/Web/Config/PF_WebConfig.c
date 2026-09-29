@@ -389,6 +389,9 @@ class PF_WebConfig
 		for (int i = 0; i < Endpoints.Count(); i++)
 		{
 			PF_WebEndpoint ep = Endpoints[i];
+			if (!ep)
+				continue;
+
 			string epName = ep.Name;
 			epName.ToLower();
 			string searchName = name;

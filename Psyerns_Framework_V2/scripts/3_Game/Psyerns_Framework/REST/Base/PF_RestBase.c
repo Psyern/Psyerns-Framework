@@ -51,7 +51,7 @@ class PF_RestBase : PF_WebApiBase
 			return;
 		}
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] POST " + m_BaseUrl + endpoint);
+		Print("[PF-REST] POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.POST(cb, endpoint, jsonData);
 	}
@@ -65,7 +65,7 @@ class PF_RestBase : PF_WebApiBase
 			return;
 		}
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -79,7 +79,7 @@ class PF_RestBase : PF_WebApiBase
 			return;
 		}
 		string endpoint = BuildEndpointArgs(path, args);
-		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -88,7 +88,7 @@ class PF_RestBase : PF_WebApiBase
 	void PostJson(string path, string jsonData)
 	{
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] POST " + m_BaseUrl + endpoint);
+		Print("[PF-REST] POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		Post(endpoint, jsonData);
 	}
 
@@ -96,7 +96,7 @@ class PF_RestBase : PF_WebApiBase
 	void GetJson(string path)
 	{
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] GET " + m_BaseUrl + endpoint);
+		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		Get(endpoint);
 	}
 

@@ -158,8 +158,8 @@ class PF_DiscordIntegration
 		int hour;
 		int minute;
 		int second;
-		GetYearMonthDay(year, month, day);
-		GetHourMinuteSecond(hour, minute, second);
+		GetYearMonthDayUTC(year, month, day);
+		GetHourMinuteSecondUTC(hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 
