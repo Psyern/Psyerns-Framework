@@ -233,7 +233,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 					if (weap && child_mag){
 						weap.AttachMagazine(weap.GetCurrentMuzzle(), child_mag);
 					}
-				} else {
+				} else if (m_Cargo.Get(i)){
 					m_Cargo.Get(i).Create(item);
 				}
 			}

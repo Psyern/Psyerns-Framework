@@ -117,8 +117,8 @@ class PF_AH_ActionExecutor
 	 * route through a dedicated admin path:
 	 *   1. Refund the current bidder if any.
 	 *   2. Force-cancel the listing via the seller UID.
-	 *   3. Note: the seller's item-return is already handled by DME_AH's existing
-	 *      PendingPickup system when the listing leaves Active state.
+	 *   3. Queue the item back to the seller as a PendingPickup (DME_AH does not
+	 *      do this on its own when a listing is removed).
 	 * If no bids, we can just invoke the normal CancelListing as the seller.
 	 */
 	protected int HandleAdminCancel(DME_AH_AuctionManager mgr, DME_AH_DataStore store, string listingId)
