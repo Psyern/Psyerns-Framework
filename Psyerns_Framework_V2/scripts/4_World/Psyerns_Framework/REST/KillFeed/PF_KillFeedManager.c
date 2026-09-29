@@ -78,6 +78,12 @@ class PF_KillFeedManager
 		if (webhookUrls)
 		{
 			RestApi api = PF_WebApiBase.PF_AcquireRestApi();
+			if (!api)
+			{
+				Print("[PF-REST] [ERROR] KillFeedManager - RestApi unavailable");
+				return;
+			}
+
 			for (int i = 0; i < webhookUrls.Count(); i++)
 			{
 				string url = webhookUrls[i];
@@ -121,8 +127,16 @@ class PF_KillFeedManager
 		killEvent.posZ = victimPos[2];
 
 		// Killer data
-		PlayerBase killerPlayer;
-		if (Class.CastTo(killerPlayer, killer))
+		// Firearm/melee kills pass the weapon as killer - resolve its holder like vanilla PluginAdminLog
+		PlayerBase killerPlayer = PlayerBase.Cast(killer);
+		if (!killerPlayer)
+		{
+			EntityAI killerEntity = EntityAI.Cast(killer);
+			if (killerEntity)
+				killerPlayer = PlayerBase.Cast(killerEntity.GetHierarchyRootPlayer());
+		}
+
+		if (killerPlayer)
 		{
 			if (killerPlayer.GetIdentity())
 			{
@@ -137,6 +151,8 @@ class PF_KillFeedManager
 				itemInHands = inv.GetEntityInHands();
 			if (itemInHands)
 				killEvent.killerWeapon = itemInHands.GetType();
+			else if (killer != killerPlayer)
+				killEvent.killerWeapon = killer.GetType();
 
 			// Distance between killer and victim
 			vector killerPos = killerPlayer.GetPosition();

@@ -12,13 +12,23 @@
  */
 modded class PluginAdminLog extends PluginBase
 {
+	//Config is NULL outside a dedicated server and unusable while DME_Api is unconfigured:
+	//fall back to vanilla logging only (0) instead of null-dereferencing
+	protected int DME_Api_GetBuiltinLogging()
+	{
+		if (!DME_Api_IsConfigured()){
+			return 0;
+		}
+		return DME_Api_GetConfig().EnableBuiltinLogging;
+	}
+
 	override void PlayerKilled( PlayerBase player, Object source )  
 	{
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.PlayerKilled( player, source );
 		}
 		
-		if ( DME_Api_GetConfig().EnableBuiltinLogging != 0 && player && source && player.GetIdentity() )
+		if ( DME_Api_GetBuiltinLogging() != 0 && player && source && player.GetIdentity() )
 		{
 			DME_Api_LogKilled logobj;
 			if ( player == source ){ // deaths not caused by another object (starvation, dehydration)
@@ -38,6 +48,9 @@ modded class PluginAdminLog extends PluginBase
 			EntityAI theSource = EntityAI.Cast(source);
 			if (logobj && theSource ) {  // player			
 				PlayerBase sourcePlayer = PlayerBase.Cast( theSource.GetHierarchyParent() );
+				if (!sourcePlayer && theSource != player){ //fist kills pass the player itself, like vanilla PluginAdminLog
+					sourcePlayer = PlayerBase.Cast( theSource );
+				}
 				if (sourcePlayer && sourcePlayer.GetIdentity()) {
 					logobj.ByPlayer(sourcePlayer.GetIdentity().GetId());
 				}
@@ -158,11 +171,11 @@ modded class PluginAdminLog extends PluginBase
 	
 	override void OnPlacementComplete( Man player, ItemBase item ) // ItemBase.c
 	{
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.OnPlacementComplete( player, item);
 		}
 		
-		if ( DME_Api_GetConfig().EnableBuiltinLogging != 0)
+		if ( DME_Api_GetBuiltinLogging() != 0)
 		{
 			PlayerBase thePlayer = PlayerBase.Cast( player );
 			if (thePlayer && thePlayer.GetIdentity()){	
@@ -182,11 +195,11 @@ modded class PluginAdminLog extends PluginBase
 	
 	override void OnContinouousAction( ActionData action_data )	// ActionContinouousBase.c
 	{
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.OnContinouousAction(action_data);
 		}
 		
-		if ( DME_Api_GetConfig().EnableBuiltinLogging != 0 && action_data)
+		if ( DME_Api_GetBuiltinLogging() != 0 && action_data)
 		{				
 			PlayerBase player = PlayerBase.Cast( action_data.m_Player );
 			if (player && player.GetIdentity()){
@@ -214,10 +227,10 @@ modded class PluginAdminLog extends PluginBase
 	}
 	override void Suicide( PlayerBase player )  // EmoteManager.c 
 	{
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.Suicide( player );
 		}
-		if ( DME_Api_GetConfig().EnableBuiltinLogging != 0 && player && player.GetIdentity() )
+		if ( DME_Api_GetBuiltinLogging() != 0 && player && player.GetIdentity() )
 		{
 			DME_Api_LogKilled logobj = new DME_Api_LogKilled(player.GetIdentity().GetId(), player.GetPosition(), "Suicide");
 			
@@ -237,10 +250,10 @@ modded class PluginAdminLog extends PluginBase
 	
 	override void BleedingOut( PlayerBase player )  // Bleeding.c
 	{
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.BleedingOut( player );
 		}
-		if ( DME_Api_GetConfig().EnableBuiltinLogging != 0 &&  player && player.GetIdentity() )
+		if ( DME_Api_GetBuiltinLogging() != 0 &&  player && player.GetIdentity() )
 		{
 			DME_Api_LogKilled logobj = new DME_Api_LogKilled(player.GetIdentity().GetId(), player.GetPosition(), "BleedingOut");
 			
@@ -259,10 +272,10 @@ modded class PluginAdminLog extends PluginBase
 	}
 	
 	override void PlayerList() {
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 2){
+		if (DME_Api_GetBuiltinLogging() != 2){
 			super.PlayerList();
 		}
-		if (DME_Api_GetConfig().EnableBuiltinLogging != 0 ){
+		if (DME_Api_GetBuiltinLogging() != 0 ){
 			thread DoUApiPlayerListLog(); //To stop any extra server lag
 		}
 	}

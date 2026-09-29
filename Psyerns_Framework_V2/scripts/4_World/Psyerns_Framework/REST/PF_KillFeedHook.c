@@ -25,11 +25,24 @@ modded class PlayerBase
 		if (GetIdentity())
 			victimName = GetIdentity().GetName();
 
-		PlayerBase killerPlayer;
-		if (Class.CastTo(killerPlayer, killer) && killerPlayer.GetIdentity())
+		// Firearm/melee kills pass the weapon as killer - resolve its holder like vanilla PluginAdminLog
+		PlayerBase killerPlayer = PlayerBase.Cast(killer);
+		if (!killerPlayer)
+		{
+			EntityAI killerEntity = EntityAI.Cast(killer);
+			if (killerEntity)
+				killerPlayer = PlayerBase.Cast(killerEntity.GetHierarchyRootPlayer());
+		}
+
+		if (killerPlayer && killerPlayer.GetIdentity())
 		{
 			killerName = killerPlayer.GetIdentity().GetName();
 			killerIsPlayer = true;
+		}
+		else if (killerPlayer)
+		{
+			killerName = killerPlayer.GetType();
+			killerIsAI = true;
 		}
 		else if (killer)
 		{

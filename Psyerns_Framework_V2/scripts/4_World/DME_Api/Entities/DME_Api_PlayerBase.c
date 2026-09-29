@@ -86,11 +86,11 @@ modded class PlayerBase {
 			if (newMagItem && !newammoItem)	{
 				int SetAmount = currentAmount;
 				if (newMagItem.GetQuantityMax() <= currentAmount){
-					SetAmount = currentAmount;
-					currentAmount = 0;
-				} else {
 					SetAmount = newMagItem.GetQuantityMax();
 					currentAmount = currentAmount - SetAmount;
+				} else {
+					SetAmount = currentAmount;
+					currentAmount = 0;
 				}
 				newMagItem.ServerSetAmmoCount(SetAmount);
 			} else if (hasQuantity){
@@ -115,13 +115,17 @@ modded class PlayerBase {
 		int MaxQuanity = UMaxQuantity(Type);
 		int StacksRequired = AmountToSpawn;
 		if (MaxQuanity != 0){
-			StacksRequired = Math.Ceil( AmountToSpawn /  MaxQuanity);
+			float stacks = AmountToSpawn;
+			stacks = stacks / MaxQuanity;
+			StacksRequired = Math.Ceil(stacks);
 		}
-		for (int i = 0; i <= StacksRequired; i++){
+		for (int i = 0; i < StacksRequired; i++){
 			if (AmountToSpawn > 0){
 				ItemBase newItem = ItemBase.Cast(g_Game.CreateObjectEx(Type, GetPosition(), ECE_PLACE_ON_SURFACE));
 				if (newItem && HasQuantity){
 					AmountToSpawn = newItem.USetQuantity(AmountToSpawn);
+				} else if (!HasQuantity){
+					AmountToSpawn--;
 				}
 			}
 		}

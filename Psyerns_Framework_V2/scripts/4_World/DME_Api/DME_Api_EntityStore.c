@@ -35,7 +35,7 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 	bool m_Flip;
 	bool m_IsInHands;
 	bool m_IsOn;
-	int m_QuickBarSlot;
+	int m_QuickBarSlot = -1;
 	int m_Agents;
 	int m_Cleanness;
 	protected ref array<ref DME_Api_ZoneHealthData> m_HealthZones;
@@ -75,6 +75,10 @@ class DME_Api_EntityStore extends DME_Api_Object_Base {
 			if (items && items.Count() > 0){
 				for (i = 0; i < items.Count(); i++){
 					EntityAI child_item = EntityAI.Cast(items.Get(i));
+					//EnumerateInventory includes the root entity itself (vanilla FireplaceBase skips it too)
+					if (child_item == item){
+						continue;
+					}
 					if (!m_Cargo){m_Cargo = new array<ref DME_Api_EntityStore>;}
 					if (child_item && ( item.GetInventory().HasEntityInCargo(child_item) || item.GetInventory().HasAttachment(child_item) ) ){
 						DME_Api_EntityStore crg_itemstore = new DME_Api_EntityStore(child_item);
