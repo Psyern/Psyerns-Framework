@@ -33,7 +33,8 @@ class DME_Api_Log extends DME_Api_LoggerBase {
 }
 
 class DME_Api_LoggerBase extends Managed {
-	protected static string m_type = "";
+	//Static calls bind to the base class, so DME_Api_Log.CreateInstance never runs - default the type here
+	protected static string m_type = "DME_Api";
 	protected static ref DME_Api_LoggerBaseInstance m_LoggerBaseInstance;
 
 	static void CreateInstance(){
@@ -202,6 +203,9 @@ class DME_Api_LoggerBaseInstance extends Managed {
 	}
 
 	protected void SendToApi(string jsonString){
+		if (!DME_Api_IsConfigured()){
+			return;
+		}
 		DME_Api().Rest().Log(jsonString);
 	}
 

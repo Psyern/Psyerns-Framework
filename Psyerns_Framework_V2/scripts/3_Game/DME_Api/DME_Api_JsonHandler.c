@@ -71,7 +71,7 @@ class DME_Api_JSONHandler<Class T>
 		if (fh) {
 			
 			string line;
-			while (FGets(fh, line) > 0) {
+			while (FGets(fh, line) >= 0) {
 				jsonData = jsonData + "\n" + line;
 			}
 

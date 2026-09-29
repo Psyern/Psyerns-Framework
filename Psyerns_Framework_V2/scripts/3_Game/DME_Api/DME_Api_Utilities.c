@@ -50,6 +50,9 @@ class DME_Api_Util extends Managed {
 		    }
 			found = FindNextFile(fileHandler, fileName, fileAttr);
 	    }
+		if (fileHandler){
+			CloseFindFile(fileHandler);
+		}
 		return fileList; 
 	};
 	
@@ -57,7 +60,7 @@ class DME_Api_Util extends Managed {
 		DME_Api().CheckAndRenewQRandom();
 		TStringArray Chars = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9"};
 		string id = "";
-		for (int i = 0; i <= number; i++){
+		for (int i = 0; i < number; i++){
 			int idx = Math.QRandomInt(0,(Chars.Count() - 1));
 			id = id + Chars.Get(idx);
 		}
@@ -219,14 +222,14 @@ class DME_Api_Util extends Managed {
 		int mth;
 		int day;
 		GetYearMonthDay(yr, mth, day);
-		int count = day;
+		int count = day - 1;
 		for (int i = 0; i < (mth - 1); i++){
 			count = count + DaysInMonth[i];
 			if (IsLeapYear(yr) && i == 1){
 				count++;
 			}
 		}
-		count = count + Math.Floor((yr - UnixStartYear) * 365.25);
+		count = count + (yr - UnixStartYear) * 365 + (yr - 1969) / 4;
 		return count;
 	}
 	
@@ -236,14 +239,14 @@ class DME_Api_Util extends Managed {
 		int mth;
 		int day;
 		GetYearMonthDayUTC(yr, mth, day);
-		int count = day;
+		int count = day - 1;
 		for (int i = 0; i < (mth - 1); i++){
 			count = count + DaysInMonth[i];
 			if (IsLeapYear(yr) && i == 1){
 				count++;
 			}
 		}
-		count = count + Math.Floor((yr - UnixStartYear) * 365.25);
+		count = count + (yr - UnixStartYear) * 365 + (yr - 1969) / 4;
 		return count;
 	}
 	

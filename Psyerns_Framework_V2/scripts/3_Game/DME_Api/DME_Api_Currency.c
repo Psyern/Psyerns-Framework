@@ -40,11 +40,19 @@ class DME_Api_Currency extends DME_Api_CurrencyBase{
 	}
 	
 	static int GetLastIndex(string key){
-		return m_UCurrencysMap.Get(key).Count() - 1;
+		DME_Api_Currency currency = m_UCurrencysMap.Get(key);
+		if (!currency){
+			return -1;
+		}
+		return currency.Count() - 1;
 	}
 	
 	static int GetLowestDenominationValue(string key){
-		return m_UCurrencysMap.Get(key).LowestDenominationValue();
+		DME_Api_Currency currency = m_UCurrencysMap.Get(key);
+		if (!currency){
+			return 0;
+		}
+		return currency.LowestDenominationValue();
 	}
 	
 	static DME_Api_Currency Register(string key, TStringIntMap currency){
@@ -160,10 +168,16 @@ class DME_Api_Currency extends DME_Api_CurrencyBase{
 		return Count() - 1;
 	}
 	int LowestDenominationValue(){
+		if (Count() == 0){
+			return 0;
+		}
 		SortCurrency();
 		return Get(LastIndex()).Value();
 	}
 	DME_Api_CurrencyValue LowestDenomination(){
+		if (Count() == 0){
+			return NULL;
+		}
 		SortCurrency();
 		return Get(LastIndex());
 	}

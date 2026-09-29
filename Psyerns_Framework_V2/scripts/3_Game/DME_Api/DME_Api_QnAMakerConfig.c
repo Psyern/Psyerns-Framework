@@ -47,23 +47,21 @@ class DME_Api_QnAMakerServerAnswers extends Managed
 		if (!UseNotifcationsMod){
 			g_Game.Chat(BotName + ": " + text, "colorImportant");
 		} else {
-			
-			#ifdef NOTIFICATIONS 
-				float nTime = 5;
-				int strlen = text.Length();
-				if (strlen > 640){
-					nTime = 70;
-				} else if (strlen > 400){
-					nTime = 50;
-				} else if (strlen > 240){
-					nTime = 35;
-				} else if (strlen > 120){
-					nTime = 25;
-				} else if (strlen > 60){
-					nTime = 15;
-				}
-				NotificationSystem.SimpleNoticiation(text, BotName, "Psyerns_Framework_V2/images/Bot.edds", ARGB(230, 142, 180, 230), nTime, NULL);
-			#endif
+			//No loaded mod defines NOTIFICATIONS - use the vanilla notification system instead
+			float nTime = 5;
+			int strlen = text.Length();
+			if (strlen > 640){
+				nTime = 70;
+			} else if (strlen > 400){
+				nTime = 50;
+			} else if (strlen > 240){
+				nTime = 35;
+			} else if (strlen > 120){
+				nTime = 25;
+			} else if (strlen > 60){
+				nTime = 15;
+			}
+			NotificationSystem.AddNotificationExtended(nTime, BotName, text);
 		}
 	}
 	
