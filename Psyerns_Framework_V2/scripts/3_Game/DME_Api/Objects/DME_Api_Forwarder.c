@@ -23,6 +23,10 @@ class DME_Api_Forwarder extends Managed{
 		URL = url;
 		if (headers == NULL){
 			Headers.Insert(new DME_Api_Headers("Content-Type", "application/json"));
+		} else {
+			for (int i = 0; i < headers.Count(); i++){
+				Headers.Insert(headers.Get(i));
+			}
 		}
 		Body = body;
 	}

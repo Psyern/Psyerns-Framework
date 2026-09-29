@@ -329,7 +329,11 @@ class DME_Api_APIEndpoint extends DME_Api_BaseEndpoint {
 		if ( from && from.Count() > 0 && to && DBCBX){
 			Post(endpoint, req.ToJson(), DBCBX);
 		} else {
-			Error2("[DME_Api] [Api] Error Crypto", "From: " +  from.Count() + " To: " +  to + " CID:" + cid);
+			string fromCount = "null";
+			if (from){
+				fromCount = from.Count().ToString();
+			}
+			Error2("[DME_Api] [Api] Error Crypto", "From: " +  fromCount + " To: " +  to + " CID:" + cid);
 			cid = -1;
 		}
 		return cid;

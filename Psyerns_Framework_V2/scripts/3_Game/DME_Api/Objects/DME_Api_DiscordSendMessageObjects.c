@@ -61,7 +61,7 @@ class DME_Api_DiscordEmbed extends DME_Api_Object_Base{
 	string url = "";
 	string description = "";
 	int color = 0;
-	ref array<ref DME_Api_DiscordField> embeds = new array<ref DME_Api_DiscordField>;
+	ref array<ref DME_Api_DiscordField> fields = new array<ref DME_Api_DiscordField>;
 	ref DME_Api_DiscordImage thumbnail;
 	ref DME_Api_DiscordImage image;
 	ref DME_Api_DiscordFooter footer;

@@ -119,7 +119,7 @@ class DME_Api_DBGlobalEndpoint extends DME_Api_BaseEndpoint {
 		
 		DME_Api_Transaction transaction = new DME_Api_Transaction(element, value);
 		
-		if ( element && transaction && mod){
+		if ( element && transaction && mod && cb){
 			cb.SetOID(mod); //Only sets if not set
 			Post(endpoint,transaction.ToJson(), new DME_Api_DBNestedCallBack(cb, cid));
 		} else {

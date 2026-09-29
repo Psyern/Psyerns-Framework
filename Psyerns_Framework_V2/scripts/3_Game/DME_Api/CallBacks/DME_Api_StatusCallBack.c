@@ -15,6 +15,9 @@ class DME_Api_StatusCallBack : DME_Api_DBCallBack
 	
 	override void OnError(int errorCode) {
 		if (!g_Game) return;
+		if (DME_Api().IsCallCanceled(CallId)){
+			return;
+		}
 		if (Instance && Function != ""){
 			g_Game.GameScript.CallFunctionParams(Instance, Function, NULL, new Param4<int, int, string, DME_Api_StatusObject>(CallId, DME_API_ERROR, OID, NULL));
 		}
@@ -22,6 +25,9 @@ class DME_Api_StatusCallBack : DME_Api_DBCallBack
 	
 	override void OnTimeout() {
 		if (!g_Game) return;
+		if (DME_Api().IsCallCanceled(CallId)){
+			return;
+		}
 		if (Instance && Function != ""){
 			g_Game.GameScript.CallFunctionParams(Instance, Function, NULL, new Param4<int, int, string, DME_Api_StatusObject>(CallId, DME_API_TIMEOUT, OID, NULL));
 		}
@@ -29,6 +35,9 @@ class DME_Api_StatusCallBack : DME_Api_DBCallBack
 	
 	override void OnSuccess(string data, int dataSize) {
 		if (!g_Game) return;
+		if (DME_Api().IsCallCanceled(CallId)){
+			return;
+		}
 		if (Instance && Function != ""){
 			
 			DME_Api_StatusObject obj;

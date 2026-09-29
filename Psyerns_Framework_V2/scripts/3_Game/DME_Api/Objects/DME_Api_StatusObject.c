@@ -35,6 +35,9 @@ class DME_Api_Status extends DME_Api_StatusObject {
 		TStringArray ApiVerMap = {};
 		version.Split(".", ModVerMap);
 		Version.Split(".", ApiVerMap);
+		if (ModVerMap.Count() < 3 || ApiVerMap.Count() < 3){
+			return 0;
+		}
 		int ModMajor = ModVerMap.Get(0).ToInt();
 		int ModMinor = ModVerMap.Get(1).ToInt();
 		int ModPatch = ModVerMap.Get(2).ToInt();

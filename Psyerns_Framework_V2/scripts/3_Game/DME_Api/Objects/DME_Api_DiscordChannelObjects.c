@@ -67,6 +67,8 @@ class DME_Api_ChannelCreateOptions extends DME_Api_ChannelOptions{
 
 	void DME_Api_ChannelCreateOptions(string Reason, string Type = "text", string Topic = ""){
 		type = Type;
+		reason = Reason;
+		topic = Topic;
 	}
 	
 }

@@ -45,6 +45,9 @@ class DME_Api_AuthCallBack : RestCallback
 		}
 		if (!authToken){
 			Print("[DME_Api] [DME_Api_AuthCallBack] Error: Failed to parse auth token, aborting");
+			if (m_GUID != ""){
+				DME_Api().AuthError(m_GUID);
+			}
 			return;
 		}
 		if (authToken.GUID == m_GUID && authToken.AUTH != "ERROR"){

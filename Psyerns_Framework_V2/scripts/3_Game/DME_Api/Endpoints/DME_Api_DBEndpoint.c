@@ -296,7 +296,7 @@ class DME_Api_DBEndpoint extends DME_Api_BaseEndpoint {
 
 		string endpoint = "Query/Update/" + mod;
 		
-		DME_Api_UpdateData updatedata = new DME_Api_UpdateData(element, value, operation);
+		DME_Api_DBQueryUpdate updatedata = new DME_Api_DBQueryUpdate(query, element, value, operation);
 		
 		cb.SetOID(mod); //Only sets if not set
 		Post(endpoint, updatedata.ToJson(), new DME_Api_DBNestedCallBack(cb, cid));
