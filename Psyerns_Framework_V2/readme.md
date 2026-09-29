@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/DayZ-1.29+-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29+">
+  <img src="https://img.shields.io/badge/DayZ-1.29%20%7C%201.30-0074D9?style=for-the-badge&logo=steam&logoColor=white" alt="DayZ 1.29 | 1.30">
   <img src="https://img.shields.io/badge/Enforce_Script-Enfusion-FF851B?style=for-the-badge" alt="Enforce Script">
   <img src="https://img.shields.io/badge/Requires-Community_Framework-2ECC40?style=for-the-badge" alt="Requires Community Framework">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-green?style=for-the-badge" alt="License AGPL-3.0"></a>
@@ -448,7 +448,7 @@ The framework logs to both server RPT and a dedicated log file:
 
 | | |
 |---|---|
-| **DayZ** | 1.29+ |
+| **DayZ** | 1.29 and 1.30 (all hooked/called vanilla APIs verified against the 1.30 scripts; no `#ifdef DAYZ_1_30` branches needed) |
 | **Dependencies** | [Community Framework (CF)](https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036) |
 | **WordPress** | Optional — plugin included for web integration |
 
