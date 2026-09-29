@@ -14,6 +14,18 @@ modded class Math
 {
 
 	protected static ref TIntArray s_DME_Api_QRandomNumbers = new TIntArray;
+	protected static bool s_DME_Api_QRandomWarned = false;
+
+	//The pool is only ever filled server-side and only when DME_Api has a ServerURL.
+	//Clients (and unconfigured servers) legitimately never have numbers, so falling back
+	//to the vanilla RNG is the expected path there - log it once, never raise a VM exception.
+	protected static void DME_Api_QRandomWarn(string fn){
+		if (s_DME_Api_QRandomWarned){
+			return;
+		}
+		s_DME_Api_QRandomWarned = true;
+		Print("[DME_Api] " + fn + ": Q random pool empty, using vanilla random (expected while DME_Api is not configured)");
+	}
 
 	//Adds a new array shouldn't be called manually Use DME_Api().CheckAndRenewQRandom();
 	static void AddQRandomNumber(TIntArray numbers){
@@ -42,7 +54,7 @@ modded class Math
 	//returns a random number across the full int range
 	static int QRandom(){
 		if (QRandomRemaining() <= 0){
-			Error2("[DME_Api] QRandom", "Q RANDOM OUT OF NUMBERS USING VANILLA RANDOM");
+			DME_Api_QRandomWarn("QRandom");
 			//Avoid RandomInt(int.MIN, int.MAX): the (max-min) span overflows and int.MIN boundary comparisons are unreliable in EnScript
 			int fallback = RandomInt(0, int.MAX);
 			bool negate = (RandomInt(0, 2) == 1);
@@ -59,7 +71,7 @@ modded class Math
 	//Unless returning a number between 0 and int.MAX exactly I would recomend not doing more than a difference of 10,000(ish) use random float instead
 	static int QRandomInt(int min = 0, int max = int.MAX){
 		if (QRandomRemaining() <= 0){
-			Error2("[DME_Api] QRandomInt", "Q RANDOM OUT OF NUMBERS USING VANILLA RANDOM");
+			DME_Api_QRandomWarn("QRandomInt");
 			return RandomInt(min, max);
 		}
 		if (min == max){
@@ -84,7 +96,7 @@ modded class Math
 	//returns a random float
 	static float QRandomFloat(float min = 0, float max = 1){
 		if (QRandomRemaining() <= 0){
-			Error2("[DME_Api] QRandomFloat", "Q RANDOM OUT OF NUMBERS USING VANILLA RANDOM");
+			DME_Api_QRandomWarn("QRandomFloat");
 			return RandomFloat(min, max);
 		}
 		if (min == max){
@@ -107,7 +119,7 @@ modded class Math
 	//returns a random true or false value
 	static bool QRandomFlip(){
 		if (QRandomRemaining() <= 0){
-			Error2("[DME_Api] QRandomFlip", "Q RANDOM OUT OF NUMBERS USING VANILLA RANDOM");
+			DME_Api_QRandomWarn("QRandomFlip");
 			int retval = RandomInt(1, int.MAX) % 2;
 			return ( retval != 0);
 		}

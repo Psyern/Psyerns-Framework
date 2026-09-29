@@ -210,6 +210,7 @@ class DME_Api_Core extends Managed {
 
 	protected int m_CallId = 0;
 	protected int m_AuthRetries = 0;
+	protected bool m_DME_Api_AuthWarned = false;
 
 	protected bool m_DME_Api_Online = false;
 	protected int m_DME_Api_VersionOffset = 0;
@@ -415,8 +416,11 @@ class DME_Api_Core extends Managed {
 					Print("[DME_Api] RPCRequestAuthToken Requesting client retry." );
 					GetRPCManager().SendRPC("DME_Api", "RPCRequestRetry", new Param1<bool>(true), true, identity);
 				}
-			} else {
-				Error("[DME_Api] Server Auth is empty or null");
+			} else if (!m_DME_Api_AuthWarned){
+				//Clients keep asking every ~22 min; without a ServerAuth that is the
+				//unconfigured-DME_Api case, not a fault - say it once, no VM exception.
+				m_DME_Api_AuthWarned = true;
+				Print("[DME_Api] RPCRequestAuthToken ignored: ServerAuth is empty (DME_Api not configured)");
 			}
 		}
 	}
