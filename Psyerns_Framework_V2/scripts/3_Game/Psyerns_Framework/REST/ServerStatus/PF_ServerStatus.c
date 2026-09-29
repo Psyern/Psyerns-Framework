@@ -31,7 +31,7 @@ class PF_ServerStatus : PF_RestBase
 		m_Interval = intervalSeconds;
 		if (g_Game)
 			m_StartTime = g_Game.GetTickTime();
-		Print("[PF-REST] ServerStatus initialized (interval: " + intervalSeconds.ToString() + "s)");
+		PsyCore_Log.Get("PF-REST").Info("ServerStatus initialized (interval: " + intervalSeconds.ToString() + "s)");
 	}
 
 	/**
@@ -93,7 +93,7 @@ class PF_ServerStatus : PF_RestBase
 		string json = b.Build();
 
 		PostJson("/server/status", json);
-		Print("[PF-REST] ServerStatus pushed: " + playerCount.ToString() + " players, uptime " + uptimeInt.ToString() + "s");
+		PsyCore_Log.Get("PF-REST").Info("ServerStatus pushed: " + playerCount.ToString() + " players, uptime " + uptimeInt.ToString() + "s");
 	}
 
 	// Returns ISO-style timestamp string

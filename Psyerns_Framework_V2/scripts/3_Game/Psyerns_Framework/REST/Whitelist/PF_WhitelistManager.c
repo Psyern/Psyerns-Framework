@@ -18,7 +18,7 @@ class PF_WhitelistManager : PF_RestBase
 {
 	void PF_WhitelistManager(string baseUrl, string apiKey)
 	{
-		Print("[PF-REST] WhitelistManager initialized");
+		PsyCore_Log.Get("PF-REST").Info("WhitelistManager initialized");
 	}
 
 	/**
@@ -30,14 +30,14 @@ class PF_WhitelistManager : PF_RestBase
 	{
 		if (steamId == "")
 		{
-			Print("[PF-REST] [ERROR] WhitelistManager::CheckWhitelist — empty steamId");
+			PsyCore_Log.Get("PF-REST").Error("WhitelistManager::CheckWhitelist — empty steamId");
 			return;
 		}
 
 		PF_HttpArguments args = new PF_HttpArguments();
 		args.Add("steam_id", steamId);
 		GetWithArgs("/whitelist/check", args, cb);
-		Print("[PF-REST] Checking whitelist for: " + steamId);
+		PsyCore_Log.Get("PF-REST").Info("Checking whitelist for: " + steamId);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class PF_WhitelistManager : PF_RestBase
 	{
 		if (steamId == "")
 		{
-			Print("[PF-REST] [ERROR] WhitelistManager::AddToWhitelist — empty steamId");
+			PsyCore_Log.Get("PF-REST").Error("WhitelistManager::AddToWhitelist — empty steamId");
 			return;
 		}
 
@@ -67,7 +67,7 @@ class PF_WhitelistManager : PF_RestBase
 	{
 		if (steamId == "")
 		{
-			Print("[PF-REST] [ERROR] WhitelistManager::RemoveFromWhitelist — empty steamId");
+			PsyCore_Log.Get("PF-REST").Error("WhitelistManager::RemoveFromWhitelist — empty steamId");
 			return;
 		}
 
@@ -99,19 +99,19 @@ class PF_CB_WhitelistCheck : RestCallback
 	{
 		m_RawData = data;
 		m_ResponseReceived = true;
-		Print("[PF-REST] WhitelistCheck success for " + m_SteamId + " (" + dataSize.ToString() + " bytes)");
+		PsyCore_Log.Get("PF-REST").Info("WhitelistCheck success for " + m_SteamId + " (" + dataSize.ToString() + " bytes)");
 	}
 
 	override void OnError(int errorCode)
 	{
 		m_ResponseReceived = true;
-		Print("[PF-REST] [ERROR] WhitelistCheck failed for " + m_SteamId + " — error: " + errorCode.ToString());
+		PsyCore_Log.Get("PF-REST").Error("WhitelistCheck failed for " + m_SteamId + " — error: " + errorCode.ToString());
 	}
 
 	override void OnTimeout()
 	{
 		m_ResponseReceived = true;
-		Print("[PF-REST] [ERROR] WhitelistCheck timed out for " + m_SteamId);
+		PsyCore_Log.Get("PF-REST").Error("WhitelistCheck timed out for " + m_SteamId);
 	}
 
 	string GetSteamId() { return m_SteamId; }
@@ -142,7 +142,7 @@ class PF_CB_WhitelistResult : PF_CB_WhitelistCheck
 		else
 			m_IsWhitelisted = false;
 
-		Print("[PF-REST] WhitelistResult for " + m_SteamId + ": whitelisted=" + m_IsWhitelisted.ToString());
+		PsyCore_Log.Get("PF-REST").Info("WhitelistResult for " + m_SteamId + ": whitelisted=" + m_IsWhitelisted.ToString());
 	}
 
 	override void OnError(int errorCode)

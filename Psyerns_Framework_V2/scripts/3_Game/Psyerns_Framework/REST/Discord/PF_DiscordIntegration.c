@@ -51,13 +51,13 @@ class PF_DiscordIntegration
 
 		if (webhookId == "" || webhookToken == "")
 		{
-			Print("[PF-REST] [ERROR] DiscordIntegration — empty webhook ID or token");
+			PsyCore_Log.Get("PF-REST").Error("DiscordIntegration — empty webhook ID or token");
 			return;
 		}
 
 		m_Webhook = new PF_DiscordWebhook(webhookId, webhookToken);
 
-		Print("[PF-REST] DiscordIntegration initialized");
+		PsyCore_Log.Get("PF-REST").Info("DiscordIntegration initialized");
 	}
 
 	/**
@@ -70,7 +70,7 @@ class PF_DiscordIntegration
 	{
 		if (!m_Webhook)
 		{
-			Print("[PF-REST] [ERROR] DiscordIntegration::Send — webhook not initialized");
+			PsyCore_Log.Get("PF-REST").Error("DiscordIntegration::Send — webhook not initialized");
 			return;
 		}
 
@@ -101,7 +101,7 @@ class PF_DiscordIntegration
 		embed.SetTimestamp(GetTimestamp());
 
 		m_Webhook.Send(payload);
-		Print("[PF-REST] Discord event sent: " + eventType + " — " + message);
+		PsyCore_Log.Get("PF-REST").Info("Discord event sent: " + eventType + " — " + message);
 	}
 
 	/**
@@ -114,7 +114,7 @@ class PF_DiscordIntegration
 	{
 		if (!m_Webhook)
 		{
-			Print("[PF-REST] [ERROR] DiscordIntegration::SendWithFields — webhook not initialized");
+			PsyCore_Log.Get("PF-REST").Error("DiscordIntegration::SendWithFields — webhook not initialized");
 			return;
 		}
 
@@ -146,7 +146,7 @@ class PF_DiscordIntegration
 		}
 
 		m_Webhook.Send(payload);
-		Print("[PF-REST] Discord event sent with fields: " + eventType);
+		PsyCore_Log.Get("PF-REST").Info("Discord event sent with fields: " + eventType);
 	}
 
 	// Returns ISO-style timestamp string

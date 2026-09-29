@@ -1,36 +1,56 @@
+// Thin wrapper around PsyCore_Log (tag "Psyerns Framework").
+// Output: RPT/script log plus a daily file in $profile:Psyerns_Framework/Logs (same folder as before;
+// file name is now "<tag>_<YYYY-MM-DD>.log" as written by PsyCore_Log).
+// The public API (Init/Log/Error/Debug/MaskSecrets) is unchanged for all callers.
 class PF_Logger
 {
+	static const string TAG = "Psyerns Framework";
+	static const string LOG_DIR = "$profile:Psyerns_Framework/Logs";
+
 	protected static bool s_DebugEnabled;
+	protected static bool s_PF_FileEnabled;
+
+	protected static PsyCore_Log GetLog()
+	{
+		PsyCore_Log log = PsyCore_Log.Get(TAG);
+		if (!s_PF_FileEnabled)
+		{
+			log.EnableFile(LOG_DIR);
+			s_PF_FileEnabled = true;
+		}
+		return log;
+	}
 
 	static void Init(bool debugEnabled)
 	{
 		s_DebugEnabled = debugEnabled;
+		GetLog().SetDebug(debugEnabled);
+	}
+
+	static bool IsDebugEnabled()
+	{
+		return s_DebugEnabled;
 	}
 
 	static void Log(string message)
 	{
-		string formatted = "[Psyerns Framework] " + message;
-		Print(formatted);
-		WriteToFile(formatted);
+		GetLog().Info(message);
 	}
 
 	static void Error(string message)
 	{
-		string formatted = "[Psyerns Framework] [ERROR] " + message;
-		Print(formatted);
-		WriteToFile(formatted);
+		GetLog().Error(message);
 	}
 
 	static void Debug(string message)
 	{
 		if (!s_DebugEnabled)
 			return;
-
-		string formatted = "[Psyerns Framework] [DEBUG] " + MaskSecrets(message);
-		Print(formatted);
-		WriteToFile(formatted);
+		GetLog().Debug(MaskSecrets(message));
 	}
 
+	// Framework-specific masks (server_token=, TopGames /servers/<token>/, Discord /webhooks/<id>/<token>)
+	// first, then the generic core masks (api_key=, token=, key=, password=, bearer ...).
 	static string MaskSecrets(string input)
 	{
 		string result = input;
@@ -39,7 +59,7 @@ class PF_Logger
 		// Discord: /webhooks/<id>/<token>, TopGames: /servers/<token>/...
 		result = MaskPathSegment(result, "/webhooks/", 1);
 		result = MaskPathSegment(result, "/servers/", 0);
-		return result;
+		return PsyCore_Log.MaskSecrets(result);
 	}
 
 	protected static string MaskQueryValue(string input, string marker)
@@ -94,32 +114,5 @@ class PF_Logger
 			visible = input.Substring(valueStart, 3);
 
 		return input.Substring(0, valueStart) + visible + "***" + input.Substring(valueEnd, input.Length() - valueEnd);
-	}
-
-	protected static void WriteToFile(string message)
-	{
-		int year;
-		int month;
-		int day;
-		int hour;
-		int minute;
-		int second;
-		GetYearMonthDay(year, month, day);
-		GetHourMinuteSecond(hour, minute, second);
-
-		string dateStr = year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2);
-		string timeStr = hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2);
-		string logDir = "$profile:Psyerns_Framework\\Logs";
-		string logPath = logDir + "\\PF_Log_" + dateStr + ".log";
-
-		if (!FileExist(logDir))
-			MakeDirectory(logDir);
-
-		FileHandle file = OpenFile(logPath, FileMode.APPEND);
-		if (file)
-		{
-			FPrintln(file, "[" + timeStr + "] " + message);
-			CloseFile(file);
-		}
 	}
 }

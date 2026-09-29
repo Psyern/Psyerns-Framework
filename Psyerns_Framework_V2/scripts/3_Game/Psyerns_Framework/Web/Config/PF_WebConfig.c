@@ -130,7 +130,7 @@ class PF_WebConfig
 			{
 				ConfigVersion = CURRENT_VERSION;
 				changed = true;
-				Print("[Psyerns Framework] Config upgraded to version " + CURRENT_VERSION.ToString() + " — new fields added");
+				PF_Logger.Log("Config upgraded to version " + CURRENT_VERSION.ToString() + " — new fields added");
 			}
 
 			if (changed)
@@ -138,16 +138,18 @@ class PF_WebConfig
 				Save();
 			}
 
-			Print("[Psyerns Framework] Config v" + ConfigVersion.ToString() + " loaded from " + path);
-			Print("[Psyerns Framework] Debug logging: " + EnableDebugLogging.ToString() + " | Endpoints: " + Endpoints.Count().ToString() + " | RetryCount: " + DefaultRetryCount.ToString() + " | QueueMax: " + QueueMaxSize.ToString());
+			PF_Logger.Log("Config v" + ConfigVersion.ToString() + " loaded from " + path);
+			PF_Logger.Log("Debug logging: " + EnableDebugLogging.ToString() + " | Endpoints: " + Endpoints.Count().ToString() + " | RetryCount: " + DefaultRetryCount.ToString() + " | QueueMax: " + QueueMaxSize.ToString());
 		}
 		else
 		{
 			CreateDefaults();
 			AutoGenerateApiKeys();
 			Save();
-			Print("[Psyerns Framework] Default config v" + CURRENT_VERSION.ToString() + " created at " + path);
+			PF_Logger.Log("Default config v" + CURRENT_VERSION.ToString() + " created at " + path);
 		}
+
+		ImportAdminsIntoCore();
 	}
 
 	protected void AutoGenerateApiKeys()
@@ -247,20 +249,20 @@ class PF_WebConfig
 		string parent = "$profile:DeadmansEcho";
 		if (!FileExist(parent))
 		{
-			Print("[Psyerns Framework] Creating parent directory: " + parent);
+			PF_Logger.Log("Creating parent directory: " + parent);
 			MakeDirectory(parent);
 		}
 
 		string dir = GetConfigDirectory();
 		if (!FileExist(dir))
 		{
-			Print("[Psyerns Framework] Creating config directory: " + dir);
+			PF_Logger.Log("Creating config directory: " + dir);
 			MakeDirectory(dir);
 		}
 
 		string path = GetConfigPath();
 		JsonFileLoader<PF_WebConfig>.JsonSaveFile(path, this);
-		Print("[Psyerns Framework] Config saved to " + path);
+		PF_Logger.Log("Config saved to " + path);
 	}
 
 	void CreateDefaults()
@@ -413,17 +415,27 @@ class PF_WebConfig
 		return ep.Enabled;
 	}
 
+	// Admin checks go through the central Psyerns Core admin list ($profile:DeadmansEcho/Core/admins.json).
+	// AdminIDs of this config stay valid: they are registered via PsyCore_Admin.ImportLegacy on every load.
+	// Accepts Steam64 (GetPlainId) and BI GUID (GetId); placeholders never grant rights.
 	bool IsAdmin(string plainId)
 	{
-		if (!AdminIDs)
-			return false;
+		return PsyCore_Admin.IsAdminId(plainId);
+	}
 
-		for (int i = 0; i < AdminIDs.Count(); i++)
-		{
-			if (AdminIDs[i] == plainId)
-				return true;
-		}
-		return false;
+	bool IsAdminIdentity(PlayerIdentity identity)
+	{
+		return PsyCore_Admin.IsAdmin(identity);
+	}
+
+	// Registers AdminIDs with the core admin list (server only; the config file itself is not touched).
+	void ImportAdminsIntoCore()
+	{
+		if (!g_Game || !g_Game.IsServer())
+			return;
+		if (!AdminIDs)
+			return;
+		PsyCore_Admin.ImportLegacy("Psyerns_Framework:" + GetConfigPath(), AdminIDs);
 	}
 
 	static void Reload()
@@ -432,6 +444,7 @@ class PF_WebConfig
 		{
 			string path = GetConfigPath();
 			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, s_Instance);
+			s_Instance.ImportAdminsIntoCore();
 			PF_Logger.Log("Config reloaded from " + path);
 		}
 	}

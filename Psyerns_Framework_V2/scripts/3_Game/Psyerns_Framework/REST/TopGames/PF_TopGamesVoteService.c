@@ -11,7 +11,7 @@ class PF_TopGamesVoteService : PF_RestBase
 	{
 		g_PF_TopGamesVoteService = this;
 		RefreshConfig(baseUrl, apiKey);
-		Print("[PF-REST] TopGamesVoteService initialized");
+		PsyCore_Log.Get("PF-REST").Info("TopGamesVoteService initialized");
 	}
 
 	void RefreshConfig(string baseUrl, string serverToken)
@@ -47,7 +47,7 @@ class PF_TopGamesVoteService : PF_RestBase
 	{
 		if (!IsConfigured())
 		{
-			Print("[PF-REST] [ERROR] TopGamesVoteService::GetPlayersRanking - service not configured");
+			PsyCore_Log.Get("PF-REST").Error("TopGamesVoteService::GetPlayersRanking - service not configured");
 			return;
 		}
 
@@ -58,7 +58,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		}
 
 		rankingEndpoint = NormalizeEndpoint(rankingEndpoint);
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + rankingEndpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + rankingEndpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, rankingEndpoint);
 	}
@@ -67,13 +67,13 @@ class PF_TopGamesVoteService : PF_RestBase
 	{
 		if (!IsConfigured())
 		{
-			Print("[PF-REST] [ERROR] TopGamesVoteService::ClaimSteamVote - service not configured");
+			PsyCore_Log.Get("PF-REST").Error("TopGamesVoteService::ClaimSteamVote - service not configured");
 			return;
 		}
 
 		if (steam64Id == "")
 		{
-			Print("[PF-REST] [ERROR] TopGamesVoteService::ClaimSteamVote - empty steam64Id");
+			PsyCore_Log.Get("PF-REST").Error("TopGamesVoteService::ClaimSteamVote - empty steam64Id");
 			return;
 		}
 
@@ -83,7 +83,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		args.Add("standard_http_code", "0");
 
 		string endpoint = args.ToQuery("/v1/votes/claim-steam");
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -92,13 +92,13 @@ class PF_TopGamesVoteService : PF_RestBase
 	{
 		if (!IsConfigured())
 		{
-			Print("[PF-REST] [ERROR] TopGamesVoteService::ClaimUsernameVote - service not configured");
+			PsyCore_Log.Get("PF-REST").Error("TopGamesVoteService::ClaimUsernameVote - service not configured");
 			return;
 		}
 
 		if (playerName == "")
 		{
-			Print("[PF-REST] [ERROR] TopGamesVoteService::ClaimUsernameVote - empty playerName");
+			PsyCore_Log.Get("PF-REST").Error("TopGamesVoteService::ClaimUsernameVote - empty playerName");
 			return;
 		}
 
@@ -107,7 +107,7 @@ class PF_TopGamesVoteService : PF_RestBase
 		args.Add("playername", playerName);
 
 		string endpoint = args.ToQuery("/v1/votes/claim-username");
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}

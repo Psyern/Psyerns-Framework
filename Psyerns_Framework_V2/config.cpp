@@ -5,7 +5,7 @@ class CfgPatches
 		units[] = {};
 		weapons[] = {};
 		requiredVersion = 0.1;
-		requiredAddons[] = {"DZ_Data", "JM_CF_Scripts"};
+		requiredAddons[] = {"DZ_Data", "JM_CF_Scripts", "Psyerns_Core_Module"};
 	};
 };
 

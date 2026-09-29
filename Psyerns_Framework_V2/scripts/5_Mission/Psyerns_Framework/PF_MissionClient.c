@@ -1,12 +1,15 @@
 modded class MissionBase
 {
+	// Client RPC handler (Psyerns Core router); null on the dedicated server.
+	protected ref PF_ReloadRpc m_PF_ReloadRpcClient;
+
 	override void OnInit()
 	{
 		super.OnInit();
 
 		if (!g_Game || !g_Game.IsDedicatedServer())
 		{
-			GetRPCManager().AddRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_RESPONSE, this, SingleplayerExecutionType.Client);
+			m_PF_ReloadRpcClient = new PF_ReloadRpc(false);
 		}
 	}
 
@@ -20,31 +23,9 @@ modded class MissionBase
 		UAInput reloadInput = GetUApi().GetInputByName("PF_ReloadConfig");
 		if (reloadInput && reloadInput.LocalPress())
 		{
-			GetRPCManager().SendRPC(PF_RPC_CHANNEL, PF_RPC_RELOAD_REQUEST, null, true);
+			PF_ReloadRpc.SendReloadRequest();
 			if (g_Game && g_Game.GetMission())
 				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", "Psyerns Framework: Reload requested...", ""));
-		}
-	}
-
-	void PF_ReloadResponse(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
-	{
-		if (type != CallType.Client)
-			return;
-
-		Param2<bool, string> data;
-		if (!ctx.Read(data))
-			return;
-
-		bool success = data.param1;
-		string message = data.param2;
-
-		string prefix = "Psyerns Framework: ";
-		if (g_Game && g_Game.GetMission())
-		{
-			if (success)
-				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + message, ""));
-			else
-				g_Game.GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", prefix + "ERROR: " + message, ""));
 		}
 	}
 }

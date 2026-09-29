@@ -43,7 +43,7 @@ class PF_PlayerLookup : PF_RestBase
 {
 	void PF_PlayerLookup(string baseUrl, string apiKey)
 	{
-		Print("[PF-REST] PlayerLookup initialized");
+		PsyCore_Log.Get("PF-REST").Info("PlayerLookup initialized");
 	}
 
 	/**
@@ -55,14 +55,14 @@ class PF_PlayerLookup : PF_RestBase
 	{
 		if (steamId == "")
 		{
-			Print("[PF-REST] [ERROR] PlayerLookup::GetPlayerData — empty steamId");
+			PsyCore_Log.Get("PF-REST").Error("PlayerLookup::GetPlayerData — empty steamId");
 			return;
 		}
 
 		PF_HttpArguments args = new PF_HttpArguments();
 		args.Add("steam_id", steamId);
 		GetWithArgs("/players/lookup", args, cb);
-		Print("[PF-REST] Looking up player: " + steamId);
+		PsyCore_Log.Get("PF-REST").Info("Looking up player: " + steamId);
 	}
 
 	/**
@@ -72,7 +72,7 @@ class PF_PlayerLookup : PF_RestBase
 	void GetOnlinePlayers(RestCallback cb)
 	{
 		GetWithCallback("/players/online", cb);
-		Print("[PF-REST] Fetching online players");
+		PsyCore_Log.Get("PF-REST").Info("Fetching online players");
 	}
 }
 
@@ -96,7 +96,7 @@ class PF_CB_PlayerData : RestCallback
 	{
 		m_RawData = data;
 		m_Success = true;
-		Print("[PF-REST] PlayerData received (" + dataSize.ToString() + " bytes)");
+		PsyCore_Log.Get("PF-REST").Info("PlayerData received (" + dataSize.ToString() + " bytes)");
 
 		m_PlayerData = new PF_PlayerData();
 		string error;
@@ -105,7 +105,7 @@ class PF_CB_PlayerData : RestCallback
 		bool parsed = (error == "");
 		if (!parsed)
 		{
-			Print("[PF-REST] [ERROR] Failed to parse PlayerData: " + error);
+			PsyCore_Log.Get("PF-REST").Error("Failed to parse PlayerData: " + error);
 			m_PlayerData = null;
 		}
 	}
@@ -113,13 +113,13 @@ class PF_CB_PlayerData : RestCallback
 	override void OnError(int errorCode)
 	{
 		m_Success = false;
-		Print("[PF-REST] [ERROR] PlayerData lookup failed — error: " + errorCode.ToString());
+		PsyCore_Log.Get("PF-REST").Error("PlayerData lookup failed — error: " + errorCode.ToString());
 	}
 
 	override void OnTimeout()
 	{
 		m_Success = false;
-		Print("[PF-REST] [ERROR] PlayerData lookup timed out");
+		PsyCore_Log.Get("PF-REST").Error("PlayerData lookup timed out");
 	}
 
 	PF_PlayerData GetPlayerData() { return m_PlayerData; }
@@ -146,19 +146,19 @@ class PF_CB_OnlinePlayers : RestCallback
 	{
 		m_RawData = data;
 		m_Success = true;
-		Print("[PF-REST] OnlinePlayers received (" + dataSize.ToString() + " bytes)");
+		PsyCore_Log.Get("PF-REST").Info("OnlinePlayers received (" + dataSize.ToString() + " bytes)");
 	}
 
 	override void OnError(int errorCode)
 	{
 		m_Success = false;
-		Print("[PF-REST] [ERROR] OnlinePlayers fetch failed — error: " + errorCode.ToString());
+		PsyCore_Log.Get("PF-REST").Error("OnlinePlayers fetch failed — error: " + errorCode.ToString());
 	}
 
 	override void OnTimeout()
 	{
 		m_Success = false;
-		Print("[PF-REST] [ERROR] OnlinePlayers fetch timed out");
+		PsyCore_Log.Get("PF-REST").Error("OnlinePlayers fetch timed out");
 	}
 
 	string GetRawData() { return m_RawData; }

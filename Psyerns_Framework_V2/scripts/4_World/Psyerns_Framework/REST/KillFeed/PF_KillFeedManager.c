@@ -80,7 +80,7 @@ class PF_KillFeedManager
 			RestApi api = PF_WebApiBase.PF_AcquireRestApi();
 			if (!api)
 			{
-				Print("[PF-REST] [ERROR] KillFeedManager - RestApi unavailable");
+				PsyCore_Log.Get("PF-REST").Error("KillFeedManager - RestApi unavailable");
 				return;
 			}
 
@@ -98,7 +98,7 @@ class PF_KillFeedManager
 			}
 		}
 
-		Print("[PF-REST] KillFeedManager initialized with " + m_WebhookUrls.Count().ToString() + " webhook(s)");
+		PsyCore_Log.Get("PF-REST").Info("KillFeedManager initialized with " + m_WebhookUrls.Count().ToString() + " webhook(s)");
 	}
 
 	/**
@@ -188,7 +188,7 @@ class PF_KillFeedManager
 			PF_RestCallback cb = new PF_RestCallback();
 			PF_RestCallback.PF_Retain(cb);
 			m_Contexts[i].POST(cb, "", json);
-			Print("[PF-REST] KillFeed sent to: " + m_WebhookUrls[i]);
+			PsyCore_Log.Get("PF-REST").Info("KillFeed sent to: " + PF_Logger.MaskSecrets(m_WebhookUrls[i]));
 		}
 	}
 }

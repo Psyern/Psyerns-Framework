@@ -73,7 +73,7 @@ class PF_AlertRule
 	{
 		if (!m_RestCtx)
 		{
-			Print("[PF-REST] [ERROR] AlertRule::Fire — no RestContext (webhookUrl empty?)");
+			PsyCore_Log.Get("PF-REST").Error("AlertRule::Fire — no RestContext (webhookUrl empty?)");
 			return;
 		}
 
@@ -91,7 +91,7 @@ class PF_AlertRule
 		PF_RestCallback cb = new PF_RestCallback();
 		PF_RestCallback.PF_Retain(cb);
 		m_RestCtx.POST(cb, "", json);
-		Print("[PF-REST] Alert fired: " + triggerType + " — " + message);
+		PsyCore_Log.Get("PF-REST").Info("Alert fired: " + triggerType + " — " + message);
 	}
 }
 
@@ -129,7 +129,7 @@ class PF_AlertSystem
 			}
 		}
 
-		Print("[PF-REST] AlertSystem initialized with " + m_Rules.Count().ToString() + " rule(s)");
+		PsyCore_Log.Get("PF-REST").Info("AlertSystem initialized with " + m_Rules.Count().ToString() + " rule(s)");
 	}
 
 	/**

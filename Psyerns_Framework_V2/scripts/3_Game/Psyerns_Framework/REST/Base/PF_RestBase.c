@@ -16,7 +16,7 @@ class PF_RestBase : PF_WebApiBase
 		m_ApiKey = apiKey;
 		if (m_BaseUrl == "")
 		{
-			Print("[PF-REST] [ERROR] REST base not initialized - empty base URL");
+			PsyCore_Log.Get("PF-REST").Error("REST base not initialized - empty base URL");
 			return;
 		}
 		m_RestContext = m_Rest.GetRestContext(m_BaseUrl);
@@ -24,7 +24,7 @@ class PF_RestBase : PF_WebApiBase
 		{
 			m_RestContext.SetHeader("application/json");
 		}
-		Print("[PF-REST] REST base initialized: " + m_BaseUrl);
+		PsyCore_Log.Get("PF-REST").Info("REST base initialized: " + m_BaseUrl);
 	}
 
 	// Builds endpoint path with api_key as query parameter
@@ -47,11 +47,11 @@ class PF_RestBase : PF_WebApiBase
 	{
 		if (!m_RestContext)
 		{
-			Print("[PF-REST] [ERROR] PostWithCallback - RestContext is null");
+			PsyCore_Log.Get("PF-REST").Error("PostWithCallback - RestContext is null");
 			return;
 		}
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.POST(cb, endpoint, jsonData);
 	}
@@ -61,11 +61,11 @@ class PF_RestBase : PF_WebApiBase
 	{
 		if (!m_RestContext)
 		{
-			Print("[PF-REST] [ERROR] GetWithCallback - RestContext is null");
+			PsyCore_Log.Get("PF-REST").Error("GetWithCallback - RestContext is null");
 			return;
 		}
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -75,11 +75,11 @@ class PF_RestBase : PF_WebApiBase
 	{
 		if (!m_RestContext)
 		{
-			Print("[PF-REST] [ERROR] GetWithArgs - RestContext is null");
+			PsyCore_Log.Get("PF-REST").Error("GetWithArgs - RestContext is null");
 			return;
 		}
 		string endpoint = BuildEndpointArgs(path, args);
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		PF_RestCallback.PF_Retain(cb);
 		m_RestContext.GET(cb, endpoint);
 	}
@@ -88,7 +88,7 @@ class PF_RestBase : PF_WebApiBase
 	void PostJson(string path, string jsonData)
 	{
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("POST " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		Post(endpoint, jsonData);
 	}
 
@@ -96,7 +96,7 @@ class PF_RestBase : PF_WebApiBase
 	void GetJson(string path)
 	{
 		string endpoint = BuildEndpoint(path);
-		Print("[PF-REST] GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
+		PsyCore_Log.Get("PF-REST").Info("GET " + PF_Logger.MaskSecrets(m_BaseUrl + endpoint));
 		Get(endpoint);
 	}
 
