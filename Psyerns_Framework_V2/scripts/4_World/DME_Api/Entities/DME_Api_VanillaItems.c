@@ -10,7 +10,7 @@
  * GNU Affero General Public License v3.0. See LICENSE in the repo root.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-modded class TransmitterBase extends ItemTransmitter{
+modded class TransmitterBase{
 	override void OnDME_ApiSave(DME_Api_EntityStore data){
 		super.OnDME_ApiSave(data);
 		
@@ -24,7 +24,7 @@ modded class TransmitterBase extends ItemTransmitter{
 	}
 }
 
-modded class Edible_Base extends ItemBase
+modded class Edible_Base
 {
 
 	override void OnDME_ApiSave(DME_Api_EntityStore data){
@@ -53,7 +53,7 @@ modded class Edible_Base extends ItemBase
 	
 }
 	
-modded class BloodContainerBase extends ItemBase
+modded class BloodContainerBase
 {	
 	override void OnDME_ApiSave(DME_Api_EntityStore data){
 		super.OnDME_ApiSave(data);

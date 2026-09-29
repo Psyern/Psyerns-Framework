@@ -10,7 +10,7 @@
  * GNU Affero General Public License v3.0. See LICENSE in the repo root.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-modded class DayZGame extends CGame
+modded class DayZGame
 {
 	protected ref DME_Api_DiscordUser m_DME_Api_DiscordUser;
 

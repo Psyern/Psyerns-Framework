@@ -10,7 +10,7 @@
  * GNU Affero General Public License v3.0. See LICENSE in the repo root.
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-modded class PluginAdminLog extends PluginBase
+modded class PluginAdminLog
 {
 	//Config is NULL outside a dedicated server and unusable while DME_Api is unconfigured:
 	//fall back to vanilla logging only (0) instead of null-dereferencing
