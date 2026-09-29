@@ -1,4 +1,5 @@
-class PF_WebApiBase
+// Managed so weak back-pointers from in-flight callbacks (PF_AH_PendingCallback.m_Owner) auto-null
+class PF_WebApiBase : Managed
 {
 	protected RestApi m_Rest;
 	protected RestContext m_RestContext;

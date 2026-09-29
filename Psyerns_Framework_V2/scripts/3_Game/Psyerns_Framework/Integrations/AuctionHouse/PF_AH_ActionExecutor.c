@@ -158,6 +158,24 @@ class PF_AH_ActionExecutor
 			store.AddPendingPickup(refund);
 		}
 
+		// Return the item to the seller as a pending item pickup (same snapshot fields as
+		// DME_AH_AuctionManager.DeliverItemToPlayer uses for offline delivery)
+		if (listing.SellerUID != "" && listing.ItemClassName != "")
+		{
+			DME_AH_PendingPickup itemReturn = new DME_AH_PendingPickup();
+			itemReturn.PendingID = "ADMIN_ITEM_CANCEL_" + listing.ListingID + "_" + listing.SellerUID;
+			itemReturn.PlayerUID = listing.SellerUID;
+			itemReturn.ItemClassName = listing.ItemClassName;
+			itemReturn.IsItem = true;
+			itemReturn.ItemHealth = listing.ItemHealth;
+			itemReturn.ItemQuantity = listing.ItemQuantity;
+			itemReturn.ItemLiquidType = listing.ItemLiquidType;
+			itemReturn.Amount = 0;
+			itemReturn.Type = EDME_AH_TransactionType.Cancelled;
+			itemReturn.Timestamp = DME_AH_Util.GetTimestamp();
+			store.AddPendingPickup(itemReturn);
+		}
+
 		listing.Status = EDME_AH_ListingStatus.Cancelled;
 
 		DME_AH_Transaction tx = new DME_AH_Transaction();
@@ -204,6 +222,7 @@ class PF_AH_ActionExecutor
 		if (code == EDME_AH_ResultCode.FailedOwnListing)           return "own_listing";
 		if (code == EDME_AH_ResultCode.FailedInvalidPrice)         return "invalid_price";
 		if (code == EDME_AH_ResultCode.FailedServerError)          return "server_error";
+		if (code == EDME_AH_ResultCode.FailedItemHasAttachments)   return "item_has_attachments";
 #endif
 		return "code_" + code.ToString();
 	}
@@ -222,6 +241,7 @@ class PF_AH_ActionExecutor
 		if (code == EDME_AH_ResultCode.FailedOwnListing)           return "Cannot act on own listing";
 		if (code == EDME_AH_ResultCode.FailedInvalidPrice)         return "Price is invalid";
 		if (code == EDME_AH_ResultCode.FailedServerError)          return "Server error during action";
+		if (code == EDME_AH_ResultCode.FailedItemHasAttachments)   return "Item has attachments";
 #endif
 		return "Unknown result code " + code.ToString();
 	}

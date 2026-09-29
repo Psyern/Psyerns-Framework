@@ -164,7 +164,8 @@ class PF_AH_Uploader : PF_RestBase
 			DME_AH_Transaction t = arr.Transactions[i];
 			if (!t)
 				continue;
-			if (t.Timestamp <= watermark)
+			// Strictly older only: later transactions in the watermark second must still go out; WP dedupes on transaction_id
+			if (t.Timestamp < watermark)
 				continue;
 
 			if (deltaCount > 0)
