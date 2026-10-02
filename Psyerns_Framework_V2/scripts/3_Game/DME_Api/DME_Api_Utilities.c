@@ -40,7 +40,7 @@ class DME_Api_Util extends Managed {
 		string pathpattern = directory + "\\*";
 		
 		//Search for files in file directory
-		FindFileHandle fileHandler = FindFile(pathpattern, fileName, fileAttr, flags);
+		FindFileHandle fileHandler = PsyCore_FindFile.Find(pathpattern, fileName, fileAttr, flags);
 		
 		bool found = true;
 	    while ( found ) {//while there are files loop through looking for more

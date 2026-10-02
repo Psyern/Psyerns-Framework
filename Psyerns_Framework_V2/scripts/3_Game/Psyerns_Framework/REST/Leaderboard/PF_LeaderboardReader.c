@@ -85,7 +85,7 @@ class PF_LeaderboardReader
 		FileAttr fileAttr;
 		string searchPattern = playersPath + "/*.json";
 
-		FindFileHandle handle = FindFile(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
+		FindFileHandle handle = PsyCore_FindFile.Find(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
 		if (!handle)
 		{
 			PF_Logger.Error("LeaderboardReader: Could not open directory: " + playersPath);

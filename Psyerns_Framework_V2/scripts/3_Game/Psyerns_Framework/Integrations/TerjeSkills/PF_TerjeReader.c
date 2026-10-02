@@ -99,7 +99,7 @@ class PF_TerjeReader
 		FileAttr fileAttr;
 		string searchPattern = dirPath + "/*.dat";
 
-		FindFileHandle handle = FindFile(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
+		FindFileHandle handle = PsyCore_FindFile.Find(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
 		if (!handle)
 			return;
 

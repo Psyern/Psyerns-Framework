@@ -37,7 +37,7 @@ class PF_AH_BalanceReader
 		FileAttr fileAttr;
 		string searchPattern = EXPANSION_ATM_DIR + "\\*.json";
 
-		FindFileHandle handle = FindFile(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
+		FindFileHandle handle = PsyCore_FindFile.Find(searchPattern, fileName, fileAttr, FindFileFlags.ALL);
 		if (!handle)
 		{
 			PF_Logger.Debug("AH: FindFile returned null for: " + searchPattern);
