@@ -94,9 +94,9 @@ class PF_ServerNotifications
 		}
 
 		if (!g_Game) return;
+		// every connected Man, same as g_Game.GetPlayers
 		array<Man> players = new array<Man>();
-		g_Game.GetPlayers(players);
-		int playerCount = players.Count();
+		int playerCount = PsyCore_Identities.GetOnlineMen(players);
 
 		PF_JsonBuilder b = PF_JsonBuilder.Begin();
 		b.Add("serverName", config.ServerName);
@@ -134,18 +134,14 @@ class PF_ServerNotifications
 			return;
 		}
 
+		// all lines joined without separator, as before (the file holds one line)
 		string previousMods = "";
-		if (FileExist(modsFile))
+		array<string> previousLines = new array<string>();
+		if (PsyCore_FS.ReadLines(modsFile, previousLines))
 		{
-			FileHandle fh = OpenFile(modsFile, FileMode.READ);
-			if (fh)
+			foreach (string line : previousLines)
 			{
-				string line;
-				while (FGets(fh, line) >= 0)
-				{
-					previousMods = previousMods + line;
-				}
-				CloseFile(fh);
+				previousMods = previousMods + line;
 			}
 		}
 
@@ -196,12 +192,9 @@ class PF_ServerNotifications
 			PF_Logger.Debug("ModUpdate: No changes detected");
 		}
 
-		FileHandle fw = OpenFile(modsFile, FileMode.WRITE);
-		if (fw)
-		{
-			FPrintln(fw, currentMods);
-			CloseFile(fw);
-		}
+		array<string> currentLines = new array<string>();
+		currentLines.Insert(currentMods);
+		PsyCore_FS.WriteLines(modsFile, currentLines);
 	}
 
 	protected static string GetCurrentModList()
@@ -278,8 +271,7 @@ class PF_ServerNotifications
 		int hour;
 		int minute;
 		int second;
-		GetYearMonthDayUTC(year, month, day);
-		GetHourMinuteSecondUTC(hour, minute, second);
+		PsyCore_Time.UtcParts(year, month, day, hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 }

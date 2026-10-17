@@ -49,7 +49,9 @@ class PF_AH_Config
 
 		if (FileExist(path))
 		{
-			JsonFileLoader<PF_AH_Config>.JsonLoadFile(path, s_Instance);
+			string loadError;
+			if (!PsyCore_Json<PF_AH_Config>.Load(path, s_Instance, loadError))
+				PF_Logger.Error("AH: Config " + path + " could not be read: " + loadError);
 			PF_Logger.Log("AH: Config loaded from " + path);
 		}
 		else
@@ -64,16 +66,13 @@ class PF_AH_Config
 
 	void Save()
 	{
-		string parent = "$profile:DeadmansEcho";
-		if (!FileExist(parent))
-			MakeDirectory(parent);
+		PsyCore_Paths.EnsureDir(GetConfigDirectory());
 
-		string dir = GetConfigDirectory();
-		if (!FileExist(dir))
-			MakeDirectory(dir);
-
+		// same pretty JSON as before, no .bak
 		string path = GetConfigPath();
-		JsonFileLoader<PF_AH_Config>.JsonSaveFile(path, this);
+		string saveError;
+		if (!PsyCore_Json<PF_AH_Config>.Save(path, this, saveError, false))
+			PF_Logger.Error("AH: Config save failed: " + saveError);
 	}
 
 	static PF_AH_Config GetInstance()

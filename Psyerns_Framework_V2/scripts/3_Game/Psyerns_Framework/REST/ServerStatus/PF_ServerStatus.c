@@ -56,10 +56,9 @@ class PF_ServerStatus : PF_RestBase
 		if (!g_Game)
 			return;
 
-		// Player count
+		// Player count (every connected Man, same as g_Game.GetPlayers)
 		array<Man> players = new array<Man>();
-		g_Game.GetPlayers(players);
-		int playerCount = players.Count();
+		int playerCount = PsyCore_Identities.GetOnlineMen(players);
 
 		// Uptime
 		float uptimeSeconds = g_Game.GetTickTime() - m_StartTime;
@@ -105,8 +104,7 @@ class PF_ServerStatus : PF_RestBase
 		int hour;
 		int minute;
 		int second;
-		GetYearMonthDayUTC(year, month, day);
-		GetHourMinuteSecondUTC(hour, minute, second);
+		PsyCore_Time.UtcParts(year, month, day, hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 }

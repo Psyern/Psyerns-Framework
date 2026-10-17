@@ -54,7 +54,9 @@ class PF_AH_BalanceReader
 			{
 				string fullPath = EXPANSION_ATM_DIR + "\\" + fileName;
 				PF_AH_ExpansionATMData atm = new PF_AH_ExpansionATMData();
-				JsonFileLoader<PF_AH_ExpansionATMData>.JsonLoadFile(fullPath, atm);
+				string atmError;
+				if (!PsyCore_Json<PF_AH_ExpansionATMData>.Load(fullPath, atm, atmError))
+					PF_Logger.Error("AH: " + atmError);
 
 				if (atm.PlayerID != "")
 				{
@@ -91,7 +93,9 @@ class PF_AH_BalanceReader
 		}
 
 		DME_AH_PlayerData data = new DME_AH_PlayerData();
-		JsonFileLoader<DME_AH_PlayerData>.JsonLoadFile(DME_AH_PLAYER_DATA, data);
+		string loadError;
+		if (!PsyCore_Json<DME_AH_PlayerData>.Load(DME_AH_PLAYER_DATA, data, loadError))
+			PF_Logger.Error("AH: " + loadError);
 
 		if (!data.Balances)
 		{

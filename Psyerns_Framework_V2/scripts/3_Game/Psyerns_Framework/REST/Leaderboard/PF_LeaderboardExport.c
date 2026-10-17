@@ -200,8 +200,7 @@ class PF_LeaderboardExport : PF_RestBase
 		int hour;
 		int minute;
 		int second;
-		GetYearMonthDayUTC(year, month, day);
-		GetHourMinuteSecondUTC(hour, minute, second);
+		PsyCore_Time.UtcParts(year, month, day, hour, minute, second);
 		return year.ToStringLen(4) + "-" + month.ToStringLen(2) + "-" + day.ToStringLen(2) + "T" + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2) + "Z";
 	}
 }

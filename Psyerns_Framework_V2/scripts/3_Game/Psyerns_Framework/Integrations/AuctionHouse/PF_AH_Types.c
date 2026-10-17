@@ -36,17 +36,19 @@ class PF_AH_SyncState
 	{
 		PF_AH_SyncState state = new PF_AH_SyncState();
 		string path = GetStatePath();
-		if (FileExist(path))
-			JsonFileLoader<PF_AH_SyncState>.JsonLoadFile(path, state);
+		string loadError;
+		if (FileExist(path) && !PsyCore_Json<PF_AH_SyncState>.Load(path, state, loadError))
+			PF_Logger.Error("AH: Sync state " + path + " could not be read: " + loadError);
 		return state;
 	}
 
 	void Save()
 	{
-		string dir = "$profile:Psyerns_Framework";
-		if (!FileExist(dir))
-			MakeDirectory(dir);
-		JsonFileLoader<PF_AH_SyncState>.JsonSaveFile(GetStatePath(), this);
+		PsyCore_Paths.EnsureDir("$profile:Psyerns_Framework");
+		// same pretty JSON as before, no .bak
+		string saveError;
+		if (!PsyCore_Json<PF_AH_SyncState>.Save(GetStatePath(), this, saveError, false))
+			PF_Logger.Error("AH: Sync state save failed: " + saveError);
 	}
 }
 

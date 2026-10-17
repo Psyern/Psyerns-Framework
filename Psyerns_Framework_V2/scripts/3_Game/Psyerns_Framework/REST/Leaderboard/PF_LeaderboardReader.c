@@ -128,7 +128,9 @@ class PF_LeaderboardReader
 	{
 		PF_NinjinPlayerData raw = new PF_NinjinPlayerData();
 
-		JsonFileLoader<PF_NinjinPlayerData>.JsonLoadFile(fullPath, raw);
+		string loadError;
+		if (!PsyCore_Json<PF_NinjinPlayerData>.Load(fullPath, raw, loadError))
+			PF_Logger.Error("LeaderboardReader: " + loadError);
 
 		if (!raw.PlayerName || raw.PlayerName == "")
 		{

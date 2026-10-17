@@ -1,11 +1,12 @@
 // Thin wrapper around PsyCore_Log (tag "Psyerns Framework").
-// Output: RPT/script log plus a daily file in $profile:Psyerns_Framework/Logs (same folder as before;
-// file name is now "<tag>_<YYYY-MM-DD>.log" as written by PsyCore_Log).
+// Output: RPT/script log plus a daily file $profile:Psyerns_Framework/Logs/PF_Log_<YYYY-MM-DD>.log
+// (same folder and file name as the pre-core logger).
 // The public API (Init/Log/Error/Debug/MaskSecrets) is unchanged for all callers.
 class PF_Logger
 {
 	static const string TAG = "Psyerns Framework";
 	static const string LOG_DIR = "$profile:Psyerns_Framework/Logs";
+	static const string LOG_FILE_PREFIX = "PF_Log";
 
 	protected static bool s_DebugEnabled;
 	protected static bool s_PF_FileEnabled;
@@ -15,7 +16,7 @@ class PF_Logger
 		PsyCore_Log log = PsyCore_Log.Get(TAG);
 		if (!s_PF_FileEnabled)
 		{
-			log.EnableFile(LOG_DIR);
+			log.EnableFile(LOG_DIR, LOG_FILE_PREFIX);
 			s_PF_FileEnabled = true;
 		}
 		return log;

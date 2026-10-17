@@ -122,7 +122,10 @@ class PF_WebConfig
 
 		if (FileExist(path))
 		{
-			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, this);
+			// fills this instance (missing keys keep the constructor defaults); the lifecycle below is unchanged
+			string loadError;
+			if (!PsyCore_Json<PF_WebConfig>.Load(path, this, loadError))
+				PF_Logger.Error("Config " + path + " could not be read: " + loadError);
 			bool changed = EnsureDefaultEndpoints();
 			AutoGenerateApiKeys();
 
@@ -248,20 +251,21 @@ class PF_WebConfig
 	{
 		string parent = "$profile:DeadmansEcho";
 		if (!FileExist(parent))
-		{
 			PF_Logger.Log("Creating parent directory: " + parent);
-			MakeDirectory(parent);
-		}
 
 		string dir = GetConfigDirectory();
 		if (!FileExist(dir))
-		{
 			PF_Logger.Log("Creating config directory: " + dir);
-			MakeDirectory(dir);
-		}
+		PsyCore_Paths.EnsureDir(dir);
 
+		// same pretty JSON as before, no .bak; a failed serialization no longer truncates the file
 		string path = GetConfigPath();
-		JsonFileLoader<PF_WebConfig>.JsonSaveFile(path, this);
+		string saveError;
+		if (!PsyCore_Json<PF_WebConfig>.Save(path, this, saveError, false))
+		{
+			PF_Logger.Error("Config save failed: " + saveError);
+			return;
+		}
 		PF_Logger.Log("Config saved to " + path);
 	}
 
@@ -443,7 +447,13 @@ class PF_WebConfig
 		if (s_Instance)
 		{
 			string path = GetConfigPath();
-			JsonFileLoader<PF_WebConfig>.JsonLoadFile(path, s_Instance);
+			// re-reads into the existing instance (keys missing in the file keep their current values)
+			if (FileExist(path))
+			{
+				string loadError;
+				if (!PsyCore_Json<PF_WebConfig>.Load(path, s_Instance, loadError))
+					PF_Logger.Error("Config " + path + " could not be read: " + loadError);
+			}
 			s_Instance.ImportAdminsIntoCore();
 			PF_Logger.Log("Config reloaded from " + path);
 		}
