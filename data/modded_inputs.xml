@@ -5,7 +5,7 @@
 			<input name="PF_ReloadConfig" loc="Reload Config (Admin)" />
 		</actions>
 
-		<sorting name="psyerns_framework" loc="Psyerns Framework">
+		<sorting name="psyern" loc="Psyern's">
 			<input name="PF_ReloadConfig" />
 		</sorting>
 	</inputs>
